@@ -1,6 +1,10 @@
 package com.cwz.blog.defaultblog.entity;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 /**
  * @author: 陈文振
@@ -10,17 +14,27 @@ import javax.persistence.Table;
 @Table(name = "tags")
 public class Tags {
 
+    /**
+     * 标签id
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     /**
-     * 标签名
+     * 标签名称
      */
     private String tagName;
 
     /**
-     * 标签大小（相当于该标签里有多少篇文章）
+     * 创建日期
      */
-    private Integer tagSize;
+    private LocalDateTime createDate;
+
+    /**
+     * 标签对应的文章
+     */
+    private Article article;
 
     public Integer getId() {
         return id;
@@ -35,14 +49,22 @@ public class Tags {
     }
 
     public void setTagName(String tagName) {
-        this.tagName = tagName == null ? null : tagName.trim();
+        this.tagName = tagName;
     }
 
-    public Integer getTagSize() {
-        return tagSize;
+    public LocalDateTime getCreateDate() {
+        return createDate;
     }
 
-    public void setTagSize(Integer tagSize) {
-        this.tagSize = tagSize;
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public Article getArticle() {
+        return article;
+    }
+
+    public void setArticle(Article article) {
+        this.article = article;
     }
 }

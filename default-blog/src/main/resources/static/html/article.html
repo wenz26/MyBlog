@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>article</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+    <form action="/getArticle" method="post">
+        用户：<input type="text" name="userId"><br>
+        文章原作者：<input type="text" name="originalAuthor"><br>
+        文章标题：<input type="text" name="articleTitle"><br>
+        文章内容：<input type="text" name="articleContent"><br>
+        文章标签：<input type="text" name="tags.tagName"><br>
+        <input type="submit" value="提交">
+    </form>
+    <button class="button">点我</button>
+    <p class="ppp">我的</p>
+    <p class="ppp">152</p>
+    <p class="ppp">萨达</p>
+    <p class="ppp">dfd</p>
+    <p class="ppp">89dsf</p>
+    <p class="pppp"></p>
+
+    <script>
+        $('.button').click(function () {
+            var list = [];
+            var listNum = $('.ppp').length;
+            for (var i = 0; i < listNum; i++) {
+                list[i] = $('.ppp').eq(i).html();
+            }
+            alert(list);
+            $('.pppp').text(list);
+        })
+    </script>
+</body>
+</html>

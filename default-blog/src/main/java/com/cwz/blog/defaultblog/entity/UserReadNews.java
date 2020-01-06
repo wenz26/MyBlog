@@ -17,15 +17,9 @@ public class UserReadNews {
      */
     private Integer commentNum;
 
-    /**
-     * 留言未读数
-     */
-    private Integer leaveMessageNum;
-
-    public UserReadNews(Integer allNewsNum, Integer commentNum, Integer leaveMessageNum) {
+    public UserReadNews(Integer allNewsNum, Integer commentNum) {
         this.allNewsNum = allNewsNum;
         this.commentNum = commentNum;
-        this.leaveMessageNum = leaveMessageNum;
     }
 
     public Integer getAllNewsNum() {
@@ -42,13 +36,5 @@ public class UserReadNews {
 
     public void setCommentNum(Integer commentNum) {
         this.commentNum = commentNum;
-    }
-
-    public Integer getLeaveMessageNum() {
-        return leaveMessageNum;
-    }
-
-    public void setLeaveMessageNum(Integer leaveMessageNum) {
-        this.leaveMessageNum = leaveMessageNum;
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 /**
  * @author: 陈文振
@@ -101,6 +102,7 @@ public class HashRedisServiceImpl implements RedisService{
     public void hashDelete(String key, Class<?> entityClass){
         Field[] fields = entityClass.getDeclaredFields();
         for (Field field : fields) {
+            field.setAccessible(true);
             redisTemplate.opsForHash().delete(key, field.getName());
         }
     }
@@ -113,6 +115,17 @@ public class HashRedisServiceImpl implements RedisService{
      */
     public void  hashDelete(String key, Object field){
         redisTemplate.opsForHash().delete(key, field);
+    }
+
+    /**
+     * @description: 删除指定key下的所有内容
+     * @author: 陈文振
+     * @date: 2020/1/2
+     * @param key
+     * @return: void
+     */
+    public void  deleteByKey(String key){
+        redisTemplate.opsForHash().getOperations().delete(key);
     }
 
     /**

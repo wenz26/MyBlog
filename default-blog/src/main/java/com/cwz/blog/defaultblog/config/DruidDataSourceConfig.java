@@ -87,7 +87,7 @@ public class DruidDataSourceConfig {
         initParams.put("resetEnable", "true"); // 开启后 点击重置按钮，可使计数器清零重新计数
         // 下面是黑白名单，多个ip地址之间用逗号隔开
         initParams.put("allow", ""); // 白名单ip，默认就是允许所有访问
-        //params.put("deny", ""); // 黑名单ip
+        // initParams.put("deny", "119.23.202.55"); // 黑名单ip
         bean.setInitParameters(initParams);
 
         return bean;

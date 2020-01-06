@@ -3,4 +3,59 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cwz.blog.defaultblog.mapper.ArticleMapper">
 
+    <select id="getArticleAndTagsByArticleId" resultMap="findArtTagsToId">
+        select u.*, t.id tagId, tag_name, create_date from article u
+        left join article_tags ats on u.id = ats.article_id
+        left join tags t on t.id = ats.tag_id
+        <where>
+            u.id = #{articleId}
+            <if test="draft != null and draft != ''">
+                and draft = #{draft}
+            </if>
+        </where>
+    </select>
+    <resultMap id="findArtTagsToId" type="article">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="original_author" property="originalAuthor"/>
+        <result column="article_title" property="articleTitle"/>
+        <result column="article_content" property="articleContent"/>
+        <result column="article_type" property="articleType"/>
+        <result column="article_categories" property="articleCategories"/>
+        <result column="publish_date" property="publishDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="article_url" property="articleUrl"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="article_tabloid" property="articleTabloid"/>
+        <result column="likes" property="likes"/>
+        <result column="last_article_id" property="lastArticleId"/>
+        <result column="next_article_id" property="nextArticleId"/>
+        <result column="draft" property="draft"/>
+        <collection property="tags" ofType="tags">
+            <id column="tagId" property="id"/>
+            <result column="tag_name" property="tagName"/>
+            <result column="create_date" property="createDate"/>
+        </collection>
+    </resultMap>
+
+    <select id="findAllToDraftArticles" resultMap="findArtTagsToId">
+        select u.*, t.id tagId, tag_name, create_date from article u
+        left join article_tags ats on u.id = ats.article_id
+        left join tags t on t.id = ats.tag_id
+        <where>
+           <if test="draft != null">
+               and draft = #{draft}
+           </if>
+           <if test="categoryId != null and categoryId != ''">
+               and article_categories = #{categoryId}
+           </if>
+           <if test="publishDate != null and publishDate != ''">
+               and publish_date like '%${publishDate}%'
+           </if>
+           <if test="userId != null and userId != ''">
+               and user_id = #{userId}
+           </if>
+        </where>
+        order by publish_date desc
+    </select>
 </mapper>

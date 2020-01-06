@@ -19,10 +19,21 @@ public class TimeUtil {
      * @date: 2019/12/4
      * @return: “年-月-日”字符串
      */
-    public String getFormatDateForThree(){
-        LocalDateTime now = LocalDateTime.now();
+    public static String getFormatDateForTwo(LocalDateTime time){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        return time.format(formatter);
+    }
+
+    /**
+     * @description: 格式化日期
+     * 使用线程安全的DateTimeFormatter
+     * @author: 陈文振
+     * @date: 2019/12/4
+     * @return: “年-月-日”字符串
+     */
+    public static String getFormatDateForThree(LocalDateTime time){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return now.format(formatter);
+        return time.format(formatter);
     }
 
     /**
@@ -31,10 +42,9 @@ public class TimeUtil {
      * @date: 2019/12/4
      * @return: “年-月-日 时:分:秒”字符串
      */
-    public String getFormatDateForSix(){
-        LocalDateTime now = LocalDateTime.now();
+    public static String getFormatDateForSix(LocalDateTime time){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return now.format(formatter);
+        return time.format(formatter);
     }
 
     /**
@@ -43,10 +53,9 @@ public class TimeUtil {
      * @date: 2019/12/4
      * @return: “年-月-日 时:分”字符串
      */
-    public String getFormatDateForFive(){
-        LocalDateTime now = LocalDateTime.now();
+    public static String getFormatDateForFive(LocalDateTime time){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return now.format(formatter);
+        return time.format(formatter);
     }
 
     /**
@@ -56,7 +65,7 @@ public class TimeUtil {
      * @param date: 日期 2019-12-4
      * @return:
      */
-    public LocalDate getParseDateForThree(String date){
+    public static LocalDate getParseDateForThree(String date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return LocalDate.parse(date, formatter);
     }
@@ -68,9 +77,9 @@ public class TimeUtil {
      * @param date: 日期 2019-12-4 16:43:20
      * @return:
      */
-    public LocalDate getParseDateForSix(String date){
+    public static LocalDateTime getParseDateForSix(String date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return LocalDate.parse(date, formatter);
+        return LocalDateTime.parse(date, formatter);
     }
 
     /**

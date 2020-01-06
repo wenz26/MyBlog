@@ -2,5 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cwz.blog.defaultblog.mapper.UserMapper">
+    <select id="getUsernameAndRolesByPhone" resultMap="findUsernameAndRoles">
+        select phone, username, password, role_name
+        from user u
+        left join user_role ur
+        on u.id = ur.user_id
+        left join role r
+        on r.id = ur.role_id
+        where phone = #{phone}
+    </select>
 
+    <resultMap id="findUsernameAndRoles" type="user">
+        <result column="phone" property="phone"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <collection property="role" ofType="role">
+            <result column="role_name" property="roleName"/>
+        </collection>
+    </resultMap>
 </mapper>

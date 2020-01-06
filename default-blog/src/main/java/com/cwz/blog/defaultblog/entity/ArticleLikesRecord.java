@@ -1,6 +1,10 @@
 package com.cwz.blog.defaultblog.entity;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 /**
  * @author: 陈文振
@@ -10,22 +14,27 @@ import javax.persistence.Table;
 @Table(name = "article_likes_record")
 public class ArticleLikesRecord {
 
+    /**
+     * 自增id
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     /**
      * 文章id
      */
-    private Long articleId;
+    private Integer articleId;
 
     /**
-     * 点赞人
+     * 用户id
      */
-    private Integer likerId;
+    private Integer userId;
 
     /**
      * 点赞时间
      */
-    private String likeDate;
+    private LocalDateTime likeDate;
 
     /**
      * 该条点赞是否已读  1--未读   0--已读
@@ -40,28 +49,28 @@ public class ArticleLikesRecord {
         this.id = id;
     }
 
-    public Long getArticleId() {
+    public Integer getArticleId() {
         return articleId;
     }
 
-    public void setArticleId(Long articleId) {
+    public void setArticleId(Integer articleId) {
         this.articleId = articleId;
     }
 
-    public Integer getLikerId() {
-        return likerId;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setLikerId(Integer likerId) {
-        this.likerId = likerId;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
-    public String getLikeDate() {
+    public LocalDateTime getLikeDate() {
         return likeDate;
     }
 
-    public void setLikeDate(String likeDate) {
-        this.likeDate = likeDate == null ? null : likeDate.trim();
+    public void setLikeDate(LocalDateTime likeDate) {
+        this.likeDate = likeDate;
     }
 
     public Integer getIsRead() {

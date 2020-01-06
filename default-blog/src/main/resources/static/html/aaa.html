@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns = "http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://lib.baomitu.com/underscore.js/1.9.1/underscore-min.js"></script>
+    <script src="https://lib.baomitu.com/amazeui/2.7.2/js/amazeui.min.js"></script>
+
+    <script>
+        $(function () {
+            $('a').click(function () {
+                var mobile = $('#mobile').val();
+
+                $.ajax({
+                    type: 'get',
+                    url: '/code/sms',
+                    dataType: 'json',
+                    data: {
+                        mobile: mobile,
+                        sign: "login"
+                    },
+                    success: function (data) {
+                        if (parseInt(data['status']) == 0) {
+                            alert("短信验证码发送成功");
+                        } else {
+                            alert("请求成功，但短信验证码发送失败");
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，并且短信验证码发送失败");
+                    }
+                })
+            });
+        })
+
+    </script>
+</head>
+<body>
+    <h3>图片验证码：</h3>
+    <img src="/code/image">
+
+    <h3>手机登录</h3>
+    <form action="/sms" method="post">
+        手机号：<input type="text" name="mobile" id="mobile"><br>
+        获取短信验证码：
+        <input type="text" name="smsCode" id="smsCode">
+        <a href="javascript:;">发送验证码</a><br>
+        <input type="submit" value="提交">
+    </form>
+    <br>
+    <br>
+    <div>
+        <img id="img" src="">
+        <input id="imgTest" type="file" onchange="imgChange(event)" accept=".gif,.jpg,.jpeg,.png">
+        <br><a>上传图片</a>
+    </div>
+
+
+    <script>
+        function imgChange(e) {
+            var dom =$("input[id^='imgTest']")[0];
+            var reader = new FileReader();
+            reader.onload = (function (file) {
+                return function (e) {
+                    //alert(this.result);
+                    $.ajax({
+                        type:'POST',
+                        url:'/uploadArticleImageUrl',
+                        dataType:'text',
+                        data:{
+                            // base64
+                            articleImageUrl:this.result
+                        },
+                        success:function (data) {
+                            $("img[id='img']").attr("src", data);
+                        },
+                        error:function () {
+                        }
+                    });
+                };
+            })(e.target.files[0]);
+            reader.readAsDataURL(e.target.files[0]);
+        }
+
+    </script>
+</body>
+
+</html>

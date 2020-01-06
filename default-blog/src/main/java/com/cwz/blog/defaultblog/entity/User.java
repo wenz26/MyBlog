@@ -1,6 +1,12 @@
 package com.cwz.blog.defaultblog.entity;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author: 陈文振
@@ -10,6 +16,11 @@ import javax.persistence.Table;
 @Table(name = "user")
 public class User {
 
+    /**
+     * 用户id
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     /**
@@ -40,7 +51,7 @@ public class User {
     /**
      * 生日
      */
-    private String birthday;
+    private LocalDate birthday;
 
     /**
      * 邮箱
@@ -53,14 +64,19 @@ public class User {
     private String personalBrief;
 
     /**
-     * 最后登录时间
-     */
-    private String recentlyLanded;
-
-    /**
      * 头像地址
      */
     private String avatarImgUrl;
+
+    /**
+     * 最后登录时间
+     */
+    private LocalDateTime recentlyLanded;
+
+    /**
+     * 用户对应的角色
+     */
+    private List<Role> role;
 
     public Integer getId() {
         return id;
@@ -75,7 +91,7 @@ public class User {
     }
 
     public void setPhone(String phone) {
-        this.phone = phone == null ? null : phone.trim();
+        this.phone = phone;
     }
 
     public String getUsername() {
@@ -83,7 +99,7 @@ public class User {
     }
 
     public void setUsername(String username) {
-        this.username = username == null ? null : username.trim();
+        this.username = username;
     }
 
     public String getPassword() {
@@ -91,7 +107,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password == null ? null : password.trim();
+        this.password = password;
     }
 
     public String getGender() {
@@ -99,7 +115,7 @@ public class User {
     }
 
     public void setGender(String gender) {
-        this.gender = gender == null ? null : gender.trim();
+        this.gender = gender;
     }
 
     public String getTrueName() {
@@ -107,15 +123,15 @@ public class User {
     }
 
     public void setTrueName(String trueName) {
-        this.trueName = trueName == null ? null : trueName.trim();
+        this.trueName = trueName;
     }
 
-    public String getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(String birthday) {
-        this.birthday = birthday == null ? null : birthday.trim();
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
     }
 
     public String getEmail() {
@@ -123,7 +139,7 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email == null ? null : email.trim();
+        this.email = email;
     }
 
     public String getPersonalBrief() {
@@ -131,15 +147,7 @@ public class User {
     }
 
     public void setPersonalBrief(String personalBrief) {
-        this.personalBrief = personalBrief == null ? null : personalBrief.trim();
-    }
-
-    public String getRecentlyLanded() {
-        return recentlyLanded;
-    }
-
-    public void setRecentlyLanded(String recentlyLanded) {
-        this.recentlyLanded = recentlyLanded == null ? null : recentlyLanded.trim();
+        this.personalBrief = personalBrief;
     }
 
     public String getAvatarImgUrl() {
@@ -147,6 +155,22 @@ public class User {
     }
 
     public void setAvatarImgUrl(String avatarImgUrl) {
-        this.avatarImgUrl = avatarImgUrl == null ? null : avatarImgUrl.trim();
+        this.avatarImgUrl = avatarImgUrl;
+    }
+
+    public LocalDateTime getRecentlyLanded() {
+        return recentlyLanded;
+    }
+
+    public void setRecentlyLanded(LocalDateTime recentlyLanded) {
+        this.recentlyLanded = recentlyLanded;
+    }
+
+    public List<Role> getRole() {
+        return role;
+    }
+
+    public void setRole(List<Role> role) {
+        this.role = role;
     }
 }

@@ -1,6 +1,10 @@
 package com.cwz.blog.defaultblog.entity;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 /**
  * @author: 陈文振
@@ -10,27 +14,32 @@ import javax.persistence.Table;
 @Table(name = "comment_likes_record")
 public class CommentLikesRecord {
 
+    /**
+     * 自增id
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     /**
      * 文章id
      */
-    private Long articleId;
+    private Integer articleId;
 
     /**
-     * 评论的id
+     * 对应点赞的评论id
      */
-    private Long pId;
+    private Integer pId;
 
     /**
-     * 点赞人
+     * 点赞人id
      */
-    private Integer likerId;
+    private Integer userId;
 
     /**
      * 点赞时间
      */
-    private String likeDate;
+    private LocalDateTime likeDate;
 
     public Integer getId() {
         return id;
@@ -40,35 +49,35 @@ public class CommentLikesRecord {
         this.id = id;
     }
 
-    public Long getArticleId() {
+    public Integer getArticleId() {
         return articleId;
     }
 
-    public void setArticleId(Long articleId) {
+    public void setArticleId(Integer articleId) {
         this.articleId = articleId;
     }
 
-    public Long getpId() {
+    public Integer getpId() {
         return pId;
     }
 
-    public void setpId(Long pId) {
+    public void setpId(Integer pId) {
         this.pId = pId;
     }
 
-    public Integer getLikerId() {
-        return likerId;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setLikerId(Integer likerId) {
-        this.likerId = likerId;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
-    public String getLikeDate() {
+    public LocalDateTime getLikeDate() {
         return likeDate;
     }
 
-    public void setLikeDate(String likeDate) {
-        this.likeDate = likeDate == null ? null : likeDate.trim();
+    public void setLikeDate(LocalDateTime likeDate) {
+        this.likeDate = likeDate;
     }
 }

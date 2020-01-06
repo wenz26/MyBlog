@@ -1,6 +1,10 @@
 package com.cwz.blog.defaultblog.entity;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 /**
  * @author: 陈文振
@@ -10,70 +14,75 @@ import javax.persistence.Table;
 @Table(name = "comment_record")
 public class Comment {
 
-    private Long id;
-
     /**
-     * 回复的父id 若是评论则为 0，则是评论中的回复则为对应评论的id
+     * 评论id
      */
-    private Long pId = 0L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     /**
-     * 文章id
+     * 被评论的文章id
      */
-    private Long articleId;
+    private Integer articleId;
 
     /**
-     * 评论者
+     * 回复的父id 若是评论则为 0，是评论中的回复则为对应评论的id
+     */
+    private Integer pId = 0;
+
+    /**
+     * 评论者id
      */
     private Integer answererId;
 
     /**
-     * 被回复者
+     * 被回复者id
      */
     private Integer respondentId;
 
     /**
      * 评论日期
      */
-    private String commentDate;
+    private LocalDateTime commentDate;
 
     /**
-     * 喜欢数
+     * 评论点赞数
      */
     private Integer likes;
-
-    /**
-     * 该条评论是否已读  1--未读   0--已读
-     */
-    private Integer isRead = 1;
 
     /**
      * 评论内容
      */
     private String commentContent;
 
-    public Long getId() {
+    /**
+     * 该条评论是否已读  1--未读   0--已读
+     */
+    private Integer isRead = 1;
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Long getpId() {
-        return pId;
-    }
-
-    public void setpId(Long pId) {
-        this.pId = pId;
-    }
-
-    public Long getArticleId() {
+    public Integer getArticleId() {
         return articleId;
     }
 
-    public void setArticleId(Long articleId) {
+    public void setArticleId(Integer articleId) {
         this.articleId = articleId;
+    }
+
+    public Integer getpId() {
+        return pId;
+    }
+
+    public void setpId(Integer pId) {
+        this.pId = pId;
     }
 
     public Integer getAnswererId() {
@@ -92,12 +101,12 @@ public class Comment {
         this.respondentId = respondentId;
     }
 
-    public String getCommentDate() {
+    public LocalDateTime getCommentDate() {
         return commentDate;
     }
 
-    public void setCommentDate(String commentDate) {
-        this.commentDate = commentDate == null ? null : commentDate.trim();
+    public void setCommentDate(LocalDateTime commentDate) {
+        this.commentDate = commentDate;
     }
 
     public Integer getLikes() {
@@ -108,19 +117,19 @@ public class Comment {
         this.likes = likes;
     }
 
+    public String getCommentContent() {
+        return commentContent;
+    }
+
+    public void setCommentContent(String commentContent) {
+        this.commentContent = commentContent;
+    }
+
     public Integer getIsRead() {
         return isRead;
     }
 
     public void setIsRead(Integer isRead) {
         this.isRead = isRead;
-    }
-
-    public String getCommentContent() {
-        return commentContent;
-    }
-
-    public void setCommentContent(String commentContent) {
-        this.commentContent = commentContent == null ? null : commentContent.trim();
     }
 }

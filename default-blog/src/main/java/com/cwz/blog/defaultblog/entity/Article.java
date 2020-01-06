@@ -1,6 +1,8 @@
 package com.cwz.blog.defaultblog.entity;
 
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author: 陈文振
@@ -10,17 +12,22 @@ import javax.persistence.Table;
 @Table(name = "article")
 public class Article {
 
-    private Integer id;
-
     /**
      * 文章id
      */
-    private Long articleId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    /**
+     * 用户id
+     */
+    private Integer userId;
 
     /**
      * 文章作者
      */
-    private String author;
+    // private String author;
 
     /**
      * 文章原作者
@@ -28,7 +35,7 @@ public class Article {
     private String originalAuthor;
 
     /**
-     * 文章名
+     * 文章标题
      */
     private String articleTitle;
 
@@ -38,29 +45,24 @@ public class Article {
     private String articleContent;
 
     /**
-     * 文章标签
-     */
-    private String articleTags;
-
-    /**
-     * 文章类型
+     * 文章类型（转载或原创）
      */
     private String articleType;
 
     /**
      * 博客分类
      */
-    private String articleCategories;
+    private Integer articleCategories;
 
     /**
      * 发布时间
      */
-    private String publishDate;
+    private LocalDateTime publishDate;
 
     /**
      * 最后一次修改时间
      */
-    private String updateDate;
+    private LocalDateTime updateDate;
 
     /**
      * 原文链接
@@ -70,24 +72,49 @@ public class Article {
     private String articleUrl;
 
     /**
+     * 文章图片url
+     */
+    private String imageUrl;
+
+    /**
      * 文章摘要
      */
     private String articleTabloid;
 
     /**
-     * 喜欢
+     * 文章喜欢数
      */
     private Integer likes = 0;
 
     /**
+     * 文章收藏数
+     */
+    private Integer favorites = 0;
+
+    /**
      * 上一篇文章id
      */
-    private Long lastArticleId;
+    private Integer lastArticleId = 0;
 
     /**
      * 下一篇文章id
      */
-    private Long nextArticleId;
+    private Integer nextArticleId = 0;
+
+    /**
+     * 该文章为草稿还是已发布（1为已发布，0为草稿）
+     */
+    private Integer draft;
+
+    /**
+     * 文章对应的标签名称
+     */
+    private String tagName;
+
+    /**
+     * 文章对应的标签类
+     */
+    private List<Tags> tags;
 
     public Integer getId() {
         return id;
@@ -97,28 +124,28 @@ public class Article {
         this.id = id;
     }
 
-    public Long getArticleId() {
-        return articleId;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setArticleId(Long articleId) {
-        this.articleId = articleId;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
-    public String getAuthor() {
+    /*public String getAuthor() {
         return author;
     }
 
     public void setAuthor(String author) {
-        this.author = author == null ? null : author.trim();
-    }
+        this.author = author;
+    }*/
 
     public String getOriginalAuthor() {
         return originalAuthor;
     }
 
     public void setOriginalAuthor(String originalAuthor) {
-        this.originalAuthor = originalAuthor == null ? null : originalAuthor.trim();
+        this.originalAuthor = originalAuthor;
     }
 
     public String getArticleTitle() {
@@ -126,79 +153,7 @@ public class Article {
     }
 
     public void setArticleTitle(String articleTitle) {
-        this.articleTitle = articleTitle == null ? null : articleTitle.trim();
-    }
-
-    public String getArticleTags() {
-        return articleTags;
-    }
-
-    public void setArticleTags(String articleTags) {
-        this.articleTags = articleTags == null ? null : articleTags.trim();
-    }
-
-    public String getArticleType() {
-        return articleType;
-    }
-
-    public void setArticleType(String articleType) {
-        this.articleType = articleType == null ? null : articleType.trim();
-    }
-
-    public String getArticleCategories() {
-        return articleCategories;
-    }
-
-    public void setArticleCategories(String articleCategories) {
-        this.articleCategories = articleCategories == null ? null : articleCategories.trim();
-    }
-
-    public String getPublishDate() {
-        return publishDate;
-    }
-
-    public void setPublishDate(String publishDate) {
-        this.publishDate = publishDate == null ? null : publishDate.trim();
-    }
-
-    public String getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(String updateDate) {
-        this.updateDate = updateDate == null ? null : updateDate.trim();
-    }
-
-    public String getArticleUrl() {
-        return articleUrl;
-    }
-
-    public void setArticleUrl(String articleUrl) {
-        this.articleUrl = articleUrl == null ? null : articleUrl.trim();
-    }
-
-    public Integer getLikes() {
-        return likes;
-    }
-
-    public void setLikes(Integer likes) {
-        this.likes = likes;
-    }
-
-    public Long getLastArticleId() {
-        return lastArticleId;
-    }
-
-    public void setLastArticleId(Long lastArticleId) {
-        this.lastArticleId = lastArticleId;
-    }
-
-    public Long getNextArticleId() {
-        return nextArticleId;
-    }
-
-    public void setNextArticleId(Long nextArticleId) {
-        this.nextArticleId = nextArticleId;
+        this.articleTitle = articleTitle;
     }
 
     public String getArticleContent() {
@@ -209,11 +164,115 @@ public class Article {
         this.articleContent = articleContent;
     }
 
+    public String getArticleType() {
+        return articleType;
+    }
+
+    public void setArticleType(String articleType) {
+        this.articleType = articleType;
+    }
+
+    public Integer getArticleCategories() {
+        return articleCategories;
+    }
+
+    public void setArticleCategories(Integer articleCategories) {
+        this.articleCategories = articleCategories;
+    }
+
+    public LocalDateTime getPublishDate() {
+        return publishDate;
+    }
+
+    public void setPublishDate(LocalDateTime publishDate) {
+        this.publishDate = publishDate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public String getArticleUrl() {
+        return articleUrl;
+    }
+
+    public void setArticleUrl(String articleUrl) {
+        this.articleUrl = articleUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public String getArticleTabloid() {
         return articleTabloid;
     }
 
     public void setArticleTabloid(String articleTabloid) {
         this.articleTabloid = articleTabloid;
+    }
+
+    public Integer getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Integer likes) {
+        this.likes = likes;
+    }
+
+    public Integer getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(Integer favorites) {
+        this.favorites = favorites;
+    }
+
+    public Integer getLastArticleId() {
+        return lastArticleId;
+    }
+
+    public void setLastArticleId(Integer lastArticleId) {
+        this.lastArticleId = lastArticleId;
+    }
+
+    public Integer getNextArticleId() {
+        return nextArticleId;
+    }
+
+    public void setNextArticleId(Integer nextArticleId) {
+        this.nextArticleId = nextArticleId;
+    }
+
+    public String getTagName() {
+        return tagName;
+    }
+
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
+
+    public Integer getDraft() {
+        return draft;
+    }
+
+    public void setDraft(Integer draft) {
+        this.draft = draft;
+    }
+
+    public List<Tags> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tags> tags) {
+        this.tags = tags;
     }
 }
