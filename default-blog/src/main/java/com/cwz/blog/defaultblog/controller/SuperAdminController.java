@@ -3,6 +3,7 @@ package com.cwz.blog.defaultblog.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.cwz.blog.defaultblog.aspect.annotation.LogAnnotation;
 import com.cwz.blog.defaultblog.aspect.annotation.PermissionCheck;
+import com.cwz.blog.defaultblog.constant.CodeType;
 import com.cwz.blog.defaultblog.entity.Categories;
 import com.cwz.blog.defaultblog.redis.HashRedisServiceImpl;
 import com.cwz.blog.defaultblog.redis.RedisToService;
@@ -12,6 +13,7 @@ import com.cwz.blog.defaultblog.utils.JsonResult;
 import com.cwz.blog.defaultblog.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +38,8 @@ public class SuperAdminController {
     private VisitStatisticsService visitStatisticsService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommentService commentService;
     @Autowired
     private ArticleService articleService;
     @Autowired
@@ -87,7 +91,7 @@ public class SuperAdminController {
         returnJson.put("yesterdayVisitor", yesterdayVisitors);
         returnJson.put("articleNum", articleService.countArticleToPublish());
 
-        if (hashRedisService.hasKey(StringUtil.ARTICLE_THUMBS_UP)) {
+        /*if (hashRedisService.hasKey(StringUtil.ARTICLE_THUMBS_UP)) {
             // 将redis中的所有文章的点赞记录显示出来
             LinkedHashMap map = (LinkedHashMap) hashRedisService.getAllFieldAndValue(StringUtil.ARTICLE_THUMBS_UP);
             String statisticsName;
@@ -103,7 +107,7 @@ public class SuperAdminController {
             returnJson.put("articleThumbsUpNum", statisticsNum);
         } else {
             returnJson.put("articleThumbsUpNum", 0);
-        }
+        }*/
         DataMap dataMap = DataMap.success().setData(returnJson);
         return JsonResult.build(dataMap).toJSON();
     }
@@ -177,6 +181,43 @@ public class SuperAdminController {
     public String getArticleTags(@RequestParam("rows") String rows,
                                  @RequestParam("pageNum") String pageNum){
         DataMap dataMap = tagsService.findTagsInfoAndArticleCountNum(Integer.parseInt(rows), Integer.parseInt(pageNum));
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+    /**
+     * @description: 获得所有评论信息
+     * @author: 陈文振
+     * @date: 2020/1/12
+     * @param rows
+     * @param pageNum
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "获得所有评论信息")
+    @LogAnnotation(module = "获得所有评论信息", operation = "查找")
+    @GetMapping(value = "/findAllComment", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_SUPERADMIN")
+    public String findAllComment(@RequestParam("rows") String rows,
+                                 @RequestParam("pageNum") String pageNum){
+        DataMap dataMap = commentService.findAllComment(Integer.parseInt(rows), Integer.parseInt(pageNum));
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+    /**
+     * @description: 删除评论
+     * @author: 陈文振
+     * @date: 2020/1/12
+     * @param id
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "删除评论")
+    @LogAnnotation(module = "删除评论", operation = "查找")
+    @GetMapping(value = "/deleteOneCommentById", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_SUPERADMIN")
+    public String deleteOneCommentById(@RequestParam("id") String id){
+        if(StringUtils.isBlank(id)){
+            return JsonResult.build(DataMap.fail(CodeType.DELETE_COMMENT_FAIL)).toJSON();
+        }
+        DataMap dataMap = commentService.deleteOneCommentById(Integer.parseInt(id));
         return JsonResult.build(dataMap).toJSON();
     }
 }

@@ -78,7 +78,7 @@ class ArticleServiceImplTest {
 
     @Test
     void findAllToPublishArticles() {
-        DataMap dataMap = articleService.findAllToPublishArticles(10, 0);
+        DataMap dataMap = articleService.findAllToPublishArticles(25, 1);
         System.out.println(JSON.toJSONString(dataMap));
     }
 

@@ -34,6 +34,9 @@
     .siteUpdateTime{
         display: block;
     }
+    .siteLocalTime{
+        display: block;
+    }
     .site-info{
         margin-top: 20px;
         box-shadow: 0 2px 5px 0 rgba(33, 22, 22, 0.2), 0 2px 10px 0 rgba(0,0,0,0.12);
@@ -83,6 +86,9 @@
     .siteUpdateTime{
         display: inline-block;
     }
+    .siteLocalTime{
+        display: inline-block;
+    }
     .site-info{
         box-shadow: 0 2px 5px 0 rgba(33, 22, 22, 0.2), 0 2px 10px 0 rgba(0,0,0,0.12);
         margin: 30px 10px 0;
@@ -103,11 +109,22 @@
 .am-u-lg-6{
     padding: 10px;
 }
-.likes{
+.watch{
     float: right;
-    margin-right: 40px;
+    margin-right: 10px;
     color: #969696;
 }
+.likes{
+    float: right;
+    margin-right: 10px;
+    color: #969696;
+}
+.star{
+    float: right;
+    margin-right: 30px;
+    color: #969696;
+}
+
 
 /*名片按钮*/
 #personal-card{

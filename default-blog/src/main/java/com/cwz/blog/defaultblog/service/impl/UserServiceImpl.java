@@ -32,29 +32,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByPhone(String phone) {
-        Example userExample = new Example(User.class);
-        Example.Criteria userCriteria = userExample.createCriteria();
-        userCriteria.andEqualTo("phone", phone);
-        return userMapper.selectOneByExample(userExample);
+        return userMapper.findUserByPhone(phone);
     }
 
     @Override
     public User findUserByUsername(String username) {
-        Example userExample = new Example(User.class);
-        Example.Criteria userCriteria = userExample.createCriteria();
-        userCriteria.andEqualTo("username", username);
-        return userMapper.selectOneByExample(userExample);
+        return userMapper.findUserByUsername(username);
     }
 
     @Override
     public User findUserByUserId(int userId) {
-        Example userExample = new Example(User.class);
-        /*userExample.selectProperties("username", "avatarImgUrl");*/
-        Example.Criteria userCriteria = userExample.createCriteria();
-        userCriteria.andEqualTo("id", userId);
-        return userMapper.selectOneByExample(userExample);
+        return userMapper.findUserByUserId(userId);
     }
-
 
     @Override
     public String findUsernameById(int id) {
@@ -213,10 +202,7 @@ public class UserServiceImpl implements UserService {
      * @return: true--存在  false--不存在
      */
     private boolean userIsExist(String phone) {
-        Example userExample = new Example(User.class);
-        Example.Criteria userCriteria = userExample.createCriteria();
-        userCriteria.andEqualTo("phone", phone);
-        User user = userMapper.selectOneByExample(userExample);
+        User user = userMapper.findUserByPhone(phone);
         return user != null;
     }
 }

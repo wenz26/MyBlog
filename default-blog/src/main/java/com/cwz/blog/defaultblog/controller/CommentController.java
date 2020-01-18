@@ -6,6 +6,9 @@ import com.cwz.blog.defaultblog.component.JavaScriptCheck;
 import com.cwz.blog.defaultblog.constant.CodeType;
 import com.cwz.blog.defaultblog.entity.Comment;
 import com.cwz.blog.defaultblog.entity.CommentLikesRecord;
+import com.cwz.blog.defaultblog.mapper.ArticleMapper;
+import com.cwz.blog.defaultblog.mapper.CommentMapper;
+import com.cwz.blog.defaultblog.redis.RedisToService;
 import com.cwz.blog.defaultblog.service.CommentLikesRecordService;
 import com.cwz.blog.defaultblog.service.CommentService;
 import com.cwz.blog.defaultblog.service.UserService;
@@ -18,6 +21,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,6 +45,10 @@ public class CommentController {
     private CommentLikesRecordService commentLikesRecordService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommentMapper commentMapper;
+    @Autowired
+    private RedisToService redisToService;
 
     /**
      * @description: 获得该文章所有评论
@@ -157,7 +165,7 @@ public class CommentController {
      */
     @ApiOperation(value = "用户是否登陆")
     @LogAnnotation(module = "用户是否登陆", operation = "登录判断")
-    @PostMapping(value = "/isLogin", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @GetMapping(value = "/isLogin", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
     @PermissionCheck(value = "ROLE_USER")
     public String isLogin(){
         return JsonResult.success().toJSON();
@@ -174,7 +182,7 @@ public class CommentController {
      */
     @ApiOperation(value = "新增评论的点赞信息")
     @LogAnnotation(module = "新增评论的点赞信息", operation = "新增")
-    @PostMapping(value = "/addCommentLike", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @GetMapping(value = "/addCommentLike", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
     @PermissionCheck(value = "ROLE_USER")
     public String addCommentLike(@RequestParam("articleId") String articleId,
                                  @RequestParam("respondentId") String respondentId,
@@ -183,10 +191,12 @@ public class CommentController {
 
         LocalDateTime localDateTime = LocalDateTime.now();
 
+        int pId = Integer.parseInt(respondentId.substring(1));
+
         CommentLikesRecord commentLikesRecord = new CommentLikesRecord();
         commentLikesRecord.setLikeDate(localDateTime);
         commentLikesRecord.setUserId(userService.findIdByUsername(username));
-        commentLikesRecord.setpId(Integer.parseInt(respondentId.substring(1)));
+        commentLikesRecord.setpId(pId);
         commentLikesRecord.setArticleId(Integer.parseInt(articleId));
 
         if (commentLikesRecordService.isLike(commentLikesRecord.getArticleId(), commentLikesRecord.getpId(), username)) {
@@ -195,6 +205,10 @@ public class CommentController {
 
         DataMap dataMap = commentService.updateLikeByArticleIdAndId(commentLikesRecord.getArticleId(), commentLikesRecord.getpId());
         commentLikesRecordService.insertCommentLikesRecord(commentLikesRecord);
+
+        int userId = commentMapper.findUserIdByPId(pId);
+
+        redisToService.readThumbsUpRecordOnRedis(StringUtil.COMMENT_THUMBS_UP, String.valueOf(userId), 1);
 
         return JsonResult.build(dataMap).toJSON();
     }

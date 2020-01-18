@@ -6,6 +6,7 @@ import com.cwz.blog.defaultblog.entity.User;
 import com.cwz.blog.defaultblog.redis.HashRedisServiceImpl;
 import com.cwz.blog.defaultblog.security.code.sms.SmsCode;
 import com.cwz.blog.defaultblog.service.UserService;
+import com.cwz.blog.defaultblog.utils.DataMap;
 import com.cwz.blog.defaultblog.utils.JsonResult;
 import com.cwz.blog.defaultblog.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -14,10 +15,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.spring.web.json.Json;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
@@ -41,16 +45,14 @@ public class LoginController {
      * @author: 陈文振
      * @date: 2020/1/5
      * @param phone
-     * @param authCode
-     * @param newPassword
      * @return: java.lang.String
      */
     @ApiOperation(value = "修改密码")
     @LogAnnotation(module = "修改密码", operation = "修改")
     @PostMapping(value = "/changePassword", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
-    public String changePassword(@RequestParam("phone") String phone,
-                                 @RequestParam("authCode") String authCode,
-                                 @RequestParam("newPassword") String newPassword){
+    public String changePassword(@RequestParam("phone") String phone, HttpServletRequest request){
+        String authCode = request.getParameter("authCode");
+        String newPassword = request.getParameter("newPassword");
 
         SmsCode code = (SmsCode) hashRedisService.get(StringUtil.PREFIX_SMS_CODE, phone);
 
@@ -80,5 +82,28 @@ public class LoginController {
         hashRedisService.hashDelete(StringUtil.PREFIX_SMS_CODE, phone);
 
         return JsonResult.success().toJSON();
+    }
+
+    /**
+     * @description: 判断验证码
+     * @author: 陈文振
+     * @date: 2020/1/12
+     * @param
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "判断验证码")
+    @LogAnnotation(module = "判断验证码", operation = "验证")
+    @GetMapping(value = "/checkCode", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    public String checkCode(@RequestParam("imageCode") String imageCode,
+                            HttpServletRequest request) {
+        String sessionId = (String) request.getSession().getAttribute("sessionId");
+
+        SmsCode code = (SmsCode) hashRedisService.get(StringUtil.PREFIX_IMAGE_CODE, sessionId);
+
+        if (StringUtils.equals(imageCode, code.getCode())) {
+            return JsonResult.success().toJSON();
+        } else {
+            return JsonResult.build(DataMap.fail().setData(CodeType.AUTH_CODE_ERROR)).toJSON();
+        }
     }
 }

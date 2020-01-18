@@ -7,6 +7,7 @@ import com.cwz.blog.defaultblog.entity.UserLog;
 import com.cwz.blog.defaultblog.service.UserLogService;
 import com.cwz.blog.defaultblog.utils.HttpContextUtils;
 import com.cwz.blog.defaultblog.utils.IpUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -140,7 +141,13 @@ public class LogAspect {
         }*/
         String username = (String) request.getSession().getAttribute("authentication");
         if (username == null) {
-            userLog.setLogUsername("匿名用户(未登录)");
+            String cookie = request.getHeader("Cookie");
+            if (!StringUtils.isBlank(cookie) && cookie.contains("remember-me")) {
+                String name = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+                userLog.setLogUsername(name);
+            } else {
+                userLog.setLogUsername("匿名用户(未登录)");
+            }
         } else {
             userLog.setLogUsername(username);
         }

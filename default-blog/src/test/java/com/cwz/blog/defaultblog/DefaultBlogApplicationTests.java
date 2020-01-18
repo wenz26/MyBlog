@@ -3,13 +3,18 @@ package com.cwz.blog.defaultblog;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.cwz.blog.defaultblog.constant.CodeType;
 import com.cwz.blog.defaultblog.entity.Article;
 import com.cwz.blog.defaultblog.entity.Categories;
 import com.cwz.blog.defaultblog.entity.Tags;
 import com.cwz.blog.defaultblog.mapper.ArticleMapper;
 import com.cwz.blog.defaultblog.mapper.CategoriesMapper;
 import com.cwz.blog.defaultblog.service.ArticleService;
+import com.cwz.blog.defaultblog.utils.DataMap;
+import com.cwz.blog.defaultblog.utils.JsonResult;
 import com.cwz.blog.defaultblog.utils.StringUtil;
+import com.cwz.blog.defaultblog.utils.TimeUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -183,6 +188,9 @@ class DefaultBlogApplicationTests {
         System.out.println(JSON.toJSONString(localDateTime));
         System.out.println(JSON.toJSONString(localDateTime.toString()));*/
 
-        System.out.println(ResourceUtils.getURL("classpath:").getPath());
+        /*System.out.println(ResourceUtils.getURL("classpath:").getPath());*/
+        /*System.out.println(JsonResult.build(DataMap.fail().setData(CodeType.AUTH_CODE_ERROR)).toJSON());*/
+        /*System.out.println(TimeUtil.getFormatDateForThree(LocalDateTime.now()));*/
+        System.out.println(StringUtils.isBlank(null));
     }
 }

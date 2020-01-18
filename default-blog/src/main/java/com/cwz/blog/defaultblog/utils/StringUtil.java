@@ -23,6 +23,16 @@ public class StringUtil {
     public static final String ARTICLE_THUMBS_UP = "articleThumbsUp";
 
     /**
+     * 评论点赞标志
+     */
+    public static final String COMMENT_THUMBS_UP = "commentThumbsUp";
+
+    /**
+     * 访问量
+     */
+    public static final String VISIT = "visit";
+
+    /**
      * 图片验证码 前缀
      */
     public static final String PREFIX_IMAGE_CODE = "PREFIX_IMAGE_CODE";

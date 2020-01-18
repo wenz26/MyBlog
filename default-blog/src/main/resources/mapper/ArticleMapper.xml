@@ -28,6 +28,7 @@
         <result column="image_url" property="imageUrl"/>
         <result column="article_tabloid" property="articleTabloid"/>
         <result column="likes" property="likes"/>
+        <result column="favorites" property="favorites" />
         <result column="last_article_id" property="lastArticleId"/>
         <result column="next_article_id" property="nextArticleId"/>
         <result column="draft" property="draft"/>

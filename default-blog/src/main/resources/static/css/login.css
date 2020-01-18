@@ -11,6 +11,9 @@
 .login_error{
     margin-top: 20px;
  }
+.sms_login_error{
+    margin-top: 20px;
+}
 .phoneNotExit{
     text-align: center;
 }

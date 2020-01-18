@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cwz.blog.defaultblog.mapper.CommentLikesRecordMapper">
+
+    <select id="findCommentLikesRecordByUserId" resultMap="commentLikesRecordMap">
+        select cr.*, clr.id cLikeId, user_id, like_date, clr.is_read cIsRead
+        from comment_record cr
+        right join comment_likes_record clr
+        on cr.id = clr.p_id
+        where cr.answerer_id = #{userId}
+        order by clr.id desc
+    </select>
+    <resultMap id="commentLikesRecordMap" type="commentLikesRecord">
+        <id column="cLikeId" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="like_date" property="likeDate"/>
+        <result column="cIsRead" property="isRead"/>
+        <association property="comment" javaType="comment">
+            <id column="id" property="id"/>
+            <result column="article_id" property="articleId"/>
+            <result column="answerer_id" property="answererId"/>
+            <result column="p_id" property="pId"/>
+            <result column="respondent_id" property="respondentId"/>
+            <result column="comment_date" property="commentDate"/>
+            <result column="likes" property="likes"/>
+            <result column="comment_content" property="commentContent"/>
+            <result column="is_read" property="isRead"/>
+        </association>
+    </resultMap>
+
+</mapper>

@@ -68,7 +68,12 @@ public class RegisterController {
             return JsonResult.fail(CodeType.CODE_IS_EXPIRED).toJSON();
         }
 
-        //判断用户名是否存在
+        // 判断手机号是否存在
+        if (userService.findUserByPhone(user.getPhone()) != null) {
+            return JsonResult.fail(CodeType.PHONE_EXIST).toJSON();
+        }
+
+        // 判断用户名是否存在
         if (userService.usernameIsExist(user.getUsername()) ||
                 StringUtils.equals(user.getUsername(), PrincipalAspect.ANONYMOUS_USER)) {
             return JsonResult.fail(CodeType.USERNAME_EXIST).toJSON();

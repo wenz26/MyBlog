@@ -10,6 +10,7 @@ import com.cwz.blog.defaultblog.entity.Article;
 import com.cwz.blog.defaultblog.entity.Categories;
 import com.cwz.blog.defaultblog.entity.Tags;
 import com.cwz.blog.defaultblog.mapper.ArticleMapper;
+import com.cwz.blog.defaultblog.redis.HashRedisServiceImpl;
 import com.cwz.blog.defaultblog.service.*;
 import com.cwz.blog.defaultblog.service.common.CommonReturn;
 import com.cwz.blog.defaultblog.utils.DataMap;
@@ -53,6 +54,8 @@ public class ArticleServiceImpl implements ArticleService {
     private TagsService tagsService;
     @Autowired
     private ArticleUserFavoriteRecordService articleUserFavoriteRecordService;
+    @Autowired
+    private HashRedisServiceImpl hashRedisService;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -63,7 +66,7 @@ public class ArticleServiceImpl implements ArticleService {
         int userId = userService.findIdByUsername(username);
 
         try {
-            if (Objects.equals(StringUtil.BLANK, article.getOriginalAuthor()) || article.getOriginalAuthor() == null) {
+            if (Objects.equals(article.getArticleType(), "原创") || Objects.equals(StringUtil.BLANK, article.getOriginalAuthor()) || article.getOriginalAuthor() == null) {
                 article.setOriginalAuthor(username);
             }
             if (Objects.equals(StringUtil.BLANK, article.getArticleUrl()) || article.getArticleUrl() == null) {
@@ -96,7 +99,10 @@ public class ArticleServiceImpl implements ArticleService {
             // 修改文章的url
             // 保存文章url
             String url = SiteOwner.SITE_OWNER_URL + "/article/" + article.getId();
-            articleMapper.updateArtcileUrlById(article.getId(), url);
+
+            if (Objects.equals(article.getArticleUrl(), "test")) {
+                articleMapper.updateArtcileUrlById(article.getId(), url);
+            }
 
             // 设置文章对应的标签
             if (tagNames.length != 0) {
@@ -106,7 +112,6 @@ public class ArticleServiceImpl implements ArticleService {
                     articleMapper.insertArticleAndTags(article.getId(), (Integer) tagDataMap.getData());
                 }
             }
-
 
             if (article.getDraft() == 1) {
                 logger.info("新文章加入访客量");
@@ -131,8 +136,8 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public synchronized DataMap updateArticleById(Article article, String username) {
 
-        Article oldArtcile = findArtcileInfoById(article.getId());
-        Integer oldDraft = oldArtcile.getDraft();
+        Article oldArticle = findArtcileInfoById(article.getId());
+        Integer oldDraft = oldArticle.getDraft();
 
         // 当 用户从转载改为原创时，要进行以下操作把原作者和文章url改过来，但是如果从原创改为转载就不用，前端有传值实现
         if (Objects.equals("原创", article.getArticleType())) {
@@ -210,6 +215,7 @@ public class ArticleServiceImpl implements ArticleService {
             dataMap.put("originalAuthor", article.getOriginalAuthor());
             dataMap.put("articleTitle", article.getArticleTitle());
             dataMap.put("publishDate", TimeUtil.getFormatDateForSix(article.getPublishDate()));
+            dataMap.put("publishDateForThree", TimeUtil.getFormatDateForThree(article.getPublishDate()));
             dataMap.put("updateDate", TimeUtil.getFormatDateForSix(article.getUpdateDate()));
             dataMap.put("articleContent", article.getArticleContent());
             dataMap.put("articleTabloid", article.getArticleTabloid());
@@ -337,8 +343,8 @@ public class ArticleServiceImpl implements ArticleService {
         JSONObject resultObject = new JSONObject();
         CommonReturn commonReturn = new CommonReturn();
 
-        for (Object artcileId : articleIds) {
-            Article article = articleMapper.getArticleAndTagsByArticleId((Integer) artcileId, 1);
+        for (Object articleId : articleIds) {
+            Article article = articleMapper.getArticleAndTagsByArticleId((Integer) articleId, 1);
 
             articleJson = getArticleByTagAndCategoryToJsonObject(article);
             articleJsonArray.add(articleJson);
@@ -430,6 +436,11 @@ public class ArticleServiceImpl implements ArticleService {
             criteria.andEqualTo("userId", userId);
         }
         resultObject.put("articleNum", articleMapper.selectCountByExample(example));
+        if (!Objects.isNull(username)) {
+            resultObject.put("username", username);
+        } else {
+            resultObject.put("username", "这是查询所有的归档信息");
+        }
 
         resultObject.put("showMonth", showMonth);
         return DataMap.success().setData(resultObject);
@@ -438,7 +449,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public DataMap getDraftArticle(Article article) {
         Map<String, Object> dataMap = new ConcurrentHashMap<>(16);
-        dataMap.put("id", article.getId());
+        dataMap.put("articleId", article.getId());
         dataMap.put("articleTitle", article.getArticleTitle());
 
         if (!Objects.isNull(article.getArticleType())){
@@ -455,6 +466,7 @@ public class ArticleServiceImpl implements ArticleService {
             dataMap.put("imageUrl", article.getImageUrl());
         }
 
+        dataMap.put("author", userService.findUsernameById(article.getUserId()));
         dataMap.put("originalAuthor", article.getOriginalAuthor());
         dataMap.put("articleContent", article.getArticleContent());
         dataMap.put("draft", article.getDraft());
@@ -558,7 +570,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * @description: 对插入或者修改时返回会数据进行封转
+     * @description: 对插入或者修改时返回数据进行封转
      * @author: 陈文振
      * @date: 2019/12/24
      * @param article
@@ -567,6 +579,7 @@ public class ArticleServiceImpl implements ArticleService {
      */
     private Map<String, Object> getDataMap(Article article, String username){
         Map<String, Object> dataMap = new ConcurrentHashMap<>(10);
+        dataMap.put("articleId", article.getId());
         dataMap.put("articleTitle", article.getArticleTitle());
         dataMap.put("updateDate", TimeUtil.getFormatDateForSix(article.getUpdateDate()));
         dataMap.put("author", username);
@@ -632,7 +645,10 @@ public class ArticleServiceImpl implements ArticleService {
             if (!Objects.isNull(article.getArticleType())){
                 map.put("articleType", article.getArticleType());
             }
+            map.put("articleId", article.getId());
             map.put("publishDate", TimeUtil.getFormatDateForSix(article.getPublishDate()));
+            map.put("publishDateForThree", TimeUtil.getFormatDateForThree(article.getPublishDate()));
+            map.put("author", userService.findUsernameById(article.getUserId()));
             map.put("originalAuthor", article.getOriginalAuthor());
             if (!Objects.isNull(article.getArticleCategories())){
                 map.put("articleCategories", categoriesService.findCategoryByCategoryId(article.getArticleCategories()).getCategoryName());
@@ -644,6 +660,14 @@ public class ArticleServiceImpl implements ArticleService {
             if (!Objects.isNull(article.getImageUrl())){
                 map.put("imageUrl", article.getImageUrl());
             }
+
+            boolean hashKey = hashRedisService.hasHashKey(StringUtil.VISIT, "article/" + article.getId());
+            if (hashKey) {
+                map.put("watchNum", hashRedisService.get(StringUtil.VISIT, "article/" + article.getId()));
+            } else {
+                map.put("watchNum", 0);
+            }
+
             newArticles.add(map);
         }
 
@@ -663,6 +687,7 @@ public class ArticleServiceImpl implements ArticleService {
     public JSONObject getArticleByTagAndCategoryToJsonObject(Article article){
         JSONObject articleJson = new JSONObject();
         articleJson.put("articleId", article.getId());
+        articleJson.put("author", userService.findUsernameById(article.getUserId()));
         articleJson.put("originalAuthor", article.getOriginalAuthor());
         articleJson.put("articleTitle", article.getArticleTitle());
 
@@ -671,6 +696,7 @@ public class ArticleServiceImpl implements ArticleService {
         }
 
         articleJson.put("publishDate", TimeUtil.getFormatDateForSix(article.getPublishDate()));
+        articleJson.put("publishDateForThree", TimeUtil.getFormatDateForThree(article.getPublishDate()));
 
         List<Tags> tags = article.getTags();
         String[] tagNames = new String[tags.size()];

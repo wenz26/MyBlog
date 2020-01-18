@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.cwz.blog.defaultblog.constant.CodeType;
 import com.cwz.blog.defaultblog.entity.Comment;
 import com.cwz.blog.defaultblog.entity.UserReadNews;
+import com.cwz.blog.defaultblog.mapper.CommentLikesRecordMapper;
 import com.cwz.blog.defaultblog.mapper.CommentMapper;
 import com.cwz.blog.defaultblog.redis.HashRedisServiceImpl;
 import com.cwz.blog.defaultblog.service.ArticleService;
@@ -35,6 +36,9 @@ public class CommentServiceImpl implements CommentService {
     private CommentMapper commentMapper;
 
     @Autowired
+    private CommentLikesRecordMapper commentLikesRecordMapper;
+
+    @Autowired
     private CommentLikesRecordService commentLikesRecordService;
 
     @Autowired
@@ -60,11 +64,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public DataMap findCommentByArticleId(int articleId, String username) {
-        Example example = new Example(Comment.class);
-        example.orderBy("id").desc();
-        example.createCriteria().andEqualTo("articleId", articleId)
-                .andEqualTo("pId", 0);
-        List<Comment> comments = commentMapper.selectByExample(example);
+        List<Comment> comments = commentMapper.findAllCommentByArticle(articleId);
 
         JSONArray commentJsonArray = new JSONArray();
         JSONArray replyJsonArray;
@@ -75,10 +75,7 @@ public class CommentServiceImpl implements CommentService {
         for (Comment comment : comments) {
 
             // 找到 根评论下的 子评论
-            example.clear();
-            example.createCriteria().andEqualTo("articleId", articleId)
-                    .andEqualTo("pId", comment.getId());
-            replyLists = commentMapper.selectByExample(example);
+            replyLists = commentMapper.findAllCommentReplyByArticleAndPId(articleId, comment.getId());
 
             replyJsonArray = new JSONArray();
 
@@ -104,6 +101,8 @@ public class CommentServiceImpl implements CommentService {
 
             commentJsonArray.add(commentJsonObject);
         }
+
+        commentJsonArray.add(commentMapper.countCommentByArticleId(articleId));
 
         return DataMap.success().setData(commentJsonArray);
     }
@@ -219,6 +218,40 @@ public class CommentServiceImpl implements CommentService {
         return DataMap.success(CodeType.COMMENT_READ_ALL_SUCCESS);
     }
 
+    @Override
+    public DataMap findAllComment(int rows, int pageNum) {
+
+        PageHelper.startPage(pageNum, rows);
+        List<Comment> comments = commentMapper.findAllComment();
+        PageInfo<Comment> pageInfo = new PageInfo<>(comments);
+
+        JSONObject jsonObject;
+        JSONArray resultJsonArray = new JSONArray();
+        JSONObject resultJsonObject = new JSONObject();
+        CommonReturn commonReturn = new CommonReturn();
+
+        for (Comment comment : comments) {
+            jsonObject = getAllCommentJson(comment);
+            resultJsonArray.add(jsonObject);
+        }
+
+        resultJsonObject.put("result", resultJsonArray);
+        resultJsonObject.put("pageInfo", commonReturn.jsonObjectToPageInfo(pageInfo));
+        return DataMap.success().setData(resultJsonObject);
+    }
+
+    @Override
+    public DataMap deleteOneCommentById(int id) {
+        // 删除评论
+        commentMapper.deleteOneCommentById(id);
+        // 删除评论的回复
+        commentMapper.deleteOneCommentBypId(id);
+        // 删除评论的点赞
+        commentLikesRecordMapper.deleteCommentLikesRecordBypId(id);
+
+        return DataMap.success();
+    }
+
     /**
      * @description: 保存评论成功后往redis中增加一条未读评论数
      * @author: 陈文振
@@ -293,6 +326,27 @@ public class CommentServiceImpl implements CommentService {
         jsonObject.put("articleTitle", articleService.findArticleTitleByArticleId(comment.getArticleId()).get("articleTitle"));
         jsonObject.put("commentContent", comment.getCommentContent());
         jsonObject.put("isRead", comment.getIsRead());
+        return jsonObject;
+    }
+
+    /**
+     * @description: 封装评论（管理员专用）
+     * @author: 陈文振
+     * @date: 2020/1/12
+     * @param comment
+     * @return: com.alibaba.fastjson.JSONObject
+     */
+    private JSONObject getAllCommentJson(Comment comment) {
+        JSONObject jsonObject = getCommentJson(comment);
+        jsonObject.put("respondent", userService.findUsernameById(comment.getRespondentId()));
+
+        // 被评论对象
+        Integer pId = comment.getpId();
+        if(pId == 0) {
+            jsonObject.put("ParentObject", "这是根评论哦");
+        } else {
+            jsonObject.put("ParentObject", commentMapper.findOneCommentById(comment.getpId()).getCommentContent());
+        }
         return jsonObject;
     }
 }

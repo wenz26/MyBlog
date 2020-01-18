@@ -20,7 +20,7 @@ public class TransCodingUtil {
      */
     public static String stringToUnicode(final String gbString) {
         char[] utfBytes = gbString.toCharArray();
-        String unicodeBytes = "";
+        String unicodeBytes = StringUtil.BLANK;
         for (int i = 0; i < utfBytes.length; i++) {
             // 将一个整型转成一个十六进制数
             String hexB = Integer.toHexString(utfBytes[i]);
@@ -37,28 +37,25 @@ public class TransCodingUtil {
      * 线程安全用 StringBuffer
      * @author: 陈文振
      * @date: 2019/12/7
-     * @param dataStr: unicode编码
+     * @param unicode: unicode编码
      * @return: 中文
      */
-    public static String unicodeToString(final String dataStr) {
-        int start = 0;
-        int end = 0;
-        final StringBuffer buffer = new StringBuffer();
-        while (start > -1) {
-            // 用 序列2 开始找第一个以 "\\u" 结尾的地方
-            end = dataStr.indexOf("\\u", start + 2);
-            String charStr = "";
-            if (end == -1) {
-                charStr = dataStr.substring(start + 2, dataStr.length());
-            } else {
-                charStr = dataStr.substring(start + 2, end);
-            }
-            // 16进制parse整形字符串
-            char letter = (char) Integer.parseInt(charStr, 16);
-            buffer.append(new Character(letter).toString());
-            start = end;
+    public static String unicodeToString(String unicode) {
+        if(!unicode.contains("\\u")){
+            return unicode;
         }
-        return buffer.toString();
+
+        StringBuffer string = new StringBuffer();
+        String[] hex = unicode.split("\\\\u");
+
+        for (int i = 1; i < hex.length; i++) {
+            // 转换出每一个代码点
+            int data = Integer.parseInt(hex[i], 16);
+            // 追加成string
+            string.append((char) data);
+        }
+
+        return string.toString();
     }
 
     /**

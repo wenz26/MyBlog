@@ -23,8 +23,8 @@ public class BuildArticleTabloidUtil {
 
         while (beginIndex != -1) {
             nowStr = articleTabloid.substring(0, beginIndex);
-            if (nowStr.length() > 170) {
-                nowStr = nowStr.substring(0, 170);
+            if (nowStr.length() > 95) {
+                nowStr = nowStr.substring(0, 95);
                 myArticleTabloid += nowStr;
             } else {
                 myArticleTabloid += nowStr;
@@ -33,7 +33,7 @@ public class BuildArticleTabloidUtil {
             articleTabloid = articleTabloid.substring(endIndex + 1);
             beginIndex = articleTabloid.indexOf("<");
 
-            if(myArticleTabloid.length() < 170){
+            if(myArticleTabloid.length() < 95){
                 //过滤掉<pre>标签中的代码块
                 if (articleTabloid.length() > 4) {
                     if (articleTabloid.charAt(beginIndex) == '<' && articleTabloid.charAt(beginIndex + 1) == 'p'
@@ -52,8 +52,8 @@ public class BuildArticleTabloidUtil {
 
         }
 
-        if (myArticleTabloid.length() > 170) {
-            myArticleTabloid = myArticleTabloid.substring(0, 170);
+        if (myArticleTabloid.length() > 95) {
+            myArticleTabloid = myArticleTabloid.substring(0, 95);
         }
 
         return myArticleTabloid;

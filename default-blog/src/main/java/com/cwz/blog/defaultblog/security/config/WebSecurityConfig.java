@@ -10,12 +10,17 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
 
 /**
  * @author: 陈文振
@@ -36,11 +41,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
     @Autowired
     private HashRedisServiceImpl hashRedisService;
+    @Autowired
+    private DataSource dataSource;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Bean("passwordEncoder")
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        //tokenRepository.setCreateTableOnStartup(true);
+        return tokenRepository;
+    }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -65,6 +83,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(failureHandler)
                 .and()
 
+            .rememberMe()
+                .tokenRepository(persistentTokenRepository())
+                // 记住我token的有效时间 一周后过期（秒数）
+                .tokenValiditySeconds(604800)
+                .userDetailsService(userDetailsService)
+                .and()
+
             .headers()
                 .frameOptions().sameOrigin()
                 .and()
@@ -80,12 +105,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/html/**", "/bar").permitAll()
                 // 配置静态资源可允许访问
                 .antMatchers("/css/**", "/emoji/**", "/img/**", "/js/**", "/languages/**",
-                        "/lib/**", "/music/**", "/plugins/**").permitAll()
+                        "/lib/**", "/music/**", "/plugins/**", "/article/**").permitAll()
                 .antMatchers("/code/image", "/code/sms").permitAll()
-                .antMatchers("/", "/index", "/categories", "/tags", "/login",
+                .antMatchers("/", "/index", "/categories", "/tags", "/login", "/archives",
                         "/update", "/register", "/article/*").permitAll()
-                .antMatchers("/editor", "/user").hasRole("USER")
-                .antMatchers("/superAdmin").hasAnyAuthority("SUPERADMIN")
+                .antMatchers("/checkCode", "/changePassword", "/getVisitorNumByPageName", "/myPublishArticles", "/newComment",
+                        "/getSiteInfo", "/getCategoryArticle", "/findCategoriesNameAndArticleNum", "/getArchiveArticle", "/findArchiveNameAndArticleNum").permitAll()
+                .antMatchers("/getArticleByArticleId", "/addArticleLike", "/addArticleFavorite").permitAll()
+                .antMatchers("/editor", "/user").hasAnyRole("USER")
+                .antMatchers("/superAdmin").hasAnyRole("SUPERADMIN")
                 .anyRequest().authenticated()
                 .and()
             .csrf().disable();

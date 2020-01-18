@@ -1,6 +1,7 @@
 package com.cwz.blog.defaultblog.service;
 
 import com.cwz.blog.defaultblog.entity.CommentLikesRecord;
+import com.cwz.blog.defaultblog.utils.DataMap;
 
 /**
  * @author: 陈文振
@@ -37,4 +38,32 @@ public interface CommentLikesRecordService {
      * @return:
      */
     void deleteCommentLikesRecordByArticleId(int articleId);
+
+    /**
+     * @description: 获得该用户的所有评论点赞信息
+     * @author: 陈文振
+     * @date: 2019/12/9
+     * @param rows: 一页显示文章数
+     * @param pageNum: 第几页
+     * @param username: 用户名
+     * @return:
+     */
+    DataMap getCommentThumbsUp(int rows, int pageNum, String username);
+
+    /**
+     * @description: 已读一条点赞记录
+     * @author: 陈文振
+     * @date: 2019/12/9
+     * @param id:
+     * @return:
+     */
+    DataMap readThisThumbsUp(int id, String username);
+
+    /**
+     * @description: 已读所有点赞记录
+     * @author: 陈文振
+     * @date: 2019/12/9
+     * @return:
+     */
+    DataMap readAllThumbsUp(String username);
 }

@@ -81,7 +81,9 @@ public class CodeController {
     public String createSmsCode(HttpServletRequest request) {
         String phone = request.getParameter("mobile");
         String sign = request.getParameter("sign");
-        request.getSession().setAttribute("phone", phone);
+
+        HttpSession session = request.getSession();
+        session.setAttribute("phone", phone);
 
         return smsCodeSender.getAuthCode(phone, sign);
     }

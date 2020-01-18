@@ -52,7 +52,7 @@ public class UserController {
     @Autowired
     private ArticleUserFavoriteRecordService articleUserFavoriteRecordService;
     @Autowired
-    private StringRedisServiceImpl stringRedisService;
+    private CommentLikesRecordService commentLikesRecordService;
     @Autowired
     private HashRedisServiceImpl hashRedisService;
     @Autowired
@@ -142,19 +142,79 @@ public class UserController {
         return JsonResult.build(dataMap).toJSON();
     }
 
+    @ApiOperation(value = "获得评论点赞信息")
+    @LogAnnotation(module = "获得评论点赞信息", operation = "查找")
+    @PostMapping(value = "/getCommentThumbsUp", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String getCommentThumbsUp(@RequestParam("rows") String rows,
+                                     @RequestParam("pageNum") String pageNum,
+                                     @AuthenticationPrincipal Principal principal){
+        String username = principal.getName();
+        DataMap dataMap = commentLikesRecordService.getCommentThumbsUp(Integer.parseInt(rows), Integer.parseInt(pageNum), username);
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+
     /**
-     * @description: 已读一条点赞信息
+     * @description: 已读一条文章点赞信息
      * @author: 陈文振
      * @date: 2020/1/6
      * @param id
      * @return: java.lang.String
      */
-    @ApiOperation(value = "已读一条点赞信息")
-    @LogAnnotation(module = "已读一条点赞信息", operation = "修改")
-    @GetMapping(value = "/readThisThumbsUp", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @ApiOperation(value = "已读一条文章点赞信息")
+    @LogAnnotation(module = "已读一条文章点赞信息", operation = "修改")
+    @GetMapping(value = "/readThisArticleThumbsUp", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
     @PermissionCheck(value = "ROLE_USER")
-    public String readThisThumbsUp(@RequestParam("id") int id){
+    public String readThisArticleThumbsUp(@RequestParam("id") int id){
         DataMap dataMap = articleLikesRecordService.readThisThumbsUp(id);
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+    /**
+     * @description: 已读一条评论点赞信息
+     * @author: 陈文振
+     * @date: 2020/1/6
+     * @param id
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "已读一条评论点赞信息")
+    @LogAnnotation(module = "已读一条评论点赞信息", operation = "修改")
+    @GetMapping(value = "/readThisCommentThumbsUp", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String readThisCommentThumbsUp(@RequestParam("id") int id, @AuthenticationPrincipal Principal principal){
+        DataMap dataMap = commentLikesRecordService.readThisThumbsUp(id, principal.getName());
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+
+    /**
+     * @description: 已读全部文章点赞信息
+     * @author: 陈文振
+     * @date: 2020/1/6
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "已读全部文章点赞信息")
+    @LogAnnotation(module = "已读全部文章点赞信息", operation = "修改")
+    @GetMapping(value = "/readAllArticleThumbsUp", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String readAllArticleThumbsUp(@AuthenticationPrincipal Principal principal){
+        DataMap dataMap = articleLikesRecordService.readAllThumbsUp(principal.getName());
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+    /**
+     * @description: 已读全部评论点赞信息
+     * @author: 陈文振
+     * @date: 2020/1/6
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "已读全部评论点赞信息")
+    @LogAnnotation(module = "已读全部评论点赞信息", operation = "修改")
+    @GetMapping(value = "/readAllCommentThumbsUp", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String readAllCommentThumbsUp(@AuthenticationPrincipal Principal principal){
+        DataMap dataMap = commentLikesRecordService.readAllThumbsUp(principal.getName());
         return JsonResult.build(dataMap).toJSON();
     }
 
@@ -291,6 +351,7 @@ public class UserController {
      * @param msgType
      * @param principal
      * @return: java.lang.String
+     * msgType == 1 为读评论   2 为文章点赞记录   3 为评论点赞记录
      */
     @ApiOperation(value = "已读一条消息")
     @LogAnnotation(module = "已读一条消息", operation = "读取信息")
@@ -300,7 +361,6 @@ public class UserController {
                               @RequestParam("msgType") int msgType,
                               @AuthenticationPrincipal Principal principal){
 
-        // msgType == 1 为读评论
         redisToService.readOneMsgOnRedis(userService.findIdByUsername(principal.getName()), msgType);
         if(msgType == 1){
             return JsonResult.build(commentService.readOneCommentRecord(id)).toJSON();

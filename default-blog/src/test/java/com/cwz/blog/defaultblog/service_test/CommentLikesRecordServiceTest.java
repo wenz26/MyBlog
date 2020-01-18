@@ -1,12 +1,15 @@
 package com.cwz.blog.defaultblog.service_test;
 
+import com.alibaba.fastjson.JSON;
 import com.cwz.blog.defaultblog.entity.CommentLikesRecord;
+import com.cwz.blog.defaultblog.mapper.CommentLikesRecordMapper;
 import com.cwz.blog.defaultblog.service.CommentLikesRecordService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,6 +18,8 @@ class CommentLikesRecordServiceTest {
 
     @Autowired
     private CommentLikesRecordService commentLikesRecordService;
+    @Autowired
+    private CommentLikesRecordMapper commentLikesRecordMapper;
 
     @Test
     void isLike() {
@@ -37,5 +42,11 @@ class CommentLikesRecordServiceTest {
     @Test
     void deleteCommentLikesRecordByArticleId() {
         commentLikesRecordService.deleteCommentLikesRecordByArticleId(2);
+    }
+
+    @Test
+    void testAAA() {
+        List<CommentLikesRecord> result = commentLikesRecordMapper.findCommentLikesRecordByUserId(1);
+        System.out.println(JSON.toJSONString(result));
     }
 }

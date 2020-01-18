@@ -69,6 +69,11 @@ public class ArchiveServiceImpl implements ArchiveService {
             }
         }
         JSONObject returnJson = new JSONObject();
+        if (!Objects.isNull(username)) {
+            returnJson.put("username", username);
+        } else {
+            returnJson.put("username", "这是查询所有的归档信息");
+        }
         returnJson.put("result", articleJsonArray);
         return DataMap.success().setData(returnJson);
     }

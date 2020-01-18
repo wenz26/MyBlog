@@ -104,4 +104,23 @@ public interface CommentService {
      * @return:
      */
     DataMap readAllComment(String username);
+
+    /**
+     * @description: 找到所有的评论
+     * @author: 陈文振
+     * @date: 2020/1/12
+     * @param
+     * @return: com.cwz.blog.defaultblog.utils.DataMap
+     */
+    DataMap findAllComment(int rows, int pageNum);
+
+    /**
+     * @description: 通过 评论id 来删除评论
+     * @author: 陈文振
+     * @date: 2020/1/12
+     * @param id
+     * @return: com.cwz.blog.defaultblog.utils.DataMap
+     */
+    @Transactional
+    DataMap deleteOneCommentById(int id);
 }

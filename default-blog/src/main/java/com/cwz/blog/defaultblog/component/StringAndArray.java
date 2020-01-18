@@ -1,5 +1,7 @@
 package com.cwz.blog.defaultblog.component;
 
+import java.util.Objects;
+
 /**
  * @author: 陈文振
  * @date: 2019/12/7
@@ -33,6 +35,10 @@ public class StringAndArray {
     public static String arrayToString(String[] articleTags) {
         StringBuffer stringBuffer = new StringBuffer();
         for (String articleTag : articleTags) {
+            if (Objects.isNull(articleTag)) {
+                break;
+            }
+            //System.out.println(articleTag);
             if (stringBuffer.length() == 0) {
                 stringBuffer.append(articleTag.trim());
             } else {

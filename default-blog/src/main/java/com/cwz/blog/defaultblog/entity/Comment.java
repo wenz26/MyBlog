@@ -49,7 +49,7 @@ public class Comment {
     /**
      * 评论点赞数
      */
-    private Integer likes;
+    private Integer likes = 0;
 
     /**
      * 评论内容

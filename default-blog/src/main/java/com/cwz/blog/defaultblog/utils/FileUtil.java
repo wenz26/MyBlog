@@ -38,7 +38,8 @@ public class FileUtil {
         logger.info("上传到OSS生成的url为：" + url);
 
         String picUrl = "https://oss.czodly.top/" + OSSClientConstants.FOLDER + subCatalog +
-                file.getName() + "?x-oss-process=style/default";
+                file.getName();
+        /* + "?x-oss-process=style/default"*/
         logger.info("上传到OSS自己组装的url为：" + picUrl);
 
         //删除临时生成的文件

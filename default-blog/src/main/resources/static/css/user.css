@@ -113,7 +113,7 @@
         position: relative;
     }
 }
-#leaveWord,#commentMessage{
+#leaveWord,#commentMessage,#articleByThumbsUp,#publishArticle,#draftArticle,#commentByThumbsUp{
     display: none;
     margin-bottom: 150px;
 }
@@ -319,6 +319,22 @@
     margin-top: 30px;
     padding-left: 1.5rem;
 }
+.articleByThumbsUpManagement{
+    margin-top: 30px;
+    padding-left: 1.5rem;
+}
+.commentByThumbsUpManagement{
+    margin-top: 30px;
+    padding-left: 1.5rem;
+}
+.publishArticleMessage{
+    margin-top: 30px;
+    padding-left: 1.5rem;
+}
+.draftArticleMessage{
+    margin-top: 30px;
+    padding-left: 1.5rem;
+}
 .msgHead{
     font-size: 14px;
 }
@@ -371,6 +387,18 @@
     margin: 5px auto 10px;
 }
 .msgCommentMessage hr{
+    margin-top: 15px;
+}
+.articleByThumbsUpManagement hr{
+    margin-top: 15px;
+}
+.commentByThumbsUpManagement hr{
+    margin-top: 15px;
+}
+.publishArticleMessage hr{
+    margin-top: 15px;
+}
+.draftArticleMessage hr{
     margin-top: 15px;
 }
 /*留言管理*/

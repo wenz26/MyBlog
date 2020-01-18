@@ -57,10 +57,10 @@ public class ScheduledTask {
         for (Object e : map.keySet()) {
             statisticsName = String.valueOf(e);
             visitStatisticsService.updateVisitNumByStatisticsName(statisticsName, (Integer) map.get(statisticsName));
-            if (!Objects.equals(statisticsName, "totalVisitors") && !Objects.equals(statisticsName, "visitorVolume")
+            /*if (!Objects.equals(statisticsName, "totalVisitors") && !Objects.equals(statisticsName, "visitorVolume")
                     && !Objects.equals(statisticsName, "yesterdayVisitors")) {
                 hashRedisService.hashDelete("visit", statisticsName);
-            }
+            }*/
         }
 
         hashRedisService.deleteByKey(StringUtil.PREFIX_IMAGE_CODE);

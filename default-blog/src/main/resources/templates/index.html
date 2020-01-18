@@ -3,7 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <meta charset="UTF-8">
-    <title>卉聚渠成轻博客</title>
+    <title>城院校园轻博客</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -20,14 +20,15 @@
 
     <script th:src="@{https://lib.baomitu.com/jquery/3.3.1/jquery.min.js}"></script>
     <script th:src="@{https://lib.baomitu.com/underscore.js/1.9.1/underscore-min.js}"></script>
-    <script th:src="@{js/zepto.min.js}"></script>
-    <script th:src="@{js/amazeui.min.js}"></script>
+    <script th:src="@{https://lib.baomitu.com/amazeui/2.7.2/js/amazeui.min.js}"></script>
+    <!--<script th:src="@{js/zepto.min.js}"></script>
+    <script th:src="@{js/amazeui.min.js}"></script>-->
     <script th:src="@{js/lastUrl.js}"></script>
-
 
     <script th:src="@{js/index.js}"></script>
     <script th:src="@{js/all.js}"></script>
     <script th:src="@{js/plugs_paging.js}"></script>
+
 </head>
 <body>
 <div id="app">
@@ -47,21 +48,21 @@
                             <div class="am-u-sm-5">
                                 <div class="img-title">
                                     <!-- data-src 图片懒加载-->
-                                    <img class="img" th:src="@{img/general/loading.gif}"
-                                         data-src="">
+                                    <a id="getAvatarImgUrl" th:href="@{img/general/loading.gif}" target="_blank"><img class="img" th:src="@{img/general/loading.gif}" id="avatarImgUrl"></a>
                                 </div>
                             </div>
                             <div class="am-u-sm-7" style="padding: 0 20px 0 0;">
                                 <div class="img-words">
                                     <h3 id="name"><span sec:authentication="name"></span></h3>
-                                    <small style="font-size: 13px;color: #808080ad">
-                                        （这里写个人简介，没有的话就默认是这句）
-                                        朋友，不必太纠结于当下，也不必太忧虑未来，当你经历过一些事情的时候，眼前的风景已经和从前不一样了。
+                                    <small id="personalBrief" style="font-size: 13px;color: #808080ad">
+
                                     </small>
                                 </div>
                             </div>
                         </div>
+                        <!--这里可以加入当前用户的博客数量等等的信息-->
                     </div>
+
 
                     <div class="new-comment">
                         <div data-am-widget="list_news" class="am-list-news am-list-news-default" >
@@ -73,7 +74,7 @@
                             <div class="am-list-news-bd">
                                 <ul class="am-list">
                                     <li class="am-g am-list-item-dated" style="height: 62px">
-                                        阿萨德
+
                                     </li>
                                     <li class="am-g am-list-item-dated" style="height: 62px">
 
@@ -217,7 +218,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="my-row" id="page-father">
+                <!--<div class="my-row" id="page-father">
                     <div id="pagination">
                         <ul class="am-pagination  am-pagination-centered">
                             <li class="am-disabled"><a href="#">&laquo; 上一页</a></li>
@@ -229,6 +230,10 @@
                             <li><a href="#">下一页 &raquo;</a></li>
                         </ul>
                     </div>
+                </div>-->
+                <div>
+                    <button type="button" class="am-btn am-btn-default am-btn-block am-round" id="readMore">
+                        阅读更多<span class="am-icon-angle-double-down"></span></button>
                 </div>
 
 
@@ -287,7 +292,7 @@
                                     <p>我喜欢就好</p>
                                     <p>我没有很好</p>
                                     <p>你不嫌弃就好</p>
-                                    <p style="text-align: right;padding-top: 10px">--- zhy</p>
+                                    <p style="text-align: right;padding-top: 10px">--- cwz</p>
                                 </div>
                                 <i class="am-icon-quote-right" style="float: right"></i>
                                 <div class="zhy-info-opinion">

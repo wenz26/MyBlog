@@ -62,4 +62,10 @@ public interface ArticleMapper extends BeanMapper<Article> {
 
     @Update("update article set article_url = #{articleUrl} where id = #{articleId}")
     void updateArtcileUrlById(@Param("articleId") int articleId, @Param("articleUrl") String articleUrl);
+
+    @Select("SELECT * FROM article")
+    void selectAllByArticle();
+
+    @Select("select user_id from article where id = #{articleId}")
+    int findUserIdByArticleId(@Param("articleId") int articleId);
 }

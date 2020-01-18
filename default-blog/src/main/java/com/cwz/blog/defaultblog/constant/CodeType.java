@@ -72,6 +72,10 @@ public enum CodeType {
 
     COMMENT_READ_SUCCESS(1001, "评论已读成功"),
     COMMENT_READ_ALL_SUCCESS(1002, "评论全部已读成功"),
+    READ_COMMENT_THUMBS_UP_SUCCESS(1003, "阅读评论点赞信息已读"),
+    READ_COMMENT_THUMBS_UP_ALL_SUCCESS(1004, "阅读评论点赞信息全部已读"),
+    READ_COMMENT_THUMBS_UP_FAIL(1005, "阅读评论点赞信息失败"),
+    DELETE_COMMENT_FAIL(1006, "删除评论失败"),
 
     ROLE_FORMAT_ERROR(1101, "角色名长度过长或格式不正确"),
     ADD_ROLE_SUCCESS(1102, "添加角色成功"),

@@ -1,6 +1,7 @@
 package com.cwz.blog.defaultblog.security.handler;
 
 import com.cwz.blog.defaultblog.aspect.annotation.LogAnnotation;
+import com.cwz.blog.defaultblog.mapper.UserMapper;
 import com.cwz.blog.defaultblog.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ public class SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandle
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserMapper userMapper;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -42,6 +45,9 @@ public class SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandle
         userService.updateRecentlyLanded(username, localDateTime);
 
         request.getSession().setAttribute("userLogin", "success");
+
+        String phone = userService.findPhoneByUsername(username);
+        userMapper.updatePersistentLogins(username, phone);
 
 
         super.onAuthenticationSuccess(request, response, authentication);

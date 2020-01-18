@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Objects;
 
 /**
@@ -106,7 +107,7 @@ public class SmsCodeSender {
 
         try {
             CommonResponse response = client.getCommonResponse(request);
-            logger.info("发送手机验证码时返回的结果为：" + JSON.toJSONString(response));
+            //logger.info("发送手机验证码时返回的结果为：" + JSON.toJSONString(response));
         } catch (ServerException e) {
             logger.error("[{}] 发送手机验证码时出现错误：", phoneNumber, e);
             e.printStackTrace();

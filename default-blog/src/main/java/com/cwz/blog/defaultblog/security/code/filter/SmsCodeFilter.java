@@ -13,6 +13,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -45,7 +46,11 @@ public class SmsCodeFilter extends OncePerRequestFilter implements InitializingB
 
         if (action) {
             try {
-                String phone = (String) request.getSession().getAttribute("phone");
+                HttpSession session = request.getSession();
+                session.setAttribute("smsLogin", "sms");
+                session.removeAttribute("imageLogin");
+
+                String phone = (String) session.getAttribute("phone");
                 String codeValue = request.getParameter("smsCode");
 
                 SmsCode code = (SmsCode) hashRedisService.get(StringUtil.PREFIX_SMS_CODE, phone);

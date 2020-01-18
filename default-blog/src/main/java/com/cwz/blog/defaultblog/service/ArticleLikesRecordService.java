@@ -65,5 +65,5 @@ public interface ArticleLikesRecordService {
      * @date: 2019/12/9
      * @return:
      */
-    DataMap readAllThumbsUp(String Username);
+    DataMap readAllThumbsUp(String username);
 }

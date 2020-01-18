@@ -26,4 +26,20 @@ public interface UserMapper extends BeanMapper<User> {
 
     @Update("update user set avatar_img_url = #{avatarImgUrl} where id = #{id}")
     int updateAvatarImgUrlById(@Param("avatarImgUrl") String avatarImgUrl, @Param("id") int id);
+
+    @Update("update persistent_logins set username = #{newUsername} where username = #{oldUsername}")
+    void updatePersistentLogins(@Param("oldUsername") String oldUsername, @Param("newUsername") String newUsername);
+
+    @Select("select count(*) from persistent_logins where username = #{username}")
+    int selectPersistentLogins(@Param("username") String username);
+
+    @Select("select * from user where phone = #{phone}")
+    User findUserByPhone(@Param("phone") String phone);
+
+    @Select("select * from user where username = #{username}")
+    User findUserByUsername(@Param("username") String username);
+
+    @Select("select * from user where id = #{userId}")
+    User findUserByUserId(@Param("userId") int userId);
+
 }

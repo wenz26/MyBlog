@@ -4,6 +4,7 @@ import com.cwz.blog.defaultblog.aspect.annotation.LogAnnotation;
 import com.cwz.blog.defaultblog.aspect.annotation.PermissionCheck;
 import com.cwz.blog.defaultblog.constant.CodeType;
 import com.cwz.blog.defaultblog.entity.FeedBack;
+import com.cwz.blog.defaultblog.entity.User;
 import com.cwz.blog.defaultblog.service.*;
 import com.cwz.blog.defaultblog.utils.DataMap;
 import com.cwz.blog.defaultblog.utils.JsonResult;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author: 陈文振
@@ -209,5 +211,31 @@ public class IndexController {
         feedBack.setUserId(userService.findIdByUsername(username));
         feedBackService.submitFeedback(feedBack);
         return JsonResult.success().toJSON();
+    }
+
+    /**
+     * @description: 获取用户头像和个人简介信息
+     * @author: 陈文振
+     * @date: 2020/1/14
+     * @param principal
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "获取用户头像和个人简介信息")
+    @LogAnnotation(module = "获取用户头像和个人简介信息", operation = "查询")
+    @GetMapping(value = "/getUserIndexInfo", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String getUserIndexInfo(@AuthenticationPrincipal Principal principal){
+        String username = principal.getName();
+        User user = userService.findUserByUsername(username);
+        Map<String, String> dataMap = new HashMap<>(3);
+        dataMap.put("avatarImgUrl", user.getAvatarImgUrl());
+
+        if (Objects.isNull(user.getPersonalBrief())) {
+            dataMap.put("personalBrief", "null");
+        } else {
+            dataMap.put("personalBrief", user.getPersonalBrief());
+        }
+
+        return JsonResult.success().data(dataMap).toJSON();
     }
 }

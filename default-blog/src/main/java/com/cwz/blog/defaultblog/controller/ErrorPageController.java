@@ -19,20 +19,27 @@ public class ErrorPageController {
     @LogAnnotation(module = "404跳转页面", operation = "跳转")
     @GetMapping("/404")
     public String error404(){
-        return "404";
+        return "errorpage/404";
     }
 
     @ApiOperation(value = "403跳转页面")
     @LogAnnotation(module = "403跳转页面", operation = "跳转")
     @GetMapping("/403")
     public String error403(){
-        return "403";
+        return "errorpage/403";
     }
 
-    @ApiOperation(value = "error跳转页面")
+    @ApiOperation(value = "500跳转页面")
+    @LogAnnotation(module = "500跳转页面", operation = "跳转")
+    @GetMapping("/500")
+    public String error500(){
+        return "errorpage/500";
+    }
+
+    /*@ApiOperation(value = "error跳转页面")
     @LogAnnotation(module = "error跳转页面", operation = "跳转")
     @GetMapping("/error")
     public String error(){
         return "404";
-    }
+    }*/
 }

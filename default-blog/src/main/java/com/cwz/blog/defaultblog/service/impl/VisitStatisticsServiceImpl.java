@@ -75,26 +75,26 @@ public class VisitStatisticsServiceImpl implements VisitStatisticsService {
 
 
         // 在 session 上找有没有 totalVisitors
-        String total = (String) request.getSession().getAttribute(TOTAL_VISITORS);
-        logger.info("session中的total值（在session中保存该用户访问页面的记录，在一段时间内重复访问时不增加在页面的访问人次）：" + total);
+        /*String total = (String) request.getSession().getAttribute(TOTAL_VISITORS);
+        logger.info("session中的total值（在session中保存该用户访问页面的记录，在一段时间内重复访问时不增加在页面的访问人次）：" + total);*/
         Long totalVisitors;
 
         // 增加总访问人数
-        if (total == null) {
-            totalVisitors = redisToService.addVisitorNumOnRedis(VISIT, TOTAL_VISITORS, 1);
-            if (totalVisitors == null) {
-                logger.info("totalVisitors is null（totalVisitors 在 redis 中没有对应的数据）：" + totalVisitors);
-                example.clear();
-                example.selectProperties("visitNum");
-                example.createCriteria().andEqualTo("statisticsName", "totalVisitors");
-                totalVisitors = visitStatisticsMapper.selectOneByExample(example).getVisitNum();
+        //if (total == null) {
+        totalVisitors = redisToService.addVisitorNumOnRedis(VISIT, TOTAL_VISITORS, 1);
+        if (totalVisitors == null) {
+            //logger.info("totalVisitors is null（totalVisitors 在 redis 中没有对应的数据）：" + totalVisitors);
+            example.clear();
+            example.selectProperties("visitNum");
+            example.createCriteria().andEqualTo("statisticsName", "totalVisitors");
+            totalVisitors = visitStatisticsMapper.selectOneByExample(example).getVisitNum();
 
-                totalVisitors = redisToService.putVisitorNumOnRedis(VISIT, TOTAL_VISITORS, totalVisitors + 1);
-            }
-            request.getSession().setAttribute(TOTAL_VISITORS, "yes");
-        } else {
-            totalVisitors = redisToService.addVisitorNumOnRedis(VISIT, TOTAL_VISITORS, 0);
+            totalVisitors = redisToService.putVisitorNumOnRedis(VISIT, TOTAL_VISITORS, totalVisitors + 1);
         }
+            //request.getSession().setAttribute(TOTAL_VISITORS, "yes");
+        /*} else {
+            totalVisitors = redisToService.addVisitorNumOnRedis(VISIT, TOTAL_VISITORS, 0);
+        }*/
 
         jsonObject.put(TOTAL_VISITORS, totalVisitors);
         jsonObject.put(STATISTICS_VISIT, statisticsVisit);

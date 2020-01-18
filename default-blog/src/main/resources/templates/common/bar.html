@@ -3,7 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <meta charset="UTF-8">
-    <title>卉聚渠成轻博客</title>
+    <title>城院校园轻博客</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -17,14 +17,15 @@
     <link rel="stylesheet" th:href="@{css/all.css}">
 
     <script th:src="@{https://lib.baomitu.com/jquery/3.3.1/jquery.min.js}"></script>
-    <script th:src="@{js/zepto.min.js}"></script>
-    <script th:src="@{js/amazeui.min.js}"></script>
+    <script th:src="@{https://lib.baomitu.com/amazeui/2.7.2/js/amazeui.min.js}"></script>
+    <!--<script th:src="@{js/zepto.min.js}"></script>
+    <script th:src="@{js/amazeui.min.js}"></script>-->
 </head>
 <body>
 <div class="header" th:fragment="topbar">
     <div class="am-topbar" style="margin-bottom: 0">
         <h1 class="am-topbar-brand">
-            <a href="/" class="blogTitleName">卉聚渠成校园轻博客</a>
+            <a href="/" class="blogTitleName">城院校园轻博客</a>
         </h1>
 
         <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only"
@@ -42,6 +43,9 @@
                 </li>
                 <li><a class="top_bar" th:href="@{/tags}" style="cursor: pointer;"><span
                         class="am-icon-tags"></span>&nbsp;标签</a>
+                </li>
+                <li><a class="top_bar" th:href="@{/archives}" style="cursor: pointer;"><span
+                        class="am-icon-archive"></span>&nbsp;归档</a>
                 </li>
                 <li>
                     <form class="am-topbar-form am-topbar-left am-form-inline am-topbar-right" role="search">
@@ -63,12 +67,14 @@
                         <span sec:authentication="name"></span>
                         <span class="am-icon-caret-down"></span></button>
                     <ul class="am-dropdown-content">
-                        <li><a th:href="@{/user}" sec:authorize="hasRole('ROLE_USER')">个人主页</a></li>
+                        <li><a th:href="@{/user}" class="news" sec:authorize="hasRole('ROLE_USER')">个人主页<span class="newsNum am-badge am-badge-danger"></span></a></li>
                         <li><a th:href="@{/superAdmin}" sec:authorize="hasRole('ROLE_SUPERADMIN')">网站后台管理</a></li>
-                        <li><a th:href="@{/user}" class="news">我的收藏<span class="newsNum am-badge am-badge-danger"></span></a>
+                        <li><a th:href="@{/user}" class="" sec:authorize="hasRole('ROLE_USER')">收藏的文章</a>
                         </li>
-                        <li><a class="feedbackClick">我的动态</a></li>
-                        <li><a class="feedbackClick">草稿箱</a></li>
+                        <li><a th:href="@{/user}" class="" sec:authorize="hasRole('ROLE_USER')">喜欢的文章</a>
+                        </li>
+                        <li><a th:href="@{/user}" class="" sec:authorize="hasRole('ROLE_USER')">我的动态</a></li>
+                        <!--<li><a class="feedbackClick" sec:authorize="hasRole('ROLE_USER')">草稿箱</a></li>-->
                         <li><a class="feedbackClick">反馈</a></li>
                         <hr style="margin: 10px 0 5px 0;">
                         <li><a th:href="@{/logout}">退出登录</a></li>
@@ -110,7 +116,7 @@
             反馈
         </div>
         <div class="feedbackWord">
-            您对于本博客网站有任何意见或是存在Bug的地方，欢迎进行反馈哦~~~♪(＾∀＾●)ﾉ
+            您对于本网站有任何意见或是存在Bug的地方，欢迎进行反馈哦~~~♪(＾∀＾●)ﾉ
         </div>
         <div class="feedbackForm">
             <form class="am-form">
@@ -118,7 +124,7 @@
                     <textarea id="feedbackFormContent" placeholder="非常感谢您抽出时间填写问题反馈。必填"></textarea>
                     <input type="text" class="feedbackFormQQ" placeholder="方便留下QQ或是微信联系你吗。选填">
                 </fieldset>
-                <button type="button" class="feedbackFormBtn am-btn am-btn-primary am-btn-block">提交反馈</button>
+                <button type="button" class="feedbackFormBtn am-btn am-btn-primary am-btn-block am-round">提交反馈</button>
             </form>
         </div>
 
@@ -133,10 +139,11 @@
                 <hr>
                 <div class="am-vertical-align-bottom">
                     <div style="color: #009688;font-size: 15px;">
-                        &copy; 2019-2020 卉聚渠成轻博客 <!-- - <i class="am-icon-coffee" style="margin: 0 5px"></i>张海洋 版权所有-->
+                        &copy; 2019-2020 城院校园轻博客 <!-- - <i class="am-icon-coffee" style="margin: 0 5px"></i>陈文振 版权所有-->
                     </div>
-
                     <div id="footer" style="color: #009688;font-size: 15px;">
+                        总访问量 <span id="totalVisitors"><strong></strong></span> 次  访客量 <span id="visitorVolume"><strong></strong></span> 人次
+                        <br>
                         ~~~~祝大家开心每一天(＾－＾)V~~~~
                         <br><br>
                     </div>
@@ -164,7 +171,6 @@
         </div>
     </div>
 </div>
-
 
 </body>
 </html>

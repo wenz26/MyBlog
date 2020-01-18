@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>403 | 城院校园轻博客</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+
+    <link rel="alternate icon" type="image/png" th:href="@{img/icon/icon.jpeg}">
+    <link rel="stylesheet" th:href="@{https://lib.baomitu.com/amazeui/2.7.2/css/amazeui.min.css}">
+    <link rel="stylesheet" th:href="@{https://lib.baomitu.com/font-awesome/5.8.0/css/fontawesome.min.css}">
+    <link rel="stylesheet" th:href="@{css/all.css}">
+    <link rel="stylesheet" th:href="@{css/errorpage.css}">
+
+    <script th:src="@{https://lib.baomitu.com/jquery/3.3.1/jquery.min.js}"></script>
+    <script th:src="@{https://lib.baomitu.com/amazeui/2.7.2/js/amazeui.min.js}"></script>
+</head>
+<body>
+<div id="app">
+    <!--共有头部-->
+    <div th:replace="~{common/bar :: topbar}"></div>
+
+    <div id="main">
+        <div class="error404Page">
+            <img th:src="@{img/errorpage/403.jpg}" style="width: 50%; height: 50%"/>
+        </div>
+
+        <div class="errorWords">
+            <div class="errorWords_display">
+                <p>亲爱的小哥哥小姐姐，您的权限不足，无法访问该页面哦
+                    <br>请<a href="javascript:history.go(-1);">返回上一步</a>或<a th:href="@{/}">返回首页</a>重新操作
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <!--引入共有底部-->
+    <div th:replace="common/bar :: footer"></div>
+    <!--消息盒子+反馈-->
+    <div th:replace="common/bar :: feedback"></div>
+</div>
+</body>
+</html>

@@ -29,7 +29,7 @@
     margin: 10px 30px 13px 30px;
 }
 #zhy-editor-title{
-    width: 90%;
+    width: 80%;
     height: 40px;
     box-sizing: border-box;
     padding: 0 16px;
@@ -41,6 +41,12 @@
 }
 /*发布博客按钮*/
 .publishBtn{
+    display: inline-block;
+    margin-left: 15px;
+    border-radius: 7px;
+}
+/*保存博客按钮*/
+.draftBtn{
     display: inline-block;
     margin-left: 15px;
     border-radius: 7px;

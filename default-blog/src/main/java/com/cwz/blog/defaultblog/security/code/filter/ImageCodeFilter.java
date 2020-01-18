@@ -13,6 +13,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -44,7 +45,11 @@ public class ImageCodeFilter extends OncePerRequestFilter implements Initializin
 
         if (action) {
             try {
-                String id = (String) request.getSession().getAttribute("sessionId");
+                HttpSession session = request.getSession();
+                session.setAttribute("imageLogin", "image");
+                session.removeAttribute("smsLogin");
+
+                String id = (String) session.getAttribute("sessionId");
                 String codeValue = request.getParameter("imageCode");
 
                 SmsCode code = (SmsCode) hashRedisService.get(StringUtil.PREFIX_IMAGE_CODE, id);

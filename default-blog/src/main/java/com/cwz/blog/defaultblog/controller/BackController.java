@@ -6,6 +6,7 @@ import com.cwz.blog.defaultblog.utils.StringUtil;
 import com.cwz.blog.defaultblog.utils.TransCodingUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
@@ -63,7 +65,14 @@ public class BackController {
     @ApiOperation(value = "跳转登录页")
     @LogAnnotation(module = "登录页", operation = "跳转")
     @GetMapping("/login")
-    public String login() {
+    public String login(HttpSession session) {
+        String imageLogin = (String) session.getAttribute("imageLogin");
+        String smsLogin = (String) session.getAttribute("smsLogin");
+
+        if (Objects.isNull(imageLogin) && Objects.isNull(smsLogin)) {
+            session.setAttribute("imageLogin", "image");
+        }
+
         return "login";
     }
 
@@ -149,9 +158,16 @@ public class BackController {
     @GetMapping("/editor")
     public String editor(HttpServletRequest request){
         request.getSession().removeAttribute("lastUrl");
+
         String id = request.getParameter("id");
-        if (!Objects.equals(id, StringUtil.BLANK)) {
-            request.getSession().setAttribute("id", id);
+        String draftId = request.getParameter("draftId");
+
+        if (!StringUtils.isBlank(id)) {
+            // 这里是已发布文章
+            request.getSession().setAttribute("articleId", id);
+        } else if (!StringUtils.isBlank(draftId)) {
+            // 这里是草稿箱文章
+            request.getSession().setAttribute("draftId", draftId);
         }
         return "editor";
     }
@@ -194,15 +210,15 @@ public class BackController {
     }
 
     /**
-     * @description: 跳转到归档页
+     * @description: 跳转到用户归档页
      * @author: 陈文振
      * @date: 2019/12/28
      * @param response
      * @param request
      * @return: java.lang.String
      */
-    @ApiOperation(value = "跳转到归档页")
-    @LogAnnotation(module = "归档页", operation = "跳转")
+    @ApiOperation(value = "跳转到用户归档页")
+    @LogAnnotation(module = "用户归档页", operation = "跳转")
     @GetMapping("/archive")
     public String archive(HttpServletResponse response,
                            HttpServletRequest request){
@@ -212,9 +228,34 @@ public class BackController {
         String archiveDay = request.getParameter("archiveDay");
 
         if (!Objects.isNull(archiveDay) && !Objects.equals(archiveDay, StringUtil.BLANK)) {
-            response.setHeader("archiveDay", TransCodingUtil.stringToUnicode(archiveDay));
+            response.setHeader("archiveDay", archiveDay);
         }
         return "archive";
+    }
+
+    /**
+     * @description: 跳转到归档页
+     * @author: 陈文振
+     * @date: 2020/1/7
+     * @param response
+     * @param request
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "跳转到归档页")
+    @LogAnnotation(module = "归档页", operation = "跳转")
+    @GetMapping("/archives")
+    public String archives(HttpServletResponse response,
+                           HttpServletRequest request){
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("text/html;charset=utf-8");
+        request.getSession().removeAttribute("lastUrl");
+        String archiveDay = request.getParameter("archiveDay");
+
+        if(!Objects.isNull(archiveDay) && !Objects.equals(archiveDay, StringUtil.BLANK)){
+            response.setHeader("archiveDay", archiveDay);
+        }
+
+        return "archives";
     }
 
     /**

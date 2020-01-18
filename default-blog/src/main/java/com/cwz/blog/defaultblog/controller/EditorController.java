@@ -78,13 +78,30 @@ public class EditorController {
         // 设置文章标签
         String[] articleTags = request.getParameterValues("articleTagsValue");
         String[] tags = new String[articleTags.length + 1];
+
+        int count = 0;
         for (int i = 0; i < articleTags.length; i++) {
             // 去掉可能出现的换行符
             articleTags[i] = articleTags[i].replaceAll("<br>", StringUtil.BLANK)
                     .replaceAll("&nbsp;", StringUtil.BLANK).replaceAll("\\s+", StringUtil.BLANK).trim();
-            tags[i] = articleTags[i];
+
+            if (Objects.equals(articleTags[i], article.getArticleType())) {
+                logger.info("这里文章类型是重复的");
+                continue;
+            }
+
+            if ((Objects.equals(articleTags[i], "原创") && Objects.equals(article.getArticleType(), "转载")) ||
+                    (Objects.equals(articleTags[i], "转载") && Objects.equals(article.getArticleType(), "原创"))) {
+                logger.info("这里是改了文章类型的");
+                continue;
+            }
+            //System.out.println(articleTags[i] + "   " + count + i);
+            tags[count] = articleTags[i];
+            count++;
         }
-        tags[articleTags.length] = article.getArticleType();
+        //System.out.println(count);
+        tags[count] = article.getArticleType();
+
         article.setTagName(StringAndArray.arrayToString(tags));
 
         // 设置文章分类
@@ -92,11 +109,9 @@ public class EditorController {
         article.setArticleCategories(categoriesService.findCategoryByCategoryName(articleCategoryName).getId());
 
         // 这里还有文章的图片URL
-        String articleImgUrl = (String) request.getSession().getAttribute("articleImgUrl");
-        if (Objects.isNull(articleImgUrl)) {
+        if (Objects.isNull(article.getImageUrl())) {
             return JsonResult.fail(CodeType.ARTICLE_IMAGE_BLANK).toJSON();
         }
-        article.setImageUrl(articleImgUrl);
 
         article.setDraft(1);
 
@@ -137,10 +152,10 @@ public class EditorController {
      * @return: java.lang.String
      */
     private String returnJsonResult(Principal principal, HttpServletRequest request, Article article) {
-        // 判断用户有无登录
+        // 判断用户是不是还没登录（大多数是判断用户写文章时是不是登录超时也就是，session过期了）
         if (principal == null) {
             request.getSession().setAttribute("article", article);
-            logger.info("用户还没登录哦");
+            logger.info("判断用户是不是还没登录（大多数是判断用户写文章时是不是登录超时也就是，session过期了）");
             return JsonResult.fail(CodeType.USER_NOT_LOGIN).toJSON();
         }
         String username = principal.getName();
@@ -183,7 +198,7 @@ public class EditorController {
     }
 
     /**
-     * @description: 获得是否有未发布的草稿文章或是修改文章
+     * @description: 获得是否有未发布的草稿文章或是修改文章（这个其实是当用户登录超时时再次给用户补上的）
      * @author: 陈文振
      * @date: 2020/1/5
      * @param request
@@ -194,15 +209,25 @@ public class EditorController {
     @GetMapping(value = "/getDraftArticle", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
     @PermissionCheck(value = "ROLE_USER")
     public String getDraftArticle(HttpServletRequest request){
-        String articleId = (String) request.getSession().getAttribute("articleId");
 
-        // 判断是否为修改文章
+        String articleId = (String) request.getSession().getAttribute("articleId");
+        // 判断是否为修改文章（已发布文章）
         if (!Objects.isNull(articleId)) {
             request.getSession().removeAttribute("articleId");
             Article article = articleService.findArticleById(Integer.parseInt(articleId));
             DataMap dataMap = articleService.getDraftArticle(article);
             return JsonResult.build(dataMap).toJSON();
         }
+
+        String draftId = (String) request.getSession().getAttribute("draftId");
+        // 判断是否为修改文章（草稿箱文章）
+        if (!Objects.isNull(draftId)) {
+            request.getSession().removeAttribute("draftId");
+            Article article = articleService.findArticleById(Integer.parseInt(draftId));
+            DataMap dataMap = articleService.getDraftArticle(article);
+            return JsonResult.build(dataMap).toJSON();
+        }
+
 
         Article article = (Article) request.getSession().getAttribute("article");
 
@@ -241,10 +266,13 @@ public class EditorController {
             String filePath = this.getClass().getResource("/").getPath().substring(1) + "articleImg";
             String fileContentType = file.getContentType();
             String fileExtension = fileContentType.substring(fileContentType.indexOf("/") + 1);
-            String fileName = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + "." + fileExtension;
+
+            Date date = new Date();
+            String fileName = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "." + fileExtension;
+            String day = new SimpleDateFormat("yyyy-MM-dd").format(date);
 
             String fileUrl = fileUtil.uploadFile(fileUtil.multipartFileToFile(file, filePath, fileName),
-                    OSSClientConstants.ARTICLE_IMAGE + "blogArticles/");
+                    OSSClientConstants.ARTICLE_IMAGE + "blogArticles/" + day + "/");
 
             resultMap.put("success", 1);
             resultMap.put("message", "上传成功");
@@ -285,16 +313,18 @@ public class EditorController {
         try {
             FileUtil fileUtil = new FileUtil();
             String filePath = this.getClass().getResource("/").getPath().substring(1) + "articleImg";
-            String fileName = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+
+            Date date = new Date();
+            String fileName = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(date);
+            String day = new SimpleDateFormat("yyyy-MM-dd").format(date);
 
             File file = fileUtil.base64ToFile(filePath, articleImageUrl, fileName + strFileExtendName);
             logger.info("文章首页图片的本地存储路径为：" + filePath);
 
-            String fileUrl = fileUtil.uploadFile(file, OSSClientConstants.ARTICLE_IMAGE);
+            String fileUrl = fileUtil.uploadFile(file, OSSClientConstants.ARTICLE_IMAGE + "indexUrl/" + day +"/");
 
             logger.info("用户[{}]上传文章首页图片成功！！！获得的url为：" + fileUrl, username);
 
-            request.getSession().setAttribute("articleImgUrl", fileUrl);
             return fileUrl;
 
         } catch (Exception e) {
@@ -303,7 +333,5 @@ public class EditorController {
             return "fail";
         }
     }
-
-
 
 }

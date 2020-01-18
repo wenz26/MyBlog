@@ -41,6 +41,16 @@ public class CommentLikesRecord {
      */
     private LocalDateTime likeDate;
 
+    /**
+     * 该条点赞是否已读  1--未读   0--已读
+     */
+    private Integer isRead = 1;
+
+    /**
+     * 评论类
+     */
+    private Comment comment;
+
     public Integer getId() {
         return id;
     }
@@ -79,5 +89,21 @@ public class CommentLikesRecord {
 
     public void setLikeDate(LocalDateTime likeDate) {
         this.likeDate = likeDate;
+    }
+
+    public Integer getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(Integer isRead) {
+        this.isRead = isRead;
+    }
+
+    public Comment getComment() {
+        return comment;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
     }
 }

@@ -119,12 +119,12 @@ public class ArticleLikesRecordServiceImpl implements ArticleLikesRecordService 
             // 文章点赞数 -1
             if (i > 0) {
                 int articleId = articleLikesRecordMapper.findArticleIdById(id);
-                hashRedisService.hashIncrement(StringUtil.ARTICLE_THUMBS_UP, articleId, -1);
+                hashRedisService.hashIncrement(StringUtil.ARTICLE_THUMBS_UP, String.valueOf(articleId), -1);
 
-                int articleThumbsUp = (int) hashRedisService.get(StringUtil.ARTICLE_THUMBS_UP, articleId);
+                int articleThumbsUp = (int) hashRedisService.get(StringUtil.ARTICLE_THUMBS_UP, String.valueOf(articleId));
                 if (articleThumbsUp == 0) {
                     // 当 文章的点赞数为0 就把这个字段在redis中删除
-                    hashRedisService.hashDelete(StringUtil.ARTICLE_THUMBS_UP, articleId);
+                    hashRedisService.hashDelete(StringUtil.ARTICLE_THUMBS_UP, String.valueOf(articleId));
                     return DataMap.success(CodeType.READ_ARTICLE_THUMBS_UP_ALL_SUCCESS);
                 }
                 return DataMap.success(CodeType.READ_ARTICLE_THUMBS_UP_SUCCESS);
@@ -145,7 +145,7 @@ public class ArticleLikesRecordServiceImpl implements ArticleLikesRecordService 
 
             if (i > 0 && articleIds.size() != 0) {
                 for (Integer articleId : articleIds) {
-                    hashRedisService.hashDelete(StringUtil.ARTICLE_THUMBS_UP, articleId);
+                    hashRedisService.hashDelete(StringUtil.ARTICLE_THUMBS_UP, String.valueOf(articleId));
                 }
                 return DataMap.success(CodeType.READ_ARTICLE_THUMBS_UP_ALL_SUCCESS);
             }
