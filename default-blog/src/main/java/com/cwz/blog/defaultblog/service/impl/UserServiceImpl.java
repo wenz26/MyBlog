@@ -1,12 +1,19 @@
 package com.cwz.blog.defaultblog.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.cwz.blog.defaultblog.constant.CodeType;
 import com.cwz.blog.defaultblog.constant.RoleConstant;
 import com.cwz.blog.defaultblog.entity.User;
 import com.cwz.blog.defaultblog.mapper.UserMapper;
 import com.cwz.blog.defaultblog.service.UserService;
+import com.cwz.blog.defaultblog.service.common.CommonReturn;
 import com.cwz.blog.defaultblog.utils.DataMap;
 import com.cwz.blog.defaultblog.utils.StringUtil;
+import com.cwz.blog.defaultblog.utils.TimeUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -83,7 +90,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public int updatePasswordByPhone(String phone, String password) {
         int updateInt = userMapper.updatePassword(phone, password);
-        // 密码修改成功后注销当前用户
+        // 密码修改成功后注销当前用户(这里要注销才能生效，如果有重新登陆的能直接登录)
         SecurityContextHolder.getContext().setAuthentication(null);
         return updateInt;
     }
@@ -159,12 +166,14 @@ public class UserServiceImpl implements UserService {
                 return DataMap.fail(CodeType.USERNAME_EXIST);
             }
             status = CodeType.HAS_MODIFY_USERNAME.getCode();
-            // 注销当前登录用户
+            // 注销当前登录用户(这里要注销才能生效，如果有重新登陆的能直接登录)
             SecurityContextHolder.getContext().setAuthentication(null);
         } else {
             // 没改昵称
             status = CodeType.NOT_MODIFY_USERNAME.getCode();
         }
+        //System.out.println(user.getBirthday());
+        //System.out.println(user.getBirthday().getYear());
 
         Example example = new Example(User.class);
         example.createCriteria().andEqualTo("username", username);
@@ -180,6 +189,58 @@ public class UserServiceImpl implements UserService {
     @Override
     public int countUserNum() {
         return userMapper.selectCount(null);
+    }
+
+    @Override
+    public DataMap findAllUser(int rows, int pageNum, String phoneSearch, String usernameSearch, String genderSearch,
+                               String firstDate, String lastDate) {
+        PageHelper.startPage(pageNum, rows);
+        List<User> users = userMapper.findAllUserToXML(phoneSearch, usernameSearch, genderSearch, firstDate, lastDate);
+        PageInfo<User> pageInfo = new PageInfo<>(users);
+
+        CommonReturn commonReturn = new CommonReturn();
+        JSONArray returnJsonArray = new JSONArray();
+        JSONObject returnJson = new JSONObject();
+        JSONObject userJson;
+        for (User user : users) {
+            userJson = new JSONObject();
+            userJson.put("id", user.getId());
+            userJson.put("phone", user.getPhone());
+            userJson.put("username", user.getUsername());
+            userJson.put("gender", user.getGender());
+
+            if (user.getTrueName() != null) {
+                userJson.put("trueName", user.getTrueName());
+            } else {
+                userJson.put("trueName", "");
+            }
+
+            if (user.getEmail() != null) {
+                userJson.put("email", user.getEmail());
+            } else {
+                userJson.put("email", "");
+            }
+
+            if (user.getBirthday() != null) {
+                userJson.put("birthday", user.getBirthday());
+            } else {
+                userJson.put("birthday", "用户尚未设置");
+            }
+
+            if (user.getRecentlyLanded() != null) {
+                userJson.put("recentlyLanded", TimeUtil.getFormatDateForSix(user.getRecentlyLanded()));
+            } else {
+                userJson.put("recentlyLanded", "用户尚未登录");
+            }
+
+            userJson.put("articleNum", userMapper.countArticleByUser(user.getId()));
+            returnJsonArray.add(userJson);
+        }
+
+        returnJson.put("result", returnJsonArray);
+        returnJson.put("total", userMapper.countAllUserToXML(phoneSearch, usernameSearch, genderSearch, firstDate, lastDate));
+        returnJson.put("pageInfo", commonReturn.jsonObjectToPageInfo(pageInfo));
+        return DataMap.success().setData(returnJson);
     }
 
     /**
@@ -205,4 +266,5 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.findUserByPhone(phone);
         return user != null;
     }
+
 }

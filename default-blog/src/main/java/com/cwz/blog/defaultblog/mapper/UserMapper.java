@@ -42,4 +42,23 @@ public interface UserMapper extends BeanMapper<User> {
     @Select("select * from user where id = #{userId}")
     User findUserByUserId(@Param("userId") int userId);
 
+    @Select("select id, phone, username, true_name, gender, email, birthday, recently_landed from user order by id desc")
+    List<User> findAllUser();
+
+    @Select("select COUNT(id) from article where user_id = #{userId}")
+    int countArticleByUser(@Param("userId") int userId);
+
+    @Select("select id, username, personal_brief, avatar_img_url from user where username like '%${keyWords}%' order by id desc")
+    List<User> searchByKeyWordsByUsername(@Param("keyWords") String keyWords);
+
+    @Select("select COUNT(id) from user where username like '%${keyWords}%'")
+    int countSearchByKeyWordsByUsername(@Param("keyWords") String keyWords);
+
+    List<User> findAllUserToXML(@Param("phoneSearch") String phoneSearch, @Param("usernameSearch") String usernameSearch,
+                                @Param("genderSearch") String genderSearch, @Param("firstDate") String firstDate,
+                                @Param("lastDate") String lastDate);
+
+    int countAllUserToXML(@Param("phoneSearch") String phoneSearch, @Param("usernameSearch") String usernameSearch,
+                          @Param("genderSearch") String genderSearch, @Param("firstDate") String firstDate,
+                          @Param("lastDate") String lastDate);
 }

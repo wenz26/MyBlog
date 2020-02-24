@@ -146,7 +146,7 @@
         onpreviewscroll      : function() {},
 
         imageUpload          : false,
-        imageFormats         : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+        imageFormats         : ["jpg", "jpeg", "gif", "png", "bmp", "webp", "mp4","mp3"],
         imageUploadURL       : "",
         crossDomainUpload    : false,
         uploadCallbackURL    : "",
@@ -251,7 +251,7 @@
                 hr               : "横线",
                 link             : "链接",
                 "reference-link" : "引用链接",
-                image            : "添加图片",
+                image            : "添加图片/视频/音频",
                 code             : "行内代码",
                 "preformatted-text" : "预格式文本 / 代码块（缩进风格）",
                 "code-block"     : "代码块（多语言风格）",
@@ -298,9 +298,9 @@
                     link     : "图片链接",
                     alt      : "图片描述",
                     uploadButton     : "本地上传",
-                    imageURLEmpty    : "错误：图片地址不能为空。",
-                    uploadFileEmpty  : "错误：上传的图片不能为空。",
-                    formatNotAllowed : "错误：只允许上传图片文件，允许上传的图片文件格式有："
+                    imageURLEmpty    : "错误：图片/视频/音频地址不能为空。",
+                    uploadFileEmpty  : "错误：上传的图片/视频/音频不能为空。",
+                    formatNotAllowed : "错误：只允许上传图片/视频/音频文件，允许上传的图片/视频/音频文件格式有："
                 },
                 preformattedText : {
                     title             : "添加预格式文本或代码块",

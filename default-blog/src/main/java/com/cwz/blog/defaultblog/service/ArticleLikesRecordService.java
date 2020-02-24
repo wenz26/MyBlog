@@ -3,6 +3,7 @@ package com.cwz.blog.defaultblog.service;
 import com.alibaba.fastjson.JSONObject;
 import com.cwz.blog.defaultblog.entity.ArticleLikesRecord;
 import com.cwz.blog.defaultblog.utils.DataMap;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author: 陈文振
@@ -37,7 +38,7 @@ public interface ArticleLikesRecordService {
      * @param articleId: 文章id
      * @return:
      */
-    int deleteArticleLikesRecordByArticleId(Integer articleId);
+    int deleteArticleLikesRecordByArticleId(Integer articleId, String username);
 
     /**
      * @description: 获得该用户的所有文章点赞信息
@@ -48,7 +49,7 @@ public interface ArticleLikesRecordService {
      * @param username: 用户名
      * @return:
      */
-    DataMap getArticleThumbsUp(int rows, int pageNum, String username);
+    DataMap getArticleThumbsUp(int rows, int pageNum, String username, Integer isRead, String firstDate, String lastDate);
 
     /**
      * @description: 已读一条点赞记录
@@ -66,4 +67,26 @@ public interface ArticleLikesRecordService {
      * @return:
      */
     DataMap readAllThumbsUp(String username);
+
+    /**
+     * @description: 通过id来删除文章点赞记录
+     * @author: 陈文振
+     * @date: 2020/2/4
+     * @param id
+     * @return: com.cwz.blog.defaultblog.utils.DataMap
+     */
+    @Transactional
+    DataMap deleteArticleLikesRecordById(int id);
+
+    /**
+     * @description: 通过用户名来获得用户的点赞文章
+     * @author: 陈文振
+     * @date: 2020/2/4
+     * @param username
+     * @param articleTitle
+     * @param rows
+     * @param pageNum
+     * @return: com.cwz.blog.defaultblog.utils.DataMap
+     */
+    DataMap findArticleLikesRecordByUsername(String username, String articleTitle, int rows, int pageNum);
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>收藏的文章 | 城院校园轻博客</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+
+    <link rel="alternate icon" type="image/png" th:href="@{img/icon/icon.jpeg}">
+    <link rel="stylesheet" th:href="@{https://lib.baomitu.com/amazeui/2.7.2/css/amazeui.min.css}">
+    <link rel="stylesheet" th:href="@{https://lib.baomitu.com/font-awesome/5.8.0/css/fontawesome.min.css}">
+    <link rel="stylesheet" th:href="@{css/all.css}">
+    <link rel="stylesheet" th:href="@{css/tags.css}">
+    <link rel="stylesheet" th:href="@{css/comment.css}">
+    <link rel="stylesheet" th:href="@{css/favorite.css}">
+    <link rel="stylesheet" th:href="@{css/index.css}">
+    <link rel="stylesheet" th:href="@{css/plugs_paging.css}">
+
+    <script th:src="@{https://lib.baomitu.com/jquery/3.3.1/jquery.min.js}"></script>
+    <script th:src="@{https://lib.baomitu.com/underscore.js/1.9.1/underscore-min.js}"></script>
+    <script th:src="@{https://lib.baomitu.com/amazeui/2.7.2/js/amazeui.min.js}"></script>
+    <script th:src="@{js/all.js}"></script>
+    <script th:src="@{js/favorite.js}"></script>
+    <script th:src="@{js/plugs_paging.js}"></script>
+</head>
+<body>
+    <!--共有头部-->
+    <div th:replace="~{common/bar :: topbar}"></div>
+
+    <!--页面主体-->
+    <div id="main">
+        <div class="am-container">
+            <img th:src="@{img/general/loading.gif}" style="margin-left: 17%">
+        </div>
+    </div>
+    <!--引入共有底部-->
+    <div th:replace="common/bar :: footer"></div>
+    <!--消息盒子+反馈-->
+    <div th:replace="common/bar :: feedback"></div>
+
+    <!--删除收藏文章模态框-->
+    <div class="am-modal am-modal-confirm" tabindex="-1" id="cancelFavoriteArticleAlter">
+        <div class="am-modal-dialog">
+            <div class="am-modal-hd">取消收藏文章</div>
+            <div class="am-modal-bd" id="cancelFavoriteArticleContent">
+                你确定要取消吗？
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="sureCancelFavoriteArticleBtn am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

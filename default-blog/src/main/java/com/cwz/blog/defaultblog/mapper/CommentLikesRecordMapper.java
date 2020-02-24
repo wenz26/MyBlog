@@ -9,7 +9,8 @@ import java.util.List;
 @Mapper
 public interface CommentLikesRecordMapper extends BeanMapper<CommentLikesRecord> {
 
-    List<CommentLikesRecord> findCommentLikesRecordByUserId(@Param("userId") int userId);
+    List<CommentLikesRecord> findCommentLikesRecordByUserId(@Param("userId") Integer userId, @Param("isRead") Integer isRead,
+                                                            @Param("firstDate") String firstDate, @Param("lastDate") String lastDate);
 
     @Select("select COUNT(clr.id) from comment_record cr right join comment_likes_record clr on cr.id = clr.p_id where cr.answerer_id = #{userId} and clr.is_read = 1")
     int countCommentLikesRecordToNotReadByUserId(@Param("userId") int userId);

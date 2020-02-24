@@ -107,11 +107,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/css/**", "/emoji/**", "/img/**", "/js/**", "/languages/**",
                         "/lib/**", "/music/**", "/plugins/**", "/article/**").permitAll()
                 .antMatchers("/code/image", "/code/sms").permitAll()
-                .antMatchers("/", "/index", "/categories", "/tags", "/login", "/archives",
+                .antMatchers("/", "/index", "/categories", "/tags", "/login", "/archives", "/person", "/search",
                         "/update", "/register", "/article/*").permitAll()
-                .antMatchers("/checkCode", "/changePassword", "/getVisitorNumByPageName", "/myPublishArticles", "/newComment",
+                .antMatchers("/checkCode", "/changePassword", "/getVisitorNumByPageName", "/myPublishArticles", "/newComment", "/getPersonInfo", "/insertUserAttention",
                         "/getSiteInfo", "/getCategoryArticle", "/findCategoriesNameAndArticleNum", "/getArchiveArticle", "/findArchiveNameAndArticleNum").permitAll()
-                .antMatchers("/getArticleByArticleId", "/addArticleLike", "/addArticleFavorite").permitAll()
+                .antMatchers("/getArticleByArticleId", "/addArticleLike", "/addArticleFavorite", "/findAllTags", "/getTagArticle", "/searchByKeyWords",
+                        "/searchHistory", "/deleteAllHistory", "/getSomeOneAttention", "/findCategoriesName").permitAll()
                 .antMatchers("/editor", "/user").hasAnyRole("USER")
                 .antMatchers("/superAdmin").hasAnyRole("SUPERADMIN")
                 .anyRequest().authenticated()

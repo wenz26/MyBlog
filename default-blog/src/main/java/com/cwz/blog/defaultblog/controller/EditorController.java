@@ -263,7 +263,9 @@ public class EditorController {
             response.setHeader("X-Frame-Options", "SAMEORIGIN");
 
             FileUtil fileUtil = new FileUtil();
-            String filePath = this.getClass().getResource("/").getPath().substring(1) + "articleImg";
+            String filePath = request.getSession().getServletContext().getRealPath("") + "upload";
+            logger.info("本地地址为：" + filePath);
+
             String fileContentType = file.getContentType();
             String fileExtension = fileContentType.substring(fileContentType.indexOf("/") + 1);
 
@@ -312,7 +314,8 @@ public class EditorController {
 
         try {
             FileUtil fileUtil = new FileUtil();
-            String filePath = this.getClass().getResource("/").getPath().substring(1) + "articleImg";
+            String filePath = request.getSession().getServletContext().getRealPath("") + "upload";
+            logger.info("本地地址为：" + filePath);
 
             Date date = new Date();
             String fileName = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(date);

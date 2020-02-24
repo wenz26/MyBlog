@@ -64,7 +64,7 @@ public class CommentLikesRecordServiceImpl implements CommentLikesRecordService 
     }
 
     @Override
-    public DataMap getCommentThumbsUp(int rows, int pageNum, String username) {
+    public DataMap getCommentThumbsUp(int rows, int pageNum, String username, Integer isRead, String firstDate, String lastDate) {
 
         int userId = userService.findIdByUsername(username);
 
@@ -72,7 +72,7 @@ public class CommentLikesRecordServiceImpl implements CommentLikesRecordService 
         CommonReturn commonReturn = new CommonReturn();
 
         PageHelper.startPage(pageNum, rows);
-        List<CommentLikesRecord> commentLikesRecords = commentLikesRecordMapper.findCommentLikesRecordByUserId(userId);
+        List<CommentLikesRecord> commentLikesRecords = commentLikesRecordMapper.findCommentLikesRecordByUserId(userId, isRead, firstDate, lastDate);
         PageInfo<CommentLikesRecord> pageInfo = new PageInfo<>(commentLikesRecords);
 
         JSONArray returnJsonArray = new JSONArray();
@@ -83,6 +83,8 @@ public class CommentLikesRecordServiceImpl implements CommentLikesRecordService 
             commentLikesJson.put("id", commentLikesRecord.getId());
             commentLikesJson.put("articleId", commentLikesRecord.getComment().getArticleId());
             commentLikesJson.put("articleTitle", articleService.findArticleTitleByArticleId(commentLikesRecord.getComment().getArticleId()).get("articleTitle"));
+            commentLikesJson.put("commentId", commentLikesRecord.getComment().getId());
+            commentLikesJson.put("answerer", username);
             commentLikesJson.put("commentContent", commentLikesRecord.getComment().getCommentContent());
             commentLikesJson.put("commentDate", TimeUtil.getFormatDateForSix(commentLikesRecord.getComment().getCommentDate()));
             commentLikesJson.put("praisePeople", userService.findUsernameById(commentLikesRecord.getUserId()));

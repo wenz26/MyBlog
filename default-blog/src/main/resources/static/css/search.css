@@ -1,0 +1,161 @@
+#articleShow {
+    display: block;
+}
+#userShow, #tagsShow, #categoriesShow {
+    display: none;
+}
+
+.articleShow, .userShow, .tagsShow, .categoriesShow {
+    width: 100%;
+    height: 50px;
+    font-size: 17px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    text-align: left;
+    vertical-align: middle;
+    line-height: 30px;
+    background-color: white;
+    border-color: white;
+}
+.searchBtnShow:hover {
+    background-color: #e6e6e6;
+}
+.cwz-div {
+    background-color: #7c7c7c;
+    width: 32px;
+    height: 32px;
+    float: left;
+    margin-right: 20px;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 6px;
+}
+.span-history {
+    font-size: 13px;
+    float: right;
+    margin-right: 10px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+.span-history:hover {
+    color: black;
+}
+
+.cwz-history {
+    cursor: pointer;
+    padding: .5em 1em;
+    border-radius: 3px;
+}
+.cwz-history:hover {
+    background-color: #e6e6e6;
+}
+.cwz-history:hover .delete-history {
+    display: block;
+}
+.delete-history {
+    float: right;
+    display: none;
+    color: #999;
+}
+.delete-history:hover {
+    color: black;
+}
+.noNews{
+    height: 30px;
+    background: #f0f0f0;
+    text-align: center;
+    opacity: .5;
+    line-height: 30px;
+}
+.personImg img {
+    width: 70px;
+    padding: 0;
+    border-radius: 50%;
+    height: 70px;
+
+}
+.title{
+    font-size: 18px;
+    margin-left: 10px;
+    line-height: 30px;
+    display: inline-block;
+    margin-top: 0;
+    font-weight: 500;
+}
+.title a{
+    color: #0a0a0a;
+    transition:0.5s;
+}
+.title a:hover{
+    color:blue;
+}
+.personAttentionBtn{
+    float: right;
+    margin-top: 33px;
+    margin-right: 20px;
+    width: 100px;
+    border-radius: 6px;
+}
+.myselfPersonAttentionBtn{
+    float: right;
+
+    margin-top: 33px;
+    margin-right: 20px;
+    width: 110px;
+    border-radius: 6px;
+}
+.myAttentionDisplay{
+    margin-left: 100px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-right: 150px;
+    color: #898d92;
+    font-size: 13px;
+}
+.tagsImg img {
+    width: 70px;
+    padding: 0;
+    border-radius: 6px;
+    height: 70px;
+}
+.categoryDiv {
+    width: 70px;
+    padding: 0;
+    border-radius: 6px;
+    height: 70px;
+    background-color: #7c7c7c;
+    float: left;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 67px;
+    font-size: 45px;
+}
+.userContentInfoFirst {
+    font-size: 13px;
+    color: #898d92;
+    margin-right: 8px;
+    padding-right: 8px;
+    border-right: 1px solid #898d92;
+    margin-left: 20px
+}
+.userContentInfo {
+    font-size: 13px;
+    color: #898d92;
+    margin-right: 8px;
+    padding-right: 8px;
+    border-right: 1px solid #898d92;
+}
+.userContentInfoLast {
+    font-size: 13px;
+    color: #898d92;
+    padding-right: 10px;
+}
+#select-publicDate {
+    float: right;
+    margin-left: 8px;
+    width: 138px;
+    height: 32px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}

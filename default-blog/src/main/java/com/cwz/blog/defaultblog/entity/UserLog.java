@@ -52,6 +52,11 @@ public class UserLog {
     private String logIp;
 
     /**
+     * 用户实际地址
+     */
+    private String logAddress;
+
+    /**
      * 操作状态（成功、失败）
      */
     private String logStatus;
@@ -116,6 +121,14 @@ public class UserLog {
 
     public String getLogIp() {
         return logIp;
+    }
+
+    public String getLogAddress() {
+        return logAddress;
+    }
+
+    public void setLogAddress(String logAddress) {
+        this.logAddress = logAddress;
     }
 
     public Long getLogTimeConsuming() {

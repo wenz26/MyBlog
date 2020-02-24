@@ -1,10 +1,10 @@
 $(function () {
 
     //网站最后更新时间（版本更新需更改）
-    var siteLastUpdateTime = '2020年1月13日20点';
+    var siteLastUpdateTime = '2020年2月25日20点';
 
     //网站开始时间
-    var siteBeginRunningTime = '2020-1-13 20:00:00';
+    var siteBeginRunningTime = '2020-2-16 20:00:00';
 
     var i = 1;
     var id;
@@ -39,7 +39,7 @@ $(function () {
                     '<i class="am-icon-calendar"><a class="linkColor" href="/archives?archiveDay=' + obj['publishDateForThree'] + '"> ' + obj['publishDate'] + '</a></i>' +
                     '</div>' +
                     '<div class="originalAuthor">' +
-                    '<i class="am-icon-user"> ' + obj['author'] + '</i>' +
+                    '<i class="am-icon-user"> <a class="linkColor" href="/person?personName=' + obj['author'] + '">' + obj['author'] + '</a></i>' +
                     '</div>' +
                     '<div class="categories">' +
                     '<i class="am-icon-folder"><a class="linkColor" href="/categories?categoryName=' + obj['articleCategories'] + '"> ' + obj['articleCategories'] + '</a></i>' +
@@ -75,7 +75,7 @@ $(function () {
 
                 articles.append(center);
 
-                var articleTags = $('<div class="article-tags"></div>');
+                var articleTags = $('<div class="article-tags tag'+ obj['articleId'] +'"></div>');
                 for (var i = 0; i < obj['articleTags'].length; i++) {
                     var articleTag = $('<i class="am-icon-tag"><a class="tag" href="/tags?tag=' + obj['articleTags'][i] + '"> ' + obj['articleTags'][i] + '</a></i>');
                     articleTags.append(articleTag);
@@ -85,7 +85,7 @@ $(function () {
                 articleTags.append(star);
 
 
-                var likes = $('<span class="likes"><i class="am-icon-heart"> ' + obj['likes'] + '</i></span>');
+                var likes = $('<span class="likes"><i class="am-icon-thumbs-up"> ' + obj['likes'] + '</i></span>');
                 articleTags.append(likes);
 
                 var watch = $('<span class="watch"><i class="am-icon-eye"> ' + obj['watchNum'] + '</i></span>');
@@ -144,7 +144,7 @@ $(function () {
             url: '/myPublishArticles',
             dataType: 'json',
             data: {
-                rows:"20",
+                rows:"8",
                 pageNum:currentPage
             },
             success: function (data) {
@@ -239,6 +239,27 @@ $(function () {
             siteDefault.append('<li>' +
                 '<i class="am-icon-commenting-o site-default-icon"></i><span class="site-default-word">评论总数</span>：' + data['data']['commentNum'] + ' 条' +
                 '</li>');
+
+            if (data['data']['address'].indexOf(",") !== -1) {
+                var i1 = data['data']['address'].indexOf(",");
+                var address = data['data']['address'].substring(0, i1);
+                var i2 = data['data']['address'].indexOf(",", i1 + 1);
+                var lat = data['data']['address'].substring(i1 + 2, i2);
+                var lon = data['data']['address'].substring(i2 + 2);
+
+                siteDefault.append('<li>' +
+                    '<i class="am-icon-map-marker site-default-icon"></i><span class="site-default-word">当前位置</span>：' +
+                    '<span style="display: block;">' + address + '</span>' +
+                    '<span style="display: block;">' + lat + '</span>' +
+                    '<span style="display: block;">' + lon + '</span>' +
+                    '</li>');
+
+            } else {
+                siteDefault.append('<li>' +
+                    '<i class="am-icon-map-marker site-default-icon"></i><span class="site-default-word">当前位置</span>：<span style="display: block;">' + data['data']['address'] + '</span>' +
+                    '</li>');
+            }
+
             siteDefault.append('<li>' +
                 '<i class="am-icon-hourglass-1 site-default-icon"></i><span class="site-default-word">当前时间</span>：<span class="siteLocalTime"> </span>' +
                 '</li>');
@@ -296,8 +317,18 @@ $(function () {
             nowTime += (nowDay.getMonth() + 1) + "-";
         }
 
-        nowTime += nowDay.getDate() + " ";
-        nowTime += nowDay.getHours() + ":";
+        if (nowDay.getDate().toString().length === 1) {
+            nowTime += "0" + nowDay.getDate() + " ";
+        } else {
+            nowTime += nowDay.getDate() + " ";
+        }
+
+        if (nowDay.getHours().toString().length === 1) {
+            nowTime += "0" + nowDay.getHours() + ":";
+        } else {
+            nowTime += nowDay.getHours() + ":";
+        }
+
 
         if (nowDay.getMinutes().toString().length === 1) {
             nowTime += "0" + nowDay.getMinutes() + ":";
@@ -363,7 +394,7 @@ $(function () {
 
             var personalBrief =  data['data']['personalBrief'];
             var personalBriefSmall = $("#personalBrief");
-            if (personalBrief === "null") {
+            if (personalBrief === "null" || personalBrief === "") {
                 personalBriefSmall.html("朋友，不必太纠结于当下，也不必太忧虑未来，当你经历过一些事情的时候，眼前的风景已经和从前不一样了。")
             } else {
                 personalBriefSmall.html(personalBrief);

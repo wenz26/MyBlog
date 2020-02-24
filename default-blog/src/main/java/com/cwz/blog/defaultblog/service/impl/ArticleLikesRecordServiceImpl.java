@@ -3,8 +3,10 @@ package com.cwz.blog.defaultblog.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cwz.blog.defaultblog.constant.CodeType;
+import com.cwz.blog.defaultblog.entity.Article;
 import com.cwz.blog.defaultblog.entity.ArticleLikesRecord;
 import com.cwz.blog.defaultblog.mapper.ArticleLikesRecordMapper;
+import com.cwz.blog.defaultblog.mapper.ArticleMapper;
 import com.cwz.blog.defaultblog.redis.HashRedisServiceImpl;
 import com.cwz.blog.defaultblog.redis.StringRedisServiceImpl;
 import com.cwz.blog.defaultblog.service.ArticleLikesRecordService;
@@ -16,6 +18,7 @@ import com.cwz.blog.defaultblog.utils.StringUtil;
 import com.cwz.blog.defaultblog.utils.TimeUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,9 @@ public class ArticleLikesRecordServiceImpl implements ArticleLikesRecordService 
     private ArticleLikesRecordMapper articleLikesRecordMapper;
 
     @Autowired
+    private ArticleMapper articleMapper;
+
+    @Autowired
     private ArticleService articleService;
 
     @Autowired
@@ -46,6 +52,8 @@ public class ArticleLikesRecordServiceImpl implements ArticleLikesRecordService 
 
     @Autowired
     private HashRedisServiceImpl hashRedisService;
+
+
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -66,14 +74,18 @@ public class ArticleLikesRecordServiceImpl implements ArticleLikesRecordService 
     }
 
     @Override
-    public int deleteArticleLikesRecordByArticleId(Integer articleId) {
+    public int deleteArticleLikesRecordByArticleId(Integer articleId, String username) {
         Example example = new Example(ArticleLikesRecord.class);
-        example.createCriteria().andEqualTo("articleId", articleId);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("articleId", articleId);
+        if (!StringUtils.isBlank(username)) {
+            criteria.andEqualTo("userId", userService.findIdByUsername(username));
+        }
         return articleLikesRecordMapper.deleteByExample(example);
     }
 
     @Override
-    public DataMap getArticleThumbsUp(int rows, int pageNum, String username) {
+    public DataMap getArticleThumbsUp(int rows, int pageNum, String username, Integer isRead, String firstDate, String lastDate) {
 
         int userId = userService.findIdByUsername(username);
 
@@ -85,7 +97,7 @@ public class ArticleLikesRecordServiceImpl implements ArticleLikesRecordService 
         example.orderBy("id").desc();
         List<ArticleLikesRecord> articleLikesRecords = articleLikesRecordMapper.selectByExample(example);*/
 
-        List<ArticleLikesRecord> articleLikesRecords = articleLikesRecordMapper.findArticleLikesRecordByUserId(userId);
+        List<ArticleLikesRecord> articleLikesRecords = articleLikesRecordMapper.findArticleLikesRecordByUserIdToXML(userId, isRead, firstDate, lastDate);
         PageInfo<ArticleLikesRecord> pageInfo = new PageInfo<>(articleLikesRecords);
 
         JSONArray returnJsonArray = new JSONArray();
@@ -154,5 +166,63 @@ public class ArticleLikesRecordServiceImpl implements ArticleLikesRecordService 
             logger.error("阅读文章点赞信息失败：" + e);
             return DataMap.fail(CodeType.READ_ARTICLE_THUMBS_UP_FAIL);
         }
+    }
+
+    @Override
+    public DataMap deleteArticleLikesRecordById(int id) {
+        int articleId = articleLikesRecordMapper.selectArticleLikeRecordById(id);
+        articleLikesRecordMapper.updateArticleLikeRecord(articleId);
+        if(hashRedisService.hasHashKey(StringUtil.ARTICLE_THUMBS_UP, String.valueOf(articleId))) {
+            if ((int)hashRedisService.get(StringUtil.ARTICLE_THUMBS_UP, String.valueOf(articleId)) != 0) {
+                hashRedisService.hashIncrement(StringUtil.ARTICLE_THUMBS_UP, String.valueOf(articleId), -1);
+            }
+        }
+        articleLikesRecordMapper.deleteArticleLikeRecordById(id);
+        return DataMap.success();
+    }
+
+    @Override
+    public DataMap findArticleLikesRecordByUsername(String username, String articleTitle, int rows, int pageNum) {
+        CommonReturn commonReturn = new CommonReturn();
+        int userId = userService.findIdByUsername(username);
+
+        PageHelper.startPage(pageNum, rows);
+        List<ArticleLikesRecord> articleUserLikeRecords;
+        int articleLikeNum;
+
+        if (StringUtils.isBlank(articleTitle)) {
+            articleUserLikeRecords = articleLikesRecordMapper.findArticleLikeRecordByUserId(userId);
+            articleLikeNum = articleLikesRecordMapper.countArticleLikeRecordByUserId(userId);
+        } else {
+            articleUserLikeRecords = articleLikesRecordMapper.findArticleLikeRecordByUserIdAndArticleTitle(userId, articleTitle);
+            articleLikeNum = articleLikesRecordMapper.countArticleLikeRecordByUserIdAndArticleTitle(userId, articleTitle);
+        }
+
+        PageInfo<ArticleLikesRecord> pageInfo = new PageInfo<>(articleUserLikeRecords);
+
+        JSONObject returnJson = new JSONObject();
+        JSONArray returnJsonArray = new JSONArray();
+        JSONObject articleLikeJson;
+
+        for (ArticleLikesRecord articleUserLikeRecord : articleUserLikeRecords) {
+            articleLikeJson = new JSONObject();
+            articleLikeJson.put("id", articleUserLikeRecord.getId());
+            //articleLikeJson.put("articleId", articleUserLikeRecord.getArticleId());
+
+            // 这里还有文章的作者啊，标题，分类，标签，类型，等等的一些信息要写
+            Article article = articleMapper.getArticleAndTagsByArticleId(articleUserLikeRecord.getArticleId(), 1);
+            JSONObject articleObject = articleService.getArticleByTagAndCategoryToJsonObject(article);
+            articleLikeJson.put("article", articleObject);
+
+
+            articleLikeJson.put("likeDate", TimeUtil.getFormatDateForSix(articleUserLikeRecord.getLikeDate()));
+            articleLikeJson.put("userId", articleUserLikeRecord.getUserId());
+            returnJsonArray.add(articleLikeJson);
+        }
+
+        returnJson.put("result", returnJsonArray);
+        returnJson.put("articleLikeNum", articleLikeNum);
+        returnJson.put("pageInfo", commonReturn.jsonObjectToPageInfo(pageInfo));
+        return DataMap.success().setData(returnJson);
     }
 }

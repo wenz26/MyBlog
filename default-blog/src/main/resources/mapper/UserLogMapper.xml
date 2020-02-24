@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cwz.blog.defaultblog.mapper.UserLogMapper">
+
+    <select id="findAllUserLogByExample" parameterType="userLog" resultType="userLog">
+        select * from user_log
+        <where>
+            <if test="userLog.logUsername != null and userLog.logUsername != ''">
+                and log_username like '%${userLog.logUsername}%'
+            </if>
+            <if test="userLog.logModule != null and userLog.logModule != ''">
+                and log_module like '%${userLog.logModule}%'
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and create_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and create_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        order by create_date desc
+    </select>
+
+    <select id="findAllUserLogByLogin" parameterType="userLog" resultType="userLog">
+        select * from user_log
+        <where>
+            (log_operation like '%登录%' or log_operation like '%注册%' or log_operation like '%注销%')
+            <if test="userLog.logUsername != null and userLog.logUsername != ''">
+                and log_username like '%${userLog.logUsername}%'
+            </if>
+            <if test="userLog.logModule != null and userLog.logModule != ''">
+                and log_module like '%${userLog.logModule}%'
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and create_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and create_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        order by create_date desc
+    </select>
+
+    <select id="findAllUserLogByOperation" parameterType="userLog" resultType="userLog">
+        select * from user_log
+        <where>
+            log_operation NOT like '%登录%' and log_operation NOT like '%注册%' and log_operation NOT like '%注销%'
+            <if test="userLog.logUsername != null and userLog.logUsername != ''">
+                and log_username like '%${userLog.logUsername}%'
+            </if>
+            <if test="userLog.logModule != null and userLog.logModule != ''">
+                and log_module like '%${userLog.logModule}%'
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and create_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and create_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        order by create_date desc
+    </select>
+
+</mapper>

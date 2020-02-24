@@ -64,8 +64,8 @@ class CommentServiceTest {
 
     @Test
     void getUserComment() {
-        DataMap dataMap = commentService.getUserComment(5, 0, "陈文振");
-        System.out.println(JSON.toJSONString(dataMap));
+//        DataMap dataMap = commentService.getUserComment(8, 0, "陈文振");
+//        System.out.println(JSON.toJSONString(dataMap));
     }
 
     @Test
@@ -90,5 +90,11 @@ class CommentServiceTest {
     void readAllComment() {
         DataMap dataMap = commentService.readAllComment("陈文振");
         System.out.println(JSON.toJSONString(dataMap));
+    }
+
+    @Test
+    void findAllComment() {
+//        DataMap dataMap = commentService.findAllComment(8, 0, "陈文振");
+//        System.out.println(JSON.toJSONString(dataMap));
     }
 }

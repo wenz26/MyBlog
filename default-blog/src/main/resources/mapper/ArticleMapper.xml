@@ -40,23 +40,224 @@
     </resultMap>
 
     <select id="findAllToDraftArticles" resultMap="findArtTagsToId">
-        select u.*, t.id tagId, tag_name, create_date from article u
+        select u.*, t.id tagId, tag_name, create_date from
+        (select * from article
+        <where>
+            <if test="draft != null">
+                and draft = #{draft}
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and article_categories = #{categoryId}
+            </if>
+            <if test="publishDate != null and publishDate != ''">
+                and publish_date like '%${publishDate}%'
+            </if>
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId}
+            </if>
+            <if test="articleTitle != null and articleTitle != ''">
+                and article_title like '%${articleTitle}%'
+            </if>
+        </where>
+        ORDER BY publish_date desc limit #{pageNum}, #{rows}) u
         left join article_tags ats on u.id = ats.article_id
         left join tags t on t.id = ats.tag_id
-        <where>
-           <if test="draft != null">
-               and draft = #{draft}
-           </if>
-           <if test="categoryId != null and categoryId != ''">
-               and article_categories = #{categoryId}
-           </if>
-           <if test="publishDate != null and publishDate != ''">
-               and publish_date like '%${publishDate}%'
-           </if>
-           <if test="userId != null and userId != ''">
-               and user_id = #{userId}
-           </if>
-        </where>
-        order by publish_date desc
     </select>
+
+    <!--<foreach collection=""></foreach>-->
+
+    <select id="countArticle" resultType="Integer">
+        select COUNT(id) from article
+        <where>
+            <if test="draft != null">
+                and draft = #{draft}
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and article_categories = #{categoryId}
+            </if>
+            <if test="publishDate != null and publishDate != ''">
+                and publish_date like '%${publishDate}%'
+            </if>
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId}
+            </if>
+            <if test="articleTitle != null and articleTitle != ''">
+                and article_title like '%${articleTitle}%'
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findTimeRangeToDraftArticles" resultMap="findArtTagsToId">
+        select u.*, t.id tagId, tag_name, create_date from
+        (select * from article
+        <where>
+            <if test="draft != null">
+                and draft = #{draft}
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and article_categories = #{categoryId}
+            </if>
+            <if test="publishDate != null and publishDate != ''">
+                and publish_date like '%${publishDate}%'
+            </if>
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId}
+            </if>
+            <if test="articleTitle != null and articleTitle != ''">
+                and article_title like '%${articleTitle}%'
+            </if>
+            <if test="timeRange != null and timeRange != ''">
+                and DATE_SUB(CURDATE(), ${timeRange} ) <![CDATA[<=]]> date(publish_date)
+            </if>
+        </where>
+        ORDER BY publish_date desc limit #{pageNum}, #{rows}) u
+        left join article_tags ats on u.id = ats.article_id
+        left join tags t on t.id = ats.tag_id
+    </select>
+
+    <select id="countTimeRangeToArticle" resultType="Integer">
+        select COUNT(id) from article
+        <where>
+            <if test="draft != null">
+                and draft = #{draft}
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and article_categories = #{categoryId}
+            </if>
+            <if test="publishDate != null and publishDate != ''">
+                and publish_date like '%${publishDate}%'
+            </if>
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId}
+            </if>
+            <if test="articleTitle != null and articleTitle != ''">
+                and article_title like '%${articleTitle}%'
+            </if>
+            <if test="timeRange != null and timeRange != ''">
+                and DATE_SUB(CURDATE(), ${timeRange} ) <![CDATA[<=]]> date(publish_date)
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectArticleByTag" resultMap="findArtTagsToId">
+        select a.*, t.id tagId, tag_name, create_date from
+
+        (select * from article where id in
+        (select ats.article_id from
+        ((select * from article_tags where tag_id = #{tagId} limit #{pageNum}, #{rows}) ats
+        inner join
+        (select * from article
+        <where>
+            <if test="draft != null">
+                and draft = #{draft}
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and article_categories = #{categoryId}
+            </if>
+            <if test="timeRange != null and timeRange != ''">
+                and DATE_SUB(CURDATE(), ${timeRange} ) <![CDATA[<=]]> date(publish_date)
+            </if>
+        </where> ) u
+        on u.id = ats.article_id))) a
+
+        inner join article_tags new_ats on a.id = new_ats.article_id
+        inner join tags t on t.id = new_ats.tag_id ORDER BY a.publish_date desc
+    </select>
+
+    <select id="countArticleByTag" resultType="Integer">
+        select COUNT(DISTINCT a.id) from
+
+        (select * from article where id in
+        (select ats.article_id from
+        ((select * from article_tags where tag_id = #{tagId}) ats
+        inner join
+        (select * from article
+        <where>
+            <if test="draft != null">
+                and draft = #{draft}
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and article_categories = #{categoryId}
+            </if>
+            <if test="timeRange != null and timeRange != ''">
+                and DATE_SUB(CURDATE(), ${timeRange} ) <![CDATA[<=]]> date(publish_date)
+            </if>
+        </where> ) u
+        on u.id = ats.article_id))) a
+
+        inner join article_tags new_ats on a.id = new_ats.article_id
+        inner join tags t on t.id = new_ats.tag_id ORDER BY a.publish_date desc
+    </select>
+
+
+    <select id="findAllToDraftArticlesByTimes" resultMap="findArtTagsToId">
+        select u.*, t.id tagId, tag_name, create_date from
+        (select * from article
+        <where>
+            <if test="draft != null">
+                and draft = #{draft}
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and article_categories = #{categoryId}
+            </if>
+            <if test="articleType != null and articleType != ''">
+                and article_type = #{articleType}
+            </if>
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId}
+            </if>
+            <if test="articleTitle != null and articleTitle != ''">
+                and article_title like '%${articleTitle}%'
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and publish_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and publish_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        ORDER BY publish_date desc limit #{pageNum}, #{rows}) u
+        left join article_tags ats on u.id = ats.article_id
+        left join tags t on t.id = ats.tag_id
+    </select>
+
+    <!--<foreach collection=""></foreach>-->
+
+    <select id="countArticleByTimes" resultType="Integer">
+        select COUNT(id) from article
+        <where>
+            <if test="draft != null">
+                and draft = #{draft}
+            </if>
+            <if test="categoryId != null and categoryId != ''">
+                and article_categories = #{categoryId}
+            </if>
+            <if test="articleType != null and articleType != ''">
+                and article_type = #{articleType}
+            </if>
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId}
+            </if>
+            <if test="articleTitle != null and articleTitle != ''">
+                and article_title like '%${articleTitle}%'
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and publish_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and publish_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
 </mapper>

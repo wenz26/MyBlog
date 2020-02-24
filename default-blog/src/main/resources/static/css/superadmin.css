@@ -116,6 +116,15 @@
 .contentTop{
     margin-bottom: 15px;
 }
+.codeTop{
+    margin-bottom: 10px;
+    margin-left: 5px;
+}
+.codeButton{
+    width: 60px;
+    height: 28px;
+    font-size: 13px;
+}
 /*反馈*/
 .userFeedbackInfo,.privateWord{
     width: 85%;
@@ -131,6 +140,15 @@
     float: right;
     margin-right: 30px;
     color: #898d92;
+}
+.feedbackReadMsg{
+    width: 56px;
+    height: 35px;
+    font-size: 14px;
+    float: right;
+    margin-right: 20px;
+    vertical-align: middle;
+    text-align: center;
 }
 .feedbackInfoContent,.feedbackInfoContact{
     padding: 5px 20px;
@@ -204,7 +222,7 @@
     margin-top: 30px;
 }
 .articles td,th{
-    border: 1px solid #eceff2;
+    border: 2px solid #eceff2;
 }
 .articles table{
     border-collapse: collapse;
@@ -246,7 +264,7 @@
 }
 .msgTxt .articleTitle{
     word-wrap: normal;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
     overflow: hidden;
     text-overflow: ellipsis;
     margin-right: 30px;
@@ -281,7 +299,11 @@
     transform: translate(-8px,10px);
 }
 .addCategory,.subCategory{
-    cursor: pointer;
+    cursor: pointer; /*改变光标的类型，变成手指的类型*/
+    color: #3399ea;
+}
+.addTag{
+    cursor: pointer; /*改变光标的类型，变成手指的类型*/
     color: #3399ea;
 }
 /*文章分类*/
@@ -337,4 +359,54 @@
 }
 #rewardUrl{
     display: inline-block;
+}
+.cwz-chart {
+    width:600px;
+    height:500px;
+}
+.cwz-today {
+    float: right;
+    margin-right: 20%;
+    margin-top: 2%;
+    font-size: 17px;
+}
+.superAdminInfo{
+    margin-bottom: 150px;
+}
+.superAdminInfo hr{
+    margin-top: 23px;
+}
+.tables a{
+    transition:0.5s;
+}
+.tables a:hover{
+    color:blue;
+}
+.userLogModal{
+    margin-bottom: 10px;
+}
+
+.articleInput {
+    padding: 5px 10px;
+    font-size: 15px;
+    border: 1px solid #c8c8c8;
+    border-radius: 4px;
+    background-color: hsla(0,0%,71%,.1);
+    margin-left: 10px;
+}
+#select-articleDraft, #select-categories, #select-articleType {
+    margin-left: 8px;
+    width: 138px;
+    height: 32px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+#select-genderSearch, #select-feedBackRead {
+    margin-left: 8px;
+    width: 138px;
+    height: 32px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }

@@ -1,6 +1,5 @@
 package com.cwz.blog.defaultblog.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cwz.blog.defaultblog.constant.CodeType;
@@ -89,9 +88,9 @@ public class CategoriesServiceImpl implements CategoriesService {
     }
 
     @Override
-    public DataMap findAllCategories(int rows, int pageNum) {
+    public DataMap findAllCategories(int rows, int pageNum, String categorySearch, String firstDate, String lastDate) {
         PageHelper.startPage(pageNum, rows);
-        List<Categories> categories = categoriesMapper.selectAll();
+        List<Categories> categories = categoriesMapper.selectAllCategoriesToXML(categorySearch, firstDate, lastDate);
         PageInfo<Categories> pageInfo = new PageInfo<>(categories);
 
         CommonReturn commonReturn = new CommonReturn();
@@ -111,6 +110,7 @@ public class CategoriesServiceImpl implements CategoriesService {
 
         returnJson.put("msg", "获得所有的文章分类信息");
         returnJson.put("pageInfo", commonReturn.jsonObjectToPageInfo(pageInfo));
+        returnJson.put("total", categoriesMapper.countAllCategoriesToXML(categorySearch, firstDate, lastDate));
         returnJson.put("result", jsonArray);
         return DataMap.success().setData(returnJson);
     }
@@ -134,7 +134,7 @@ public class CategoriesServiceImpl implements CategoriesService {
         if (type == 1) {
             if (isExistCategory == 0) {
                 categories.setCreateDate(localDateTime);
-                categoriesMapper.insert(categories);
+                categoriesMapper.insertSelective(categories);
                 // 把插入的文章分类 id返回
                 return DataMap.success(CodeType.ADD_CATEGORY_SUCCESS).setData(categories.getId());
             } else {

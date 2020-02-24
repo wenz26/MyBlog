@@ -59,20 +59,21 @@ public class CategoriesController {
      */
     @ApiOperation(value = "分页获得该分类下的文章", notes = "分页获得该分类下的文章(如果分类名为空则显示全部文章)")
     @LogAnnotation(module = "分类信息", operation = "查找")
-    @ApiImplicitParams(value = {
+    /*@ApiImplicitParams(value = {
             @ApiImplicitParam(name = "categoryName", value = "查找的分类名", paramType = "query"),
             @ApiImplicitParam(name = "rows", value = "分页中每页查询条数", paramType = "query"),
             @ApiImplicitParam(name = "pageNum", value = "分页中查询的第几页", paramType = "query")
-    })
+    })*/
     @GetMapping(value = "/getCategoryArticle", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
     public String getCategoryArticle(@RequestParam(value = "categoryName", required = false) String categoryName,
+                                     @RequestParam(value = "timeRange", required = false) String timeRange,
                                      @RequestParam(value = "rows", defaultValue = "8") String rows,
                                      @RequestParam(value = "pageNum", defaultValue = "0") String pageNum) {
         if (!Objects.equals(categoryName, StringUtil.BLANK)) {
             categoryName = TransCodingUtil.unicodeToString(categoryName);
         }
 
-        DataMap dataMap = articleService.findArticleByCategory(categoryName, Integer.parseInt(rows), Integer.parseInt(pageNum));
+        DataMap dataMap = articleService.findArticleByCategory(categoryName, timeRange, Integer.parseInt(rows), Integer.parseInt(pageNum));
         return JsonResult.build(dataMap).toJSON();
     }
 }

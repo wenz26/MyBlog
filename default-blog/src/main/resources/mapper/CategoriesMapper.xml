@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cwz.blog.defaultblog.mapper.CategoriesMapper">
+
+    <select id="selectAllCategoriesToXML" resultType="categories">
+        select * from categories
+        <where>
+            <if test="categorySearch != null and categorySearch != ''">
+                and category_name like '%${categorySearch}%'
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and create_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and create_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        ORDER BY create_date desc
+    </select>
+
+
+    <select id="countAllCategoriesToXML" resultType="integer">
+        select COUNT(id) from categories
+        <where>
+            <if test="categorySearch != null and categorySearch != ''">
+                and category_name like '%${categorySearch}%'
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and create_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and create_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+</mapper>

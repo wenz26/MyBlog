@@ -10,10 +10,7 @@ import com.cwz.blog.defaultblog.entity.Tags;
 import com.cwz.blog.defaultblog.mapper.ArticleMapper;
 import com.cwz.blog.defaultblog.mapper.CategoriesMapper;
 import com.cwz.blog.defaultblog.service.ArticleService;
-import com.cwz.blog.defaultblog.utils.DataMap;
-import com.cwz.blog.defaultblog.utils.JsonResult;
-import com.cwz.blog.defaultblog.utils.StringUtil;
-import com.cwz.blog.defaultblog.utils.TimeUtil;
+import com.cwz.blog.defaultblog.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +20,15 @@ import org.springframework.util.ResourceUtils;
 import javax.xml.crypto.Data;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 @SpringBootTest
 class DefaultBlogApplicationTests {
@@ -191,6 +193,65 @@ class DefaultBlogApplicationTests {
         /*System.out.println(ResourceUtils.getURL("classpath:").getPath());*/
         /*System.out.println(JsonResult.build(DataMap.fail().setData(CodeType.AUTH_CODE_ERROR)).toJSON());*/
         /*System.out.println(TimeUtil.getFormatDateForThree(LocalDateTime.now()));*/
-        System.out.println(StringUtils.isBlank(null));
+//        System.out.println(StringUtils.isBlank(null));
+        LocalDateTime localDateTime = LocalDateTime.now();
+        System.out.println(localDateTime.getDayOfWeek());
     }
+
+    @Test
+    void collectionTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        List<String> lists = new ArrayList<>();
+        lists.add("我的");
+        lists.add("永远是第");
+        lists.add("1");
+
+        Thread thread = new Thread();
+
+        Class aClass = lists.getClass();
+
+        /*Method add = aClass.getDeclaredMethod("add", Object.class);
+        add.setAccessible(true);
+        add.invoke(lists, 100);*/
+
+        //lists.forEach(list -> System.out.println(list));
+        /*Object[] objects = lists.toArray();
+        for (Object object : objects) {
+            System.out.println(object);
+        }*/
+
+        String[] as = new String[4];
+        String[] strings = lists.toArray(as);
+        for (String string : strings) {
+            System.out.println(string);
+        }
+        //Vector
+        //CopyOnWriteArrayList
+        //LinkedList
+        //Stack
+        //HashMap
+        //ConcurrentHashMap
+
+        //Supplier<T>
+        ThreadLocal<String> stringThreadLocal = new ThreadLocal<>();
+
+        //ReentrantLock reentrantLock = new ReentrantLock();
+        //Condition condition = reentrantLock.newCondition();
+
+        //ThreadPoolExecutor.
+        //Executors
+
+        /*Iterator<String> iterator = lists.iterator();
+
+        while (iterator.hasNext()) {
+            String next = iterator.next();
+            System.out.println(next);
+        }*/
+    }
+
+    @Test
+    void ipGet() {
+        String address = AddressUtils.getAddress("163.142.99.36");
+        System.out.println(address);
+    }
+
 }

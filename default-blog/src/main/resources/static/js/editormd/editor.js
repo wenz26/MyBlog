@@ -28,7 +28,7 @@ $(function () {
         sequenceDiagram : true, // 开启时序/序列图支持，默认关闭,
         htmlDecode : true, //不过滤标签
         imageUpload : true, //上传图片
-        imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp","JPG","JPEG","GIF","PNG","BMP","WEBP"],
+        imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp","JPG","JPEG","GIF","PNG","BMP","WEBP","mp4","mp3"],
         imageUploadURL : "/uploadImage",
         onload:function () {
             // console.log('onload', this);

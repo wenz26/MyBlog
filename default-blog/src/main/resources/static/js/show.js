@@ -14,18 +14,18 @@ function putInArticle(data) {
         '<i class="am-icon-calendar"><a class="articleCategoryColor" href="/archives?archiveDay=' + data.publishDateForThree + '"> ' + data.publishDate + '</a></i>' +
         '</div>' +
         '<div class="article-info article-info-originalAuthor">' +
-        '<i class="am-icon-user"> ' + data.author + '</i>' +
+        '<i class="am-icon-user"> <a class="articleCategoryColor" href="/person?personName=' + data.author + '">' + data.author + '</a></i>' +
         '</div>' +
         '<div class="article-info article-info-categories">' +
         '<i class="am-icon-folder"> <a class="articleCategoryColor" href="/categories?categoryName=' + data.articleCategories + '">' + data.articleCategories + '</a></i>' +
         '</div>' +
         '</div>' +
-        '</article-top>' +
+        '</article-top>');
 
         // 这里我打算把他给成用户的头像
-        '<div class="article-i-say">' +
-        '多年以后，愿你的城市，有清风，有烈酒，也有人是你的归途。<span class="article-i-say-me">--- (*^__^*) </span>' +
-        '</div>' );
+        // '<div class="article-i-say">' +
+        // '多年以后，愿你的城市，有清风，有烈酒，也有人是你的归途。<span class="article-i-say-me">--- (*^__^*) </span>' +
+        // '</div>'
 
     $('.zhy-article-top').append(articleTop);
     $("#mdText").text(data.articleContent);
@@ -103,7 +103,7 @@ function putInArticle(data) {
     // 喜欢按钮
     var likeBtn = $('<div class="likeBtn am-btn am-btn-danger">' +
         '<div class="likeHeart">' +
-        '<i class="am-icon-heart-o">&nbsp;&nbsp;喜欢</i>' +
+        '<i class="am-icon-thumbs-o-up">&nbsp;&nbsp;点赞</i>' +
         '</div>' +
         '<div class="likesNum">' +
         '<span> ' + data.likes + '</span>' +
@@ -119,8 +119,8 @@ function putInArticle(data) {
         $('.likesNum').css({
             "border-left": "1px solid white"
         });
-        $('.likeHeart').find('i').removeClass("am-icon-heart-o");
-        $('.likeHeart').find('i').addClass("am-icon-heart");
+        $('.likeHeart').find('i').removeClass("am-icon-thumbs-o-up");
+        $('.likeHeart').find('i').addClass("am-icon-thumbs-up");
     }
 
     // 收藏按钮
@@ -147,12 +147,12 @@ function putInArticle(data) {
     }
 
     // 这里是社交的 以后继续完善
-    other.append($('<div class="social-share" data-initialized="true" data-url="https://www.czodly.top/article/' + data.articleId  + '"  data-title="' + data.articleTitle + '">' +
+    /*other.append($('<div class="social-share" data-initialized="true" data-url="https://www.czodly.top/article/' + data.articleId  + '"  data-title="' + data.articleTitle + '">' +
         '<a href="#" class="social-share-icon icon-qq" data-am-popover="{content: \'分享至QQ好友\', trigger: \'hover focus\'}"></a>' +
         '<a href="#" class="social-share-icon icon-qzone" data-am-popover="{content: \'分享至QQ空间\', trigger: \'hover focus\'}"></a>' +
         '<a href="#" class="social-share-icon icon-wechat"></a>' +
         '<a href="#" class="social-share-icon icon-weibo" data-am-popover="{content: \'分享至微博\', trigger: \'hover focus\'}"></a>' +
-        '</div>'));
+        '</div>'));*/
 
     // 选中所有需放大的图片加上data-src属性
     $("#wordsView img").each(function (index) {
@@ -202,19 +202,24 @@ function putInComment(data) {
                 $.each(obj['replies'], function (index1, obj1) {
                     var visitorReply = $('<div id="p' + obj1['id'] + '" class="visitorReply"></div>');
 
+                    visitorReply.append($('<div class="visitorCommentImg am-u-sm-2 am-u-lg-1" style="padding-left: 0">' +
+                        '<img src="' + obj1['avatarImgUrl'] + '" style="object-fit: cover">' +
+                        '</div>'));
+
                     var visitorReplyWords;
                     if (obj1['answerer'] === obj1['respondent'] && obj1['answerer'] === obj['answerer']) {
-                        visitorReplyWords = $('<div class="visitorReplyWords">' +
-                            '<a class="answerer">' + obj1['answerer'] + '</a>&nbsp;&nbsp;<span class="am-badge am-badge-primary" style="border-radius: 5px;">楼主</span>：' + obj1['commentContent'] +
+                        visitorReplyWords = $('<div class="visitorReplyWords" style="margin-left: 60px">' +
+                            '<a class="answerer" href="/person?personName=' + obj1['answerer'] + '" title="' + obj1['answerer'] + '" target="_blank">' + obj1['answerer'] + '</a>&nbsp;&nbsp;<span class="am-badge am-badge-primary" style="border-radius: 5px;">楼主</span>：' + obj1['commentContent'] +
                             '</div>');
                     } else {
-                        visitorReplyWords = $('<div class="visitorReplyWords">' +
-                            '<a class="answerer">' + obj1['answerer'] + '</a>： <a class="respondent">@' + obj1['respondent'] + ' </a>' + obj1['commentContent'] +
+                        visitorReplyWords = $('<div class="visitorReplyWords" style="margin-left: 60px">' +
+                            '<a class="answerer" href="/person?personName=' + obj1['answerer'] + '" title="' + obj1['answerer'] + '" target="_blank">' + obj1['answerer'] +
+                            '</a>： <a class="respondent" href="/person?personName=' + obj1['respondent'] + '" title="' + obj1['respondent'] + '" target="_blank">@' + obj1['respondent'] + ' </a>' + obj1['commentContent'] +
                             '</div>');
                     }
 
 
-                    var visitorReplyTime = $('<div class="visitorReplyTime">' +
+                    var visitorReplyTime = $('<div class="visitorReplyTime" style="margin-left: 60px">' +
                         '<span class="visitorReplyTimeTime">' + obj1['commentDate'] + '</span>' +
                         '<a>' +
                         '<i class="replyReply am-icon-comment-o">&nbsp;&nbsp;回复</i>' +
@@ -253,14 +258,14 @@ function putInComment(data) {
 
                 var amG = $('<div class="am-g"></div>');
                 amG.append($('<div class="visitorCommentImg am-u-sm-2 am-u-lg-1">' +
-                    '<img src="' + obj['avatarImgUrl'] + '">' +
+                    '<img src="' + obj['avatarImgUrl'] + '" style="object-fit: cover">' +
                     '</div>'));
 
                 var amUSm10 = $('<div class="am-u-sm-10 am-u-lg-11"></div>');
 
                 var visitorInfo = $('<div class="visitorInfo">' +
                     '<span class="visitorFloor">#' + (data.length - (index + 1)) + '楼</span>' +
-                    '<span class="visitorName">' + obj['answerer'] + '</span>' +
+                    '<a href="/person?personName=' + obj['answerer'] + '" title="' + obj['answerer'] + '" target="_blank"><span class="visitorName">' + obj['answerer'] + '</span></a>' +
                     '<span class="visitorPublishDate">' + obj['commentDate'] + '</span>' +
                     '</div>');
 
@@ -440,18 +445,23 @@ function putInComment(data) {
 
                         var visitorReply = $('<div id=p' + data['data']['id'] + ' class="visitorReply"></div>');
 
+                        visitorReply.append($('<div class="visitorCommentImg am-u-sm-2 am-u-lg-1" style="padding-left: 0">' +
+                            '<img src="' + data['data']['avatarImgUrl'] + '" style="object-fit: cover">' +
+                            '</div>'));
+
                         var visitorReplyWords;
                         if (data['data']['answerer'] === data['data']['respondent'] && data['data']['answerer'] === orgin_user) {
-                            visitorReplyWords = $('<div class="visitorReplyWords">' +
-                                '<a class="answerer">' + data['data']['answerer'] + '</a>&nbsp;&nbsp;<span class="am-badge am-badge-primary" style="border-radius: 5px;">楼主</span>：' + data['data']['commentContent'] +
+                            visitorReplyWords = $('<div class="visitorReplyWords" style="margin-left: 60px">' +
+                                '<a class="answerer" href="/person?personName=' + data['data']['answerer'] + '" title="' + data['data']['answerer'] + '" target="_blank">' + data['data']['answerer'] + '</a>&nbsp;&nbsp;<span class="am-badge am-badge-primary" style="border-radius: 5px;">楼主</span>：' + data['data']['commentContent'] +
                                 '</div>');
                         } else {
-                            visitorReplyWords = $('<div class="visitorReplyWords">' +
-                                '<a class="answerer">' + data['data']['answerer'] + '</a>： <a class="respondent">@' + data['data']['respondent'] + ' </a>' + data['data']['commentContent'] +
+                            visitorReplyWords = $('<div class="visitorReplyWords" style="margin-left: 60px">' +
+                                '<a class="answerer" href="/person?personName=' + data['data']['answerer'] + '" title="' + data['data']['answerer'] + '" target="_blank">' + data['data']['answerer'] +
+                                '</a>： <a class="respondent" href="/person?personName=' + data['data']['respondent'] + '" title="' + data['data']['respondent'] + '" target="_blank">@' + data['data']['respondent'] + ' </a>' + data['data']['commentContent'] +
                                 '</div>');
                         }
 
-                        var visitorReplyTime = $('<div class="visitorReplyTime">' +
+                        var visitorReplyTime = $('<div class="visitorReplyTime" style="margin-left: 60px">' +
                             '<span class="visitorReplyTimeTime">' + data['data']['commentDate'] + '</span>' +
                             '<a>' +
                             '<i class="replyReply am-icon-comment-o">&nbsp;&nbsp;回复</i>' +
@@ -637,11 +647,11 @@ $(function () {
                     $('.likesNum').css({
                         "border-left": "1px solid white"
                     });
-                    $('.likeHeart').find('i').removeClass("am-icon-heart-o");
-                    $('.likeHeart').find('i').addClass("am-icon-heart");
+                    $('.likeHeart').find('i').removeClass("am-icon-thumbs-o-up");
+                    $('.likeHeart').find('i').addClass("am-icon-thumbs-up");
                     $.tipsBox({
                         obj: $this,
-                        str: "+1个喜欢"
+                        str: "+1个点赞"
                     });
                     niceIn($this);
                 }

@@ -2,6 +2,7 @@ package com.cwz.blog.defaultblog.service;
 
 import com.cwz.blog.defaultblog.entity.ArticleUserFavoriteRecord;
 import com.cwz.blog.defaultblog.utils.DataMap;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author: 陈文振
@@ -46,7 +47,7 @@ public interface ArticleUserFavoriteRecordService {
      * @param username: 用户名
      * @return:
      */
-    DataMap findArticleFavoriteRecordByUsername(String username, int rows, int pageNum);
+    DataMap findArticleFavoriteRecordByUsername(String username, String articleTitle, int rows, int pageNum);
 
     /**
      * @description: 统计该用户的所有收藏文章数
@@ -65,4 +66,14 @@ public interface ArticleUserFavoriteRecordService {
      * @return:
      */
     int countArticleFavoriteRecordByArticleId(int articleId);
+
+    /**
+     * @description: 通过id来删除文章收藏记录
+     * @author: 陈文振
+     * @date: 2020/2/4
+     * @param id
+     * @return: com.cwz.blog.defaultblog.utils.DataMap
+     */
+    @Transactional
+    DataMap deleteArticleFavoriteRecordById(int id);
 }

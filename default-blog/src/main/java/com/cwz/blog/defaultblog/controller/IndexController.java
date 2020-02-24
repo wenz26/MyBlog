@@ -5,9 +5,9 @@ import com.cwz.blog.defaultblog.aspect.annotation.PermissionCheck;
 import com.cwz.blog.defaultblog.constant.CodeType;
 import com.cwz.blog.defaultblog.entity.FeedBack;
 import com.cwz.blog.defaultblog.entity.User;
+import com.cwz.blog.defaultblog.redis.StringRedisServiceImpl;
 import com.cwz.blog.defaultblog.service.*;
-import com.cwz.blog.defaultblog.utils.DataMap;
-import com.cwz.blog.defaultblog.utils.JsonResult;
+import com.cwz.blog.defaultblog.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -49,6 +49,8 @@ public class IndexController {
     private FeedBackService feedBackService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private StringRedisServiceImpl stringRedisService;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -185,11 +187,15 @@ public class IndexController {
     @ApiOperation(value = "获得网站基本数据信息")
     @LogAnnotation(module = "获得网站基本数据信息", operation = "查找")
     @GetMapping(value = "/getSiteInfo", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
-    public String getSiteInfo(){
-        Map<String, Integer> dataMap = new HashMap<>(4);
+    public String getSiteInfo(HttpServletRequest request){
+        Map<String, Object> dataMap = new HashMap<>(5);
         dataMap.put("articleNum", articleService.countArticleToPublish());
         dataMap.put("tagsNum", tagsService.countTagsNum());
         dataMap.put("commentNum", commentService.commentNum());
+
+        String ipAddr = IpUtils.getIpAddr(request);
+        String address = AddressUtils.getAddress(ipAddr);
+        dataMap.put("address", address);
         return JsonResult.success().data(dataMap).toJSON();
     }
 
@@ -210,6 +216,13 @@ public class IndexController {
         String username = principal.getName();
         feedBack.setUserId(userService.findIdByUsername(username));
         feedBackService.submitFeedback(feedBack);
+
+        if (stringRedisService.hasKey(StringUtil.FEEDBACK_MSG)) {
+            stringRedisService.stringIncrement(StringUtil.FEEDBACK_MSG, 1);
+        } else {
+            stringRedisService.set(StringUtil.FEEDBACK_MSG, 1);
+        }
+
         return JsonResult.success().toJSON();
     }
 

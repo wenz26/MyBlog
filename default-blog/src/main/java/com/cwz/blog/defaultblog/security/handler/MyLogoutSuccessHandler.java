@@ -1,7 +1,10 @@
 package com.cwz.blog.defaultblog.security.handler;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cwz.blog.defaultblog.entity.UserLog;
 import com.cwz.blog.defaultblog.service.UserLogService;
+import com.cwz.blog.defaultblog.utils.AddressUtils;
+import com.cwz.blog.defaultblog.utils.HttpClientUtils;
 import com.cwz.blog.defaultblog.utils.IpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +45,15 @@ public class MyLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
         userLog.setLogOperation("注销成功");
         userLog.setLogMethod("com.cwz.blog.defaultblog.security.handler.MyLogoutSuccessHandler.onLogoutSuccess()");
         userLog.setLogParams("[null,null,null]");
-        userLog.setLogIp(IpUtils.getIpAddr(request));
+
+        String ipAddr = IpUtils.getIpAddr(request);
+        userLog.setLogIp(ipAddr);
+
+        // 获取设置用户实际地址
+        String address = AddressUtils.getAddress(ipAddr);
+        //System.out.println(address);
+        userLog.setLogAddress(address);
+
         userLog.setLogStatus("0");
         userLog.setLogTimeConsuming(0L);
         userLog.setCreateDate(localDateTime);

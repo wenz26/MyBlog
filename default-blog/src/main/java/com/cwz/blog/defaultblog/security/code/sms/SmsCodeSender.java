@@ -1,6 +1,5 @@
 package com.cwz.blog.defaultblog.security.code.sms;
 
-import com.alibaba.fastjson.JSON;
 import com.aliyuncs.CommonRequest;
 import com.aliyuncs.CommonResponse;
 import com.aliyuncs.DefaultAcsClient;
@@ -54,7 +53,7 @@ public class SmsCodeSender {
     /**
      * 阿里云短信发送模板
      */
-    private static final String SIGN_NAME = "卉聚渠成";
+    private static final String SIGN_NAME = "城院校园轻博客";
 
     public synchronized String getAuthCode(String phone, String sign) {
 

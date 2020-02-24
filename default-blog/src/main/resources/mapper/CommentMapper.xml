@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cwz.blog.defaultblog.mapper.CommentMapper">
+
+    <resultMap id="commentMap" type="comment">
+        <id column="id" property="id"/>
+        <result column="article_id" property="articleId"/>
+        <result column="answerer_id" property="answererId"/>
+        <result column="p_id" property="pId"/>
+        <result column="respondent_id" property="respondentId"/>
+        <result column="comment_date" property="commentDate"/>
+        <result column="likes" property="likes"/>
+        <result column="comment_content" property="commentContent"/>
+        <result column="is_read" property="isRead"/>
+        <association property="article" javaType="article">
+            <result column="article_title" property="articleTitle"/>
+        </association>
+    </resultMap>
+
+    <select id="findAllCommentBySome" resultMap="commentMap">
+        select cr.*, article_title from
+        comment_record cr, article a, user u
+        <where>
+            cr.article_id = a.id and u.id = cr.answerer_id
+            <if test="articleTitle != null and articleTitle != ''">
+                and article_title like '%${articleTitle}%'
+            </if>
+            <if test="answererId != null and answererId != ''">
+                and answerer_id = #{answererId}
+            </if>
+            <if test="commentContent != null and commentContent != ''">
+                and comment_content like '%${commentContent}%'
+            </if>
+            <if test="searchUsername != null and searchUsername != ''">
+                and username like '%${searchUsername}%'
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and comment_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and comment_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        ORDER BY id desc
+    </select>
+
+
+    <select id="countAllCommentBySome" resultType="integer">
+        select COUNT(cr.id) from
+        comment_record cr, article a, user u
+        <where>
+            cr.article_id = a.id and u.id = cr.answerer_id
+            <if test="articleTitle != null and articleTitle != ''">
+                and article_title like '%${articleTitle}%'
+            </if>
+            <if test="answererId != null and answererId != ''">
+                and answerer_id = #{answererId}
+            </if>
+            <if test="commentContent != null and commentContent != ''">
+                and comment_content like '%${commentContent}%'
+            </if>
+            <if test="searchUsername != null and searchUsername != ''">
+                and username like '%${searchUsername}%'
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and comment_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and comment_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getUserComment" resultMap="commentMap">
+        select cr.*, article_title from
+        comment_record cr, article a
+        <where>
+            cr.article_id = a.id and
+            respondent_id = #{respondentId} and answerer_id &lt;&gt; #{answererId}
+            <if test="isRead != null and isRead != '' or isRead == 0">
+                and is_read = #{isRead}
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and comment_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and comment_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        ORDER BY id desc
+    </select>
+</mapper>

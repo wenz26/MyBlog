@@ -41,6 +41,11 @@ public class FeedBack {
      */
     private LocalDateTime feedbackDate;
 
+    /**
+     * 该条点赞是否已读  1--未读   0--已读
+     */
+    private Integer isRead = 1;
+
     public Integer getId() {
         return id;
     }
@@ -79,5 +84,13 @@ public class FeedBack {
 
     public void setFeedbackDate(LocalDateTime feedbackDate) {
         this.feedbackDate = feedbackDate;
+    }
+
+    public Integer getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(Integer isRead) {
+        this.isRead = isRead;
     }
 }

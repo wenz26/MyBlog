@@ -1,17 +1,21 @@
 package com.cwz.blog.defaultblog.controller;
 
 import com.cwz.blog.defaultblog.aspect.annotation.LogAnnotation;
+import com.cwz.blog.defaultblog.redis.HashRedisServiceImpl;
 import com.cwz.blog.defaultblog.service.ArticleService;
+import com.cwz.blog.defaultblog.service.UserService;
 import com.cwz.blog.defaultblog.utils.StringUtil;
 import com.cwz.blog.defaultblog.utils.TransCodingUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
@@ -33,6 +39,10 @@ public class BackController {
 
     @Autowired
     private ArticleService articleService;
+    @Autowired
+    private HashRedisServiceImpl hashRedisService;
+    @Autowired
+    private UserService userService;
 
     private static final String SLASH_SYMBOL = "/";
 
@@ -317,12 +327,74 @@ public class BackController {
      */
     @ApiOperation(value = "跳转到超级管理员页")
     @LogAnnotation(module = "超级管理员页", operation = "跳转")
-    @GetMapping("/superAdmin")
-    public String superAdmin(HttpServletRequest request){
+    @GetMapping("/superadmin")
+    public String superadmin(HttpServletRequest request){
         request.getSession().removeAttribute("lastUrl");
-        return "superAdmin";
+        return "superadmin";
     }
 
+    @ApiOperation(value = "跳转到收藏的文章")
+    @LogAnnotation(module = "跳转到收藏的文章", operation = "跳转")
+    @GetMapping("/favorite")
+    public String favorite(HttpServletRequest request){
+        request.getSession().removeAttribute("lastUrl");
+        return "favorite";
+    }
 
+    @ApiOperation(value = "跳转到点赞的文章")
+    @LogAnnotation(module = "跳转到点赞的文章", operation = "跳转")
+    @GetMapping("/like")
+    public String like(HttpServletRequest request){
+        request.getSession().removeAttribute("lastUrl");
+        return "like";
+    }
 
+    @ApiOperation(value = "跳转到用户详情")
+    @LogAnnotation(module = "跳转到用户详情", operation = "跳转")
+    @GetMapping("/person")
+    public String person(HttpServletRequest request, HttpServletResponse response){
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("text/html;charset=utf-8");
+        request.getSession().removeAttribute("lastUrl");
+        String personName = request.getParameter("personName");
+
+        if(!Objects.isNull(personName) && !Objects.equals(personName, StringUtil.BLANK)){
+            response.setHeader("personName", TransCodingUtil.stringToUnicode(personName));
+        }
+
+        return "person";
+    }
+
+    @ApiOperation(value = "跳转到关键字查询页面")
+    @LogAnnotation(module = "跳转到关键字查询页面", operation = "跳转")
+    @GetMapping("/search")
+    public String search(HttpServletRequest request, HttpServletResponse response,
+                         @RequestParam(value = "type", defaultValue = "0") String type){
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("text/html;charset=utf-8");
+        request.getSession().removeAttribute("lastUrl");
+        String keyWords = request.getParameter("keyWords");
+
+        if(!Objects.isNull(keyWords) && !Objects.equals(keyWords, StringUtil.BLANK)){
+
+            String stringToKeyWords = TransCodingUtil.stringToUnicode(keyWords);
+            response.setHeader("keyWords", stringToKeyWords);
+
+            //System.out.println(type);
+            if (Integer.parseInt(type) == 0) {
+                String name = SecurityContextHolder.getContext().getAuthentication().getName();
+
+                if (!Objects.equals(name, "anonymousUser")) {
+
+                    int userId = userService.findIdByUsername(name);
+                    Date date = new Date();
+                    String nowDay = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(date);
+                    hashRedisService.put(StringUtil.SEARCH_HISTORY + "_" + userId, nowDay, keyWords);
+                }
+            }
+
+        }
+
+        return "search";
+    }
 }

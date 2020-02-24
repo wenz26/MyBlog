@@ -48,6 +48,8 @@ public class CommentController {
     @Autowired
     private CommentMapper commentMapper;
     @Autowired
+    private ArticleMapper articleMapper;
+    @Autowired
     private RedisToService redisToService;
 
     /**
@@ -93,7 +95,7 @@ public class CommentController {
         // 如果是首评论不是回复的话，评论id和被回复id都是本人
         int userId = userService.findIdByUsername(publisher);
         comment.setAnswererId(userId);
-        comment.setRespondentId(userId);
+        comment.setRespondentId(articleMapper.findUserIdByArticleId(comment.getArticleId()));
 
         comment.setCommentContent(JavaScriptCheck.javaScriptCheck(comment.getCommentContent()));
 
@@ -188,14 +190,14 @@ public class CommentController {
                                  @RequestParam("respondentId") String respondentId,
                                  @AuthenticationPrincipal Principal principal){
         String username = principal.getName();
-
         LocalDateTime localDateTime = LocalDateTime.now();
-
         int pId = Integer.parseInt(respondentId.substring(1));
+        int userId = commentMapper.findUserIdByPId(pId);
+        int likeId = userService.findIdByUsername(username);
 
         CommentLikesRecord commentLikesRecord = new CommentLikesRecord();
         commentLikesRecord.setLikeDate(localDateTime);
-        commentLikesRecord.setUserId(userService.findIdByUsername(username));
+        commentLikesRecord.setUserId(likeId);
         commentLikesRecord.setpId(pId);
         commentLikesRecord.setArticleId(Integer.parseInt(articleId));
 
@@ -203,12 +205,14 @@ public class CommentController {
             return JsonResult.fail(CodeType.MESSAGE_HAS_THUMBS_UP).toJSON();
         }
 
+        if (Objects.equals(userId, likeId)) {
+            commentLikesRecord.setIsRead(0);
+        } else {
+            commentLikesRecord.setIsRead(1);
+            redisToService.readThumbsUpRecordOnRedis(StringUtil.COMMENT_THUMBS_UP, String.valueOf(userId), 1);
+        }
         DataMap dataMap = commentService.updateLikeByArticleIdAndId(commentLikesRecord.getArticleId(), commentLikesRecord.getpId());
         commentLikesRecordService.insertCommentLikesRecord(commentLikesRecord);
-
-        int userId = commentMapper.findUserIdByPId(pId);
-
-        redisToService.readThumbsUpRecordOnRedis(StringUtil.COMMENT_THUMBS_UP, String.valueOf(userId), 1);
 
         return JsonResult.build(dataMap).toJSON();
     }

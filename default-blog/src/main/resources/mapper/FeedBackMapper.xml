@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cwz.blog.defaultblog.mapper.FeedBackMapper">
+
+    <select id="selectAllFeedBackToXML" resultType="feedBack">
+        select * from feedback
+        <where>
+            <if test="isRead != null and isRead != '' or isRead == 0">
+                and is_read = #{isRead}
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and feedback_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and feedback_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        ORDER BY feedback_date desc
+    </select>
+
+
+    <select id="countAllFeedBackToXML" resultType="integer">
+        select COUNT(id) from feedback
+        <where>
+            <if test="isRead != null and isRead != '' or isRead == 0">
+                and is_read = #{isRead}
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and feedback_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and feedback_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+</mapper>

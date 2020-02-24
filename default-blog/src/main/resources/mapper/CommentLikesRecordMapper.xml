@@ -8,7 +8,22 @@
         from comment_record cr
         right join comment_likes_record clr
         on cr.id = clr.p_id
-        where cr.answerer_id = #{userId}
+        <where>
+            cr.answerer_id = #{userId} and clr.user_id &lt;&gt; #{userId}
+            <if test="isRead != null and isRead != '' or isRead == 0">
+                and clr.is_read = #{isRead}
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and like_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and like_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
         order by clr.id desc
     </select>
     <resultMap id="commentLikesRecordMap" type="commentLikesRecord">

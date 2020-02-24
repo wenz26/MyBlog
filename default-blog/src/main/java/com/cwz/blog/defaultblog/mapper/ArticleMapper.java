@@ -32,8 +32,14 @@ public interface ArticleMapper extends BeanMapper<Article> {
     void updateArticleNextId(@Param("nextArticleId") int nextArticleId, @Param("articleId") int articleId);
 
     List<Article> findAllToDraftArticles(@Param("draft") Integer draft, @Param("categoryId") Integer categoryId,
-                                         @Param("publishDate") String publishDate, @Param("userId") Integer userId);
+                                         @Param("publishDate") String publishDate, @Param("userId") Integer userId,
+                                         @Param("articleTitle") String articleTitle,
+                                         @Param("pageNum") int pageNum, @Param("rows") int rows);
 
+    List<Article> findTimeRangeToDraftArticles(@Param("draft") Integer draft, @Param("categoryId") Integer categoryId,
+                                               @Param("publishDate") String publishDate, @Param("userId") Integer userId,
+                                               @Param("articleTitle") String articleTitle, @Param("timeRange") String timeRange,
+                                               @Param("pageNum") int pageNum, @Param("rows") int rows);
 
     @Update("update article set likes = likes + 1 where id = #{articleId}")
     void updateLikeByArticleId(@Param("articleId") int articleId);
@@ -50,6 +56,15 @@ public interface ArticleMapper extends BeanMapper<Article> {
 
     @Select("select article_id from article_tags where tag_id = #{tagId} order by article_id desc")
     List<Object> findArticleByTag(@Param("tagId") int tagId);
+
+    List<Article> selectArticleByTag(@Param("draft") Integer draft, @Param("categoryId") Integer categoryId, @Param("tagId") int tagId,
+                                   @Param("timeRange") String timeRange, @Param("pageNum") int pageNum, @Param("rows") int rows);
+
+    int countArticleByTag(@Param("draft") Integer draft, @Param("categoryId") Integer categoryId, @Param("tagId") int tagId,
+                          @Param("timeRange") String timeRange);
+
+    @Select("select id from article where article_categories = #{categoryId} and draft = 1 order by publish_date desc")
+    List<Integer> findArticleByCategory(@Param("categoryId") int categoryId);
 
     @Update("update article set ${lastOrNextStr} = #{updateId} where id = #{articleId}")
     void updateLastOrNextId(@Param("lastOrNextStr") String lastOrNextStr, @Param("updateId") int updateId, @Param("articleId") int articleId);
@@ -68,4 +83,35 @@ public interface ArticleMapper extends BeanMapper<Article> {
 
     @Select("select user_id from article where id = #{articleId}")
     int findUserIdByArticleId(@Param("articleId") int articleId);
+
+    @Select("select COUNT(*) from article_tags where tag_id = #{tag}")
+    int countArticleNumByTag(@Param("tag") int tag);
+
+    int countArticle(@Param("draft") Integer draft, @Param("categoryId") Integer categoryId,
+                     @Param("publishDate") String publishDate, @Param("userId") Integer userId, @Param("articleTitle") String articleTitle);
+
+    int countTimeRangeToArticle(@Param("draft") Integer draft, @Param("categoryId") Integer categoryId, @Param("publishDate") String publishDate,
+                                @Param("userId") Integer userId, @Param("articleTitle") String articleTitle, @Param("timeRange") String timeRange);
+
+    @Select("select COUNT(id) from article_likes_record where article_id = #{articleId} and is_read = 1")
+    int countArticleLikesNotRead(@Param("articleId") int articleId);
+
+    @Select("select id from comment_record where article_id = #{articleId} and p_id = 0")
+    List<Integer> deleteCommentByArticleId(@Param("articleId") int articleId);
+
+    @Select("select COUNT(id) from comment_record where article_id = #{articleId} and p_id = 0 and is_read = 1")
+    int countCommentPIdByArticleId(@Param("articleId") int articleId);
+
+    @Select("select COUNT(id) from article where user_id = #{userId} and draft = 1")
+    int countArticleByUserId(@Param("userId") int userId);
+
+    List<Article> findAllToDraftArticlesByTimes(@Param("draft") Integer draft, @Param("categoryId") Integer categoryId,
+                                                @Param("articleType") String articleType, @Param("userId") Integer userId,
+                                                @Param("articleTitle") String articleTitle, @Param("firstDate") String firstDate,
+                                                @Param("lastDate") String lastDate, @Param("pageNum") int pageNum, @Param("rows") int rows);
+
+    int countArticleByTimes(@Param("draft") Integer draft, @Param("categoryId") Integer categoryId,
+                            @Param("articleType") String articleType, @Param("userId") Integer userId,
+                            @Param("articleTitle") String articleTitle, @Param("firstDate") String firstDate,
+                            @Param("lastDate") String lastDate);
 }

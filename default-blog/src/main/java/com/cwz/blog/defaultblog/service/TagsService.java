@@ -17,7 +17,7 @@ public interface TagsService {
      * @date: 2019/12/24
      * @return:
      */
-    DataMap findTagsInfoAndArticleCountNum(int rows, int pageNum);
+    DataMap findTagsInfoAndArticleCountNum(int rows, int pageNum, String tagSearch, String firstDate, String lastDate);
 
     /**
      * @description: 获得所有的标签名称

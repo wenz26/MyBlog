@@ -108,7 +108,7 @@ public interface ArticleService {
      * @param pageNum: 第几页
      * @return:
      */
-    DataMap findArticleByTag(String tagName, int rows, int pageNum);
+    DataMap findArticleByTag(String tagName, String timeRange, String category, int rows, int pageNum);
 
     /**
      * @description: 分页获得该分类下的所有文章
@@ -119,7 +119,7 @@ public interface ArticleService {
      * @param pageNum: 第几页
      * @return:
      */
-    DataMap findArticleByCategory(String categoryName, int rows, int pageNum);
+    DataMap findArticleByCategory(String categoryName, String timeRange, int rows, int pageNum);
 
     /**
      * @description: 分页获得该归档日期下的该用户的所有文章
@@ -143,14 +143,20 @@ public interface ArticleService {
     /**
      * @description: 分页获得文章管理
      * @author: 陈文振
-     * @date: 2020/1/6
+     * @date: 2020/2/17
      * @param rows
      * @param pageNum
      * @param userId
      * @param draft
+     * @param articleTitle
+     * @param articleType
+     * @param articleCategory
+     * @param firstDate
+     * @param lastDate
      * @return: com.cwz.blog.defaultblog.utils.DataMap
      */
-    DataMap getArticleManagement(int rows, int pageNum, Integer userId, Integer draft);
+    DataMap getArticleManagement(int rows, int pageNum, Integer userId, Integer draft, String articleTitle,
+                                 String articleType, String articleCategory, String firstDate, String lastDate);
 
     /**
      * @description: 通过id获取文章
@@ -222,13 +228,22 @@ public interface ArticleService {
     JSONObject getArticleByTagAndCategoryToJsonObject(Article article);
 
     /**
+     * @description: 通过用户找到该用户的文章
+     * @author: 陈文振
+     * @date: 2020/2/5
+     * @param personName
+     * @return: com.cwz.blog.defaultblog.utils.DataMap
+     */
+    DataMap getArticleByUsername(int rows, int pageNum, String personName, String username, String articleTitle);
+
+    /**
      * @description: 通过文章id找文章对应的标签
      * @author: 陈文振
      * @date: 2019/12/18
      * @param articleId: 文章id
      * @return:
      */
-    //List<Object> findTagesByArticleId(int articleId);
+    //List<Object> findTagsByArticleId(int articleId);
 
     /**
      * @description: 通过文章id找文章对应的作者id

@@ -5,6 +5,7 @@ import com.cwz.blog.defaultblog.aspect.annotation.PermissionCheck;
 import com.cwz.blog.defaultblog.constant.CodeType;
 import com.cwz.blog.defaultblog.entity.ArticleLikesRecord;
 import com.cwz.blog.defaultblog.entity.ArticleUserFavoriteRecord;
+import com.cwz.blog.defaultblog.mapper.ArticleMapper;
 import com.cwz.blog.defaultblog.redis.RedisToService;
 import com.cwz.blog.defaultblog.service.ArticleLikesRecordService;
 import com.cwz.blog.defaultblog.service.ArticleService;
@@ -41,6 +42,8 @@ public class ShowArticleController {
     @Autowired
     private ArticleService articleService;
     @Autowired
+    private ArticleMapper articleMapper;
+    @Autowired
     private UserService userService;
     @Autowired
     private RedisToService redisToService;
@@ -59,7 +62,7 @@ public class ShowArticleController {
     @LogAnnotation(module = "获取文章", operation = "查找")
     @PostMapping(value = "/getArticleByArticleId", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
     public String getArticleByArticleId(@RequestParam("articleId") String articleId,
-                                 @AuthenticationPrincipal Principal principal) {
+                                        @AuthenticationPrincipal Principal principal) {
 
         String username = null;
         if (!Objects.isNull(principal)) {
@@ -94,13 +97,22 @@ public class ShowArticleController {
 
         DataMap dataMap = articleService.updateLikeByArticleId(parseInt);
 
+        int userId = userService.findIdByUsername(username);
+
         ArticleLikesRecord articleLikesRecord = new ArticleLikesRecord();
         articleLikesRecord.setArticleId(parseInt);
-        articleLikesRecord.setUserId(userService.findIdByUsername(username));
+        articleLikesRecord.setUserId(userId);
         articleLikesRecord.setLikeDate(LocalDateTime.now());
+
+        if (Objects.equals(userId, articleMapper.findUserIdByArticleId(parseInt))) {
+            articleLikesRecord.setIsRead(0);
+        } else {
+            articleLikesRecord.setIsRead(1);
+            redisToService.readThumbsUpRecordOnRedis(StringUtil.ARTICLE_THUMBS_UP, articleId, 1);
+        }
+
         articleLikesRecordService.insertArticleLikesRecord(articleLikesRecord);
 
-        redisToService.readThumbsUpRecordOnRedis(StringUtil.ARTICLE_THUMBS_UP, articleId, 1);
         return JsonResult.build(dataMap).toJSON();
     }
 
@@ -117,7 +129,7 @@ public class ShowArticleController {
     @GetMapping(value = "/addArticleFavorite", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
     @PermissionCheck(value = "ROLE_USER")
     public String addArticleFavorite(@RequestParam("articleId") String articleId,
-                                 @AuthenticationPrincipal Principal principal){
+                                     @AuthenticationPrincipal Principal principal){
 
         String username = principal.getName();
         Integer parseInt = Integer.parseInt(articleId);

@@ -20,4 +20,58 @@
             <result column="role_name" property="roleName"/>
         </collection>
     </resultMap>
+
+
+    <select id="findAllUserToXML" resultType="user">
+        select id, phone, username, true_name, gender, email, birthday, recently_landed from user
+        <where>
+            <if test="phoneSearch != null and phoneSearch != ''">
+                and phone like '%${phoneSearch}%'
+            </if>
+            <if test="usernameSearch != null and usernameSearch != ''">
+                and username like '%${usernameSearch}%'
+            </if>
+            <if test="genderSearch != null and genderSearch != ''">
+                and gender = #{genderSearch}
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and recently_landed between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and recently_landed like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+
+    <select id="countAllUserToXML" resultType="integer">
+        select COUNT(id) from user
+        <where>
+            <if test="phoneSearch != null and phoneSearch != ''">
+                and phone like '%${phoneSearch}%'
+            </if>
+            <if test="usernameSearch != null and usernameSearch != ''">
+                and username like '%${usernameSearch}%'
+            </if>
+            <if test="genderSearch != null and genderSearch != ''">
+                and gender = #{genderSearch}
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and recently_landed between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and recently_landed like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
 </mapper>

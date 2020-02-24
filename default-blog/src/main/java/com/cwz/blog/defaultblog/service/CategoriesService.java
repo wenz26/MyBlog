@@ -59,7 +59,7 @@ public interface CategoriesService {
      * @date: 2019/12/18
      * @return:
      */
-    DataMap findAllCategories(int rows, int pageNum);
+    DataMap findAllCategories(int rows, int pageNum, String categorySearch, String firstDate, String lastDate);
 
     /**
      * @description: 更新分类

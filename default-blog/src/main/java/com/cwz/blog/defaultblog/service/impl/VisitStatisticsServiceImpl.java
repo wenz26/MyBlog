@@ -133,4 +133,9 @@ public class VisitStatisticsServiceImpl implements VisitStatisticsService {
     public void updateVisitNumByStatisticsName(String statisticsName, long visitNum) {
         visitStatisticsMapper.updateVisitNumByStatisticsName(statisticsName, visitNum);
     }
+
+    @Override
+    public void deleteVisitByStatisticsName(String statisticsName) {
+        visitStatisticsMapper.deleteVisitByStatisticsName(statisticsName);
+    }
 }

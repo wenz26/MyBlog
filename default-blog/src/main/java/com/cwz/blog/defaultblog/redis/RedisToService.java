@@ -2,12 +2,15 @@ package com.cwz.blog.defaultblog.redis;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cwz.blog.defaultblog.entity.UserReadNews;
+import com.cwz.blog.defaultblog.mapper.ArticleLikesRecordMapper;
 import com.cwz.blog.defaultblog.service.UserService;
 import com.cwz.blog.defaultblog.utils.DataMap;
+import com.cwz.blog.defaultblog.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * @author: 陈文振
@@ -18,7 +21,7 @@ import java.util.LinkedHashMap;
 public class RedisToService {
 
     @Autowired
-    private StringRedisServiceImpl stringRedisService;
+    private ArticleLikesRecordMapper articleLikesRecordMapper;
 
     @Autowired
     private HashRedisServiceImpl hashRedisService;
@@ -37,16 +40,40 @@ public class RedisToService {
         JSONObject jsonObject = new JSONObject();
 
         int userId = userService.findIdByUsername(username);
-        LinkedHashMap map = (LinkedHashMap) hashRedisService.getAllFieldAndValue(String.valueOf(userId));
 
-        if (map.size() == 0) {
-            jsonObject.put("result", 0);
+        if (hashRedisService.hasKey(String.valueOf(userId))) {
+
+            LinkedHashMap map = (LinkedHashMap) hashRedisService.getAllFieldAndValue(String.valueOf(userId));
+            if (map.size() == 0) {
+                jsonObject.put("result", 0);
+            } else {
+                int allNewsNum = (int) map.get("allNewsNum");
+                int commentNum = (int) map.get("commentNum");
+                UserReadNews news = new UserReadNews(allNewsNum, commentNum);
+                jsonObject.put("result", news);
+            }
         } else {
-            int allNewsNum = (int) map.get("allNewsNum");
-            int commentNum = (int) map.get("commentNum");
-            UserReadNews news = new UserReadNews(allNewsNum, commentNum);
-            jsonObject.put("result", news);
+            System.out.println(111);
+            jsonObject.put("result", 0);
         }
+
+
+        boolean hasCommentThumbsUp = hashRedisService.hasHashKey(StringUtil.COMMENT_THUMBS_UP, String.valueOf(userId));
+        if (hasCommentThumbsUp) {
+            jsonObject.put("commentThumbsUpNum", hashRedisService.get(StringUtil.COMMENT_THUMBS_UP, String.valueOf(userId)));
+        } else {
+            jsonObject.put("commentThumbsUpNum", 0);
+        }
+
+        int articleThumbsUpNum = 0;
+        List<Integer> articleIds = articleLikesRecordMapper.findArticleIdToNotReadByUserId(userId);
+        for (Integer article : articleIds) {
+            if (hashRedisService.hasHashKey(StringUtil.ARTICLE_THUMBS_UP, String.valueOf(article))) {
+                articleThumbsUpNum += (int) hashRedisService.get(StringUtil.ARTICLE_THUMBS_UP, String.valueOf(article));
+            }
+        }
+        jsonObject.put("articleThumbsUpNum", articleThumbsUpNum);
+
         return DataMap.success().setData(jsonObject);
     }
 

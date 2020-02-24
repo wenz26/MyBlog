@@ -113,7 +113,7 @@
         position: relative;
     }
 }
-#leaveWord,#commentMessage,#articleByThumbsUp,#publishArticle,#draftArticle,#commentByThumbsUp{
+#leaveWord,#commentMessage,#articleByThumbsUp,#publishArticle,#myCommentManage,#draftArticle,#commentByThumbsUp,#myAttention,#myFan{
     display: none;
     margin-bottom: 150px;
 }
@@ -305,7 +305,7 @@
     line-height: 30px;
 }
 /*p评论管理*/
-.msgContent{
+.msgContent,.articleByThumbsUpContent,.commentByThumbsUpContent {
     margin-left: 2px;
 }
 .msgReadSign{
@@ -327,11 +327,23 @@
     margin-top: 30px;
     padding-left: 1.5rem;
 }
+.myAttentionManagement{
+    margin-top: 30px;
+    padding-left: 1.5rem;
+}
+.myFanManagement{
+    margin-top: 30px;
+    padding-left: 1.5rem;
+}
 .publishArticleMessage{
     margin-top: 30px;
     padding-left: 1.5rem;
 }
 .draftArticleMessage{
+    margin-top: 30px;
+    padding-left: 1.5rem;
+}
+.myCommentManageMessage{
     margin-top: 30px;
     padding-left: 1.5rem;
 }
@@ -367,7 +379,7 @@
 }
 .msgTxt .articleTitle{
     word-wrap: normal;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
     overflow: hidden;
     text-overflow: ellipsis;
     margin-right: 30px;
@@ -395,10 +407,19 @@
 .commentByThumbsUpManagement hr{
     margin-top: 15px;
 }
+.myAttentionManagement hr{
+    margin-top: 15px;
+}
+.myFanManagement hr{
+    margin-top: 15px;
+}
 .publishArticleMessage hr{
     margin-top: 15px;
 }
 .draftArticleMessage hr{
+    margin-top: 15px;
+}
+.myCommentManageMessage hr{
     margin-top: 15px;
 }
 /*留言管理*/
@@ -412,3 +433,132 @@
 .msgHref{
     margin-left: 5px;
 }
+.articlePublishManagementBtn{
+    margin-right: 10px;
+}
+.articleDraftManagementBtn{
+    margin-right: 10px;
+}
+.myAttentionInfo{
+    border: 3px solid #eceff2;
+    margin-bottom: 10px;
+}
+
+.personAttentionBtn{
+    float: right;
+    margin-top: 38px;
+    margin-right: 20px;
+    width: 100px;
+    border-radius: 6px;
+}
+.myselfPersonAttentionBtn{
+    float: right;
+    margin-top: 38px;
+    margin-right: 20px;
+    width: 110px;
+    border-radius: 6px;
+}
+
+.personImg img {
+    width: 70px;
+    padding: 0;
+    border-radius: 50%;
+    height: 70px;
+
+}
+.title{
+    font-size: 18px;
+    margin-left: 10px;
+    line-height: 30px;
+    display: inline-block;
+    margin-top: 0;
+    font-weight: 500;
+}
+.timeline-row{
+    margin: 20px 0;
+}
+.timeline-row{
+    color: #fff;
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    margin: 0 0 0 -17px;
+    padding: 6px 8px 10px;
+    display: inline-block;
+    background-color: #38b7ea;
+    border-radius: 50%;
+}
+.myAttentionListInfo, .myFanListInfo{
+    width: 85%;
+}
+.myAttentionDisplay{
+    margin-left: 120px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-right: 160px;
+    color: #898d92;
+    font-size: 15px;
+}
+.title a{
+    color: #0a0a0a;
+    transition:0.5s;
+}
+.title a:hover{
+    color:blue;
+}
+.userContentInfoFirst {
+    font-size: 13px;
+    color: #898d92;
+    margin-right: 8px;
+    padding-right: 8px;
+    border-right: 1px solid #898d92;
+    margin-left: 20px
+}
+.userContentInfo {
+    font-size: 13px;
+    color: #898d92;
+    margin-right: 8px;
+    padding-right: 8px;
+    border-right: 1px solid #898d92;
+}
+.userContentInfoLast {
+    font-size: 13px;
+    color: #898d92;
+    padding-right: 10px;
+}
+.articleInput {
+    padding: 5px 10px;
+    font-size: 15px;
+    border: 1px solid #c8c8c8;
+    border-radius: 4px;
+    background-color: hsla(0,0%,71%,.1);
+    margin-left: 10px;
+}
+.codeButton{
+    width: 60px;
+    height: 28px;
+    font-size: 13px;
+}
+#select-publicDate, #select-categories, #select-articleType {
+    margin-left: 8px;
+    width: 138px;
+    height: 32px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+#select-commentMsgRead, #select-commentThumbsUpRead, #select-articleThumbsUpRead {
+    margin-left: 8px;
+    width: 138px;
+    height: 32px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+
+
+
+
+
+

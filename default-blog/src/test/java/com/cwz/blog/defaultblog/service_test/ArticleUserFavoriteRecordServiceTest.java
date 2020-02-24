@@ -43,7 +43,7 @@ class ArticleUserFavoriteRecordServiceTest {
 
     @Test
     void findArticleFavoriteRecordByUsername() {
-        DataMap dataMap = articleUserFavoriteRecordService.findArticleFavoriteRecordByUsername("陈文振", 2, 0);
+        DataMap dataMap = articleUserFavoriteRecordService.findArticleFavoriteRecordByUsername("陈文振", null, 2, 0);
         System.out.println(JSON.toJSONString(dataMap));
     }
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cwz.blog.defaultblog.mapper.ArticleLikesRecordMapper">
+
+    <select id="findArticleLikesRecordByUserIdToXML" resultType="articleLikesRecord">
+        select alr.* from
+        article a right join
+        article_likes_record alr on a.id = alr.article_id
+        <where>
+            a.user_id = #{userId} and alr.user_id &lt;&gt; #{userId}
+            <if test="isRead != null and isRead != '' or isRead == 0">
+                and is_read = #{isRead}
+            </if>
+            <if test="firstDate != null and firstDate != ''">
+                <choose>
+                    <when test="lastDate != null and lastDate != ''">
+                        and like_date between #{firstDate} and DATE_ADD(#{lastDate} ,INTERVAL 1 DAY)
+                    </when>
+                    <otherwise>
+                        and like_date like '%${firstDate}%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        order by alr.id desc
+    </select>
+
+
+</mapper>

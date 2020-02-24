@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 @Table(name = "comment_record")
 public class Comment {
 
-    /**
+
+    @Id/**
      * 评论id
      */
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
@@ -60,6 +60,16 @@ public class Comment {
      * 该条评论是否已读  1--未读   0--已读
      */
     private Integer isRead = 1;
+
+    private Article article;
+
+    public Article getArticle() {
+        return article;
+    }
+
+    public void setArticle(Article article) {
+        this.article = article;
+    }
 
     public Integer getId() {
         return id;

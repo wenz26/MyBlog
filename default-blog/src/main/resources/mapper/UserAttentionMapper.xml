@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cwz.blog.defaultblog.mapper.UserAttentionMapper">
+
+    <resultMap id="findUserAttention" type="userAttention">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="attention_user_id" property="attentionUserId"/>
+        <result column="attention_date" property="attentionDate"/>
+        <association property="user" javaType="user">
+            <id column="u_id" property="id"/>
+            <result column="username" property="username"/>
+            <result column="avatar_img_url" property="avatarImgUrl"/>
+            <result column="personal_brief" property="personalBrief"/>
+        </association>
+    </resultMap>
+
+    <select id="getUserAttentionByUserId" resultMap="findUserAttention">
+        select ua.*, u.id u_id, u.username, u.avatar_img_url, u.personal_brief from
+        (select * from user_attention where user_id = #{userId}) ua
+        left join user u
+        on ua.attention_user_id = u.id
+        <where>
+            <if test="inquireName != null and inquireName != ''">
+                username like '%${inquireName}%'
+            </if>
+        </where>
+        order by attention_date desc
+    </select>
+
+    <select id="countUserAttentionByUserId" resultType="integer">
+        select COUNT(ua.id) from
+        (select * from user_attention where user_id = #{userId}) ua
+        left join user u
+        on ua.attention_user_id = u.id
+        <where>
+            <if test="inquireName != null and inquireName != ''">
+                username like '%${inquireName}%'
+            </if>
+        </where>
+    </select>
+
+    <select id="getUserAttentionByAttentionId" resultMap="findUserAttention">
+        select ua.*, u.id u_id, u.username, u.avatar_img_url, u.personal_brief from
+        (select * from user_attention where attention_user_id = #{attentionId}) ua
+        left join user u
+        on ua.user_id = u.id
+        <where>
+            <if test="inquireName != null and inquireName != ''">
+                username like '%${inquireName}%'
+            </if>
+        </where>
+        order by attention_date desc
+    </select>
+
+    <select id="countUserAttentionByAttentionId" resultType="integer">
+        select COUNT(ua.id) from
+        (select * from user_attention where attention_user_id = #{attentionId}) ua
+        left join user u
+        on ua.user_id = u.id
+        <where>
+            <if test="inquireName != null and inquireName != ''">
+                username like '%${inquireName}%'
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

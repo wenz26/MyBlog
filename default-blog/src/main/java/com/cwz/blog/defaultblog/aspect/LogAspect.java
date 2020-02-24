@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.cwz.blog.defaultblog.aspect.annotation.LogAnnotation;
 import com.cwz.blog.defaultblog.entity.UserLog;
 import com.cwz.blog.defaultblog.service.UserLogService;
+import com.cwz.blog.defaultblog.utils.AddressUtils;
+import com.cwz.blog.defaultblog.utils.HttpClientUtils;
 import com.cwz.blog.defaultblog.utils.HttpContextUtils;
 import com.cwz.blog.defaultblog.utils.IpUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -79,11 +82,16 @@ public class LogAspect {
     private void saveLong(ProceedingJoinPoint joinPoint, long logTimeConsuming, Object result) throws NoSuchMethodException {
         HttpServletRequest request = HttpContextUtils.getHttpServletRequest();
 
+        //System.out.println(joinPoint);
+
         // 获取抽象方法 (获取切入点的方法签名(包括方法名和方法参数))
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         //logger.info("当前的方法签名为：" + signature);
+        //System.out.println(signature);
 
+        // 获取当前方法
         Method method = signature.getMethod();
+        //System.out.println(method);
 
         UserLog userLog = new UserLog();
 
@@ -92,7 +100,8 @@ public class LogAspect {
         //logger.info("获取被代理类的对象：" + clazz);
 
         // 获取当前类有LogAnnotation注解的方法,获取切入点方法的LogAnnotation注解类，根据该注解类的内置对象进行下一步操作
-        method = clazz.getMethod(method.getName(), method.getParameterTypes());
+        //method = clazz.getMethod(method.getName(), method.getParameterTypes());
+        //System.out.println(method);
         LogAnnotation logAnnotation = method.getAnnotation(LogAnnotation.class);
         //logger.info("当前的方法注解为：" + logAnnotation);
 
@@ -110,7 +119,7 @@ public class LogAspect {
         for (int i = 0; i < args.length; i++) {
             if (args[i] instanceof ServletRequest || args[i] instanceof ServletResponse
                 || args[i] instanceof MultipartFile || args[i] instanceof AuthenticationException
-                    || args[i] instanceof Authentication) {
+                    || args[i] instanceof Authentication || args[i] instanceof File) {
 
                 /*
                  * ServletRequest不能序列化，从入参里排除，否则报异常：java.lang.IllegalStateException:
@@ -129,7 +138,13 @@ public class LogAspect {
         userLog.setLogParams(params);
 
         // 获取request 设置IP地址
-        userLog.setLogIp(IpUtils.getIpAddr(request));
+        String ipAddr = IpUtils.getIpAddr(request);
+        userLog.setLogIp(ipAddr);
+
+        // 获取设置用户实际地址
+        String address = AddressUtils.getAddress(ipAddr);
+        //System.out.println(address);
+        userLog.setLogAddress(address);
 
         // 用户名（这里从 Spring Security中获取用户名）
         // 如果从Spring Security中获取用户名为空，则写入 “访客(未登录)”

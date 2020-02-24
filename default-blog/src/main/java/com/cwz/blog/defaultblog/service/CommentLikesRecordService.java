@@ -48,7 +48,7 @@ public interface CommentLikesRecordService {
      * @param username: 用户名
      * @return:
      */
-    DataMap getCommentThumbsUp(int rows, int pageNum, String username);
+    DataMap getCommentThumbsUp(int rows, int pageNum, String username, Integer isRead, String firstDate, String lastDate);
 
     /**
      * @description: 已读一条点赞记录

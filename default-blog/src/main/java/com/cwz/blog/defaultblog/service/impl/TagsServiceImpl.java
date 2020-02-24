@@ -44,9 +44,9 @@ public class TagsServiceImpl implements TagsService {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    public DataMap findTagsInfoAndArticleCountNum(int rows, int pageNum) {
+    public DataMap findTagsInfoAndArticleCountNum(int rows, int pageNum, String tagSearch, String firstDate, String lastDate) {
         PageHelper.startPage(pageNum, rows);
-        List<Tags> tags = tagsMapper.selectAllTags();
+        List<Tags> tags = tagsMapper.selectAllTagsToXML(tagSearch, firstDate, lastDate);
         PageInfo<Tags> pageInfo = new PageInfo<>(tags);
 
         CommonReturn commonReturn = new CommonReturn();
@@ -75,6 +75,7 @@ public class TagsServiceImpl implements TagsService {
         }
         returnJson.put("msg", "获得所有的标签信息以及该标签的文章总数");
         returnJson.put("pageInfo", commonReturn.jsonObjectToPageInfo(pageInfo));
+        returnJson.put("tagsCount", tagsMapper.countAllTagsToXML(tagSearch, firstDate, lastDate));
         returnJson.put("result", tagJsonArray);
         return DataMap.success().setData(returnJson);
     }

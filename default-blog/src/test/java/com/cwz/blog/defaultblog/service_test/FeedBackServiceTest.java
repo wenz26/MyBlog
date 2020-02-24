@@ -27,8 +27,8 @@ class FeedBackServiceTest {
 
     @Test
     void getAllFeedback() {
-        DataMap allFeedback = feedBackService.getAllFeedback(5, 0);
-        System.out.println(JSON.toJSONString(allFeedback));
+//        DataMap allFeedback = feedBackService.getAllFeedback(5, 0);
+//        System.out.println(JSON.toJSONString(allFeedback));
 
     }
 }

@@ -80,6 +80,83 @@ $(function () {
         }
     });
 
+    // 获得登录用户未读消息
+    $.ajax({
+        type: 'POST',
+        url: '/getUserNews',
+        dataType: 'json',
+        data:{
+        },
+        success:function (data) {
+            var thisPageName = window.location.pathname + window.location.search;
+            //alert(data['data']['result'] + " " + data['data']['articleThumbsUpNum'] + " " + data['data']['commentThumbsUpNum']);
+            var news = $('.news');
+            if(data['status'] !== 101 && data['data']['result'] !== 0 && (data['data']['result']['allNewsNum'] !== 0 || data['data']['commentThumbsUpNum'] !== 0 || data['data']['articleThumbsUpNum'] !== 0)){
+                var totalCount = data['data']['result']['allNewsNum'] + data['data']['commentThumbsUpNum'] + data['data']['articleThumbsUpNum'];
+                news.append($('<span class="newsNum am-badge am-badge-danger am-round">' + totalCount + '</span>'));
+
+                if(thisPageName === "/user"){
+                    if(data['data']['result']['commentNum'] !== 0){
+                        $('.commentMessage').find('a').append($('<span class="commentNotReadNum am-margin-right am-fr am-badge am-badge-danger am-round">' + data['data']['result']['commentNum'] + '</span>'));
+                    }
+
+                    if(data['data']['articleThumbsUpNum'] !== 0){
+                        $('.articleByThumbsUp').find('a').append($('<span class="articleThumbsUpNum am-margin-right am-fr am-badge am-badge-danger am-round">' + data['data']['articleThumbsUpNum'] + '</span>'));
+                    }
+
+                    if(data['data']['commentThumbsUpNum'] !== 0){
+                        $('.commentByThumbsUp').find('a').append($('<span class="commentThumbsUpNum am-margin-right am-fr am-badge am-badge-danger am-round">' + data['data']['commentThumbsUpNum'] + '</span>'));
+                    }
+                }
+            }
+        },
+        error:function () {
+            //alert("获取用户未读信息失败")
+        }
+    });
+
+    // 获得超级管理员未读消息
+    $.ajax({
+        type: 'GET',
+        url: '/getSuperAdminMsg',
+        dataType: 'json',
+        data: {
+        },
+        success: function (data) {
+            var thisPageName = window.location.pathname + window.location.search;
+
+            var superAdminNews = $('.superAdminNews');
+            if(data['status'] !== 101 && data['data']['result'] !== 0 ){
+                superAdminNews.append($('<span class="superAdminNum am-badge am-badge-danger am-round">' + data['data']['result'] + '</span>'));
+
+                if(thisPageName === "/superadmin"){
+                    if(data['data']['result'] !== 0){
+                        $('.userFeedback').find('a').append($('<span class="feedbackNum am-margin-right am-fr am-badge am-badge-danger am-round">' + data['data']['result'] + '</span>'));
+                    }
+                }
+
+            }
+        },
+        error: function () {
+
+        }
+
+    });
+
+    var keyWordsContent = $('#keyWordsContent');
+    var keyWordsBtn = $('#keyWordsBtn');
+
+    keyWordsBtn.click(function () {
+        var keyWordsContentVal = keyWordsContent.val();
+        if (keyWordsContentVal === null || keyWordsContentVal === "" || keyWordsContentVal.length === 0) {
+            dangerNotice("搜索内容不能为空")
+        } else {
+            window.open("/search?keyWords=" + keyWordsContentVal);
+            keyWordsContent.val("");
+        }
+
+    });
+
     //图片懒加载
     // 获取window的引用:
     var $window = $(window);
@@ -117,6 +194,4 @@ $(function () {
     $window.scroll(onScroll);
     // 手动触发一次:
     onScroll();
-
-    // 导航栏上的搜索文章
 });

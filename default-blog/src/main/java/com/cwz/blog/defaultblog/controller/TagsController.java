@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,16 +45,35 @@ public class TagsController {
     @PostMapping(value = "/getTagArticle", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
     public String getTagArticle(@RequestParam("rows") String rows,
                                 @RequestParam("pageNum") String pageNum,
-                                @RequestParam("tag") String tag){
+                                @RequestParam("tag") String tag,
+                                @RequestParam(value = "timeRange", required = false) String timeRange,
+                                @RequestParam(value = "category", required = false) String category){
 
         if (StringUtils.equals(tag, StringUtil.BLANK)) {
             return JsonResult.build(tagsService.findAllTags()).toJSON();
         }
 
         tag = TransCodingUtil.unicodeToString(tag);
-        DataMap dataMap = articleService.findArticleByTag(tag, Integer.parseInt(rows), Integer.parseInt(pageNum));
+        DataMap dataMap = articleService.findArticleByTag(tag, timeRange, category, Integer.parseInt(rows), Integer.parseInt(pageNum));
 
         return JsonResult.build(dataMap).toJSON();
     }
 
+
+    /**
+     * @description: 分页获得所有标签
+     * @author: 陈文振
+     * @date: 2020/1/18
+     * @param rows
+     * @param pageNum
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "分页获得所有标签")
+    @LogAnnotation(module = "分页获得所有标签", operation = "查找")
+    @GetMapping(value = "/findAllTags", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    public String findAllTags(@RequestParam("rows") String rows, @RequestParam("pageNum") String pageNum){
+
+        DataMap dataMap = tagsService.findTagsInfoAndArticleCountNum(Integer.parseInt(rows), Integer.parseInt(pageNum), null, null, null);
+        return JsonResult.build(dataMap).toJSON();
+    }
 }

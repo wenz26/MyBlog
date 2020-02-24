@@ -37,7 +37,7 @@ class CategoriesServiceTest {
 
     @Test
     void findAllCategories() {
-        DataMap allCategories = categoriesService.findAllCategories(5, 0);
+        DataMap allCategories = categoriesService.findAllCategories(5, 0, null, null, null);
         System.out.println(JSON.toJSONString(allCategories));
     }
 

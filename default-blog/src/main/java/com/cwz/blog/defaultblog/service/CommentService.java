@@ -68,7 +68,7 @@ public interface CommentService {
      * @param username: 用户
      * @return:
      */
-    DataMap getUserComment(int rows, int pageNum, String username);
+    DataMap getUserComment(int rows, int pageNum, String username, Integer isRead, String firstDate, String lastDate);
 
     /**
      * @description: 获得评论总数
@@ -112,7 +112,8 @@ public interface CommentService {
      * @param
      * @return: com.cwz.blog.defaultblog.utils.DataMap
      */
-    DataMap findAllComment(int rows, int pageNum);
+    DataMap findAllComment(int rows, int pageNum, String username, String articleTitle,
+                           String commentContent, String firstDate, String lastDate, String searchUsername);
 
     /**
      * @description: 通过 评论id 来删除评论

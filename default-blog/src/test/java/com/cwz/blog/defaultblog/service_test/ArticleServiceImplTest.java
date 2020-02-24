@@ -78,7 +78,7 @@ class ArticleServiceImplTest {
 
     @Test
     void findAllToPublishArticles() {
-        DataMap dataMap = articleService.findAllToPublishArticles(25, 1);
+        DataMap dataMap = articleService.findAllToPublishArticles(7, 3);
         System.out.println(JSON.toJSONString(dataMap));
     }
 
@@ -101,13 +101,13 @@ class ArticleServiceImplTest {
 
     @Test
     void findArticleByTag() {
-        DataMap dataMap = articleService.findArticleByTag("动漫", 5, 0);
+        DataMap dataMap = articleService.findArticleByTag("动漫", "all", "",5, 0);
         System.out.println(JSON.toJSONString(dataMap));
     }
 
     @Test
     void findArticleByCategory() {
-        DataMap dataMap = articleService.findArticleByCategory("", 10, 0);
+        DataMap dataMap = articleService.findArticleByCategory("", "all", 10, 0);
         System.out.println(JSON.toJSONString(dataMap));
     }
 
@@ -126,8 +126,8 @@ class ArticleServiceImplTest {
 
     @Test
     void getArticleManagement() {
-        DataMap dataMap = articleService.getArticleManagement(10, 0, null, null);
-        System.out.println(JSON.toJSONString(dataMap));
+        //DataMap dataMap = articleService.getArticleManagement(20, 1, null, 1);
+        //System.out.println(JSON.toJSONString(dataMap));
     }
 
     @Test
@@ -191,5 +191,21 @@ class ArticleServiceImplTest {
         for (String toArray : toArrays) {
             System.out.println(toArray);
         }*/
+    }
+
+    @Test
+    void getArticleByUsername() {
+        DataMap dataMap = articleService.getArticleByUsername(8, 1, "陈文振", "李莉", null);
+        System.out.println(JSON.toJSONString(dataMap));
+    }
+
+    @Test
+    void mast() {
+        double a = 12;
+        int b = 5;
+        double c = a / b;
+        double d = Math.ceil(c);
+        System.out.println(c);
+        System.out.println(d);
     }
 }

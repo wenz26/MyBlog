@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>关键字查询 | 城院校园轻博客</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+
+    <link rel="alternate icon" type="image/png" th:href="@{img/icon/icon.jpeg}">
+    <link rel="stylesheet" th:href="@{https://lib.baomitu.com/amazeui/2.7.2/css/amazeui.min.css}">
+    <link rel="stylesheet" th:href="@{https://lib.baomitu.com/font-awesome/5.8.0/css/fontawesome.min.css}">
+    <link rel="stylesheet" th:href="@{css/all.css}">
+    <link rel="stylesheet" th:href="@{css/categories.css}">
+    <link rel="stylesheet" th:href="@{css/tags.css}">
+    <link rel="stylesheet" th:href="@{css/comment.css}">
+    <link rel="stylesheet" th:href="@{css/search.css}">
+    <link rel="stylesheet" th:href="@{css/plugs_paging.css}">
+
+    <script th:src="@{https://lib.baomitu.com/jquery/3.3.1/jquery.min.js}"></script>
+    <script th:src="@{https://lib.baomitu.com/underscore.js/1.9.1/underscore-min.js}"></script>
+    <script th:src="@{https://lib.baomitu.com/amazeui/2.7.2/js/amazeui.min.js}"></script>
+    <script th:src="@{js/all.js}"></script>
+    <script th:src="@{js/search.js}"></script>
+    <script th:src="@{js/plugs_paging.js}"></script>
+</head>
+<body>
+    <!--这里不能用共有头部-->
+    <div class="header">
+        <div class="am-topbar" style="margin-bottom: 0">
+            <h1 class="am-topbar-brand">
+                <a href="/" class="blogTitleName">城院校园轻博客</a>
+            </h1>
+
+            <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only"
+                    style="background-color: #CCCCCC;border-color: white;border-radius: 6px"
+                    data-am-collapse="{target: '#doc-topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span
+                    class="am-icon-bars"></span></button>
+
+            <div class="am-collapse am-topbar-collapse" id="doc-topbar-collapse">
+                <ul class="am-nav am-nav-pills am-topbar-nav">
+                    <li><a class="top_bar am-active" th:href="@{/}" style="cursor: pointer;"><span
+                            class="am-icon-home"></span>&nbsp;首页</a>
+                    </li>
+                    <li><a class="top_bar" th:href="@{/categories}" style="cursor: pointer;"><span
+                            class="am-icon-th"></span>&nbsp;分类</a>
+                    </li>
+                    <li><a class="top_bar" th:href="@{/tags}" style="cursor: pointer;"><span
+                            class="am-icon-tags"></span>&nbsp;标签</a>
+                    </li>
+                    <li><a class="top_bar" th:href="@{/archives}" style="cursor: pointer;"><span
+                            class="am-icon-archive"></span>&nbsp;归档</a>
+                    </li>
+                    <li>
+                        <div class="am-topbar-form am-topbar-left am-form-inline am-topbar-right">
+                            <div class="am-form-group">
+                                <input type="text" class="am-form-field am-input-sm" id="searchKeyWordsContent" style="border-radius: 6px; width: 300px"
+                                       placeholder="搜索关键字">
+                            </div>
+                            <button class="am-btn am-btn-default am-btn-sm" id="searchKeyWordsBtn" style="border-radius: 6px">搜索</button>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="am-topbar-right" th:if="${#httpServletRequest.remoteUser}">
+                    <div class="am-dropdown" data-am-dropdown="{boundary: '.am-topbar'}">
+                        <button class="personalSpace am-btn am-btn-secondary am-topbar-btn am-btn-sm am-dropdown-toggle"
+                                data-am-dropdown-toggle>
+                            <!--<img th:src="@{}" class="imgStyle">-->
+                            <span sec:authentication="name"></span>
+                            <span class="am-icon-caret-down"></span></button>
+                        <ul class="am-dropdown-content">
+                            <li><a th:href="@{/user}" class="news" sec:authorize="hasRole('ROLE_USER')">个人主页</a></li>
+                            <li><a th:href="@{/superadmin}" class="superAdminNews" sec:authorize="hasRole('ROLE_SUPERADMIN')">网站后台管理</a></li>
+                            <li><a th:href="@{/favorite}" class="" sec:authorize="hasRole('ROLE_USER')">收藏的文章</a>
+                            </li>
+                            <li><a th:href="@{/like}" class="" sec:authorize="hasRole('ROLE_USER')">点赞的文章</a>
+                            </li>
+                            <!--<li><a class="feedbackClick" sec:authorize="hasRole('ROLE_USER')">草稿箱</a></li>-->
+                            <li><a class="feedbackClick">反馈</a></li>
+                            <hr style="margin: 10px 0 5px 0;">
+                            <li><a th:href="@{/logout}">退出登录</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="am-topbar-right" th:unless="${#httpServletRequest.remoteUser}">
+                    <a href="/register" class="am-btn am-btn-primary am-topbar-btn am-btn-sm" style="color: white">注册</a>
+                </div>
+                <div class="am-topbar-right" th:unless="${#httpServletRequest.remoteUser}">
+                    <a href="/login" class="loginBtn am-btn am-btn-primary am-topbar-btn am-btn-sm"
+                       style="color: white">登录</a>
+                </div>
+                <div class="am-topbar-right writing am-hide-md-down">
+                    <a href="/editor" target="_blank" style="text-decoration: none">
+                        <img class="am-circle" th:src="@{img/general/write.jpg}">
+                        <span class="write-word">写博客</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--页面主体-->
+    <div id="main">
+        <div class="am-container">
+            <!--<img th:src="@{img/general/loading.gif}" style="margin-left: 17%">-->
+            <div class="am-g">
+                <div class="site-inner" style="margin: 30px 10px 0">
+                    <div class="categories-title">
+                        <h3 class="searchResult" style="font-size: 20px">以下是【】的搜索结果</h3>
+                        <!--<span style="color: #999; font-size: 15px">【】及其后面的字符均被忽略，因为本博客的查询限制在28个字符以内。</span>-->
+
+                    </div>
+
+
+                    <!--左侧-->
+                    <div class="am-u-sm-12 am-u-md-4">
+                        <div class="categories">
+
+                            <div class="categories-comment">
+                                <div class="searchBtnShow am-btn am-btn-default articleShow">
+                                    <div class="cwz-div"><div style="color: white"><span class="am-icon-file-text"></span></div></div>文章
+                                </div>
+
+                                <div class="searchBtnShow am-btn am-btn-default userShow">
+                                    <div class="cwz-div"><div style="color: white"><span class="am-icon-user"></span></div></div>用户
+                                </div>
+
+                                <div class="searchBtnShow am-btn am-btn-default tagsShow">
+                                    <div class="cwz-div"><div style="color: white"><span class="am-icon-tags"></span></div></div>标签
+                                </div>
+
+                                <div class="searchBtnShow am-btn am-btn-default categoriesShow">
+                                    <div class="cwz-div"><div style="color: white"><span class="am-icon-th-large"></span></div></div>分类
+                                </div>
+                            </div>
+                            <hr>
+
+                            <div>
+                                <div style="color: #999; margin-bottom: 5px">最近的10条搜索
+                                    <span class="span-history">清空</span>
+                                </div>
+
+                                <div class="search-history">
+
+                                    <!--<div class="cwz-history">
+                                        <span class="am-icon-clock-o" style="margin-right: 5px"></span>
+                                        &lt;!&ndash;title可以把查询内容存在里面，最大可显示12个字符&ndash;&gt;
+                                        <span style="font-size: 14px;" title="">分类我都打了萨拉达拉斯啦第. . .</span>
+                                        <span class="delete-history am-icon-times"></span>
+                                    </div>
+
+                                    <div class="cwz-history">
+                                        <span class="am-icon-clock-o" style="margin-right: 5px"></span>
+                                        &lt;!&ndash;title可以把查询内容存在里面，最大可显示12个字符&ndash;&gt;
+                                        <span style="font-size: 14px;" title="">分类</span>
+                                        <span class="delete-history am-icon-times"></span>
+                                    </div>
+
+
+                                    <div class="cwz-history">
+                                        <span class="am-icon-clock-o" style="margin-right: 5px"></span>
+                                        &lt;!&ndash;title可以把查询内容存在里面，最大可显示12个字符&ndash;&gt;
+                                        <span style="font-size: 14px;" title="">分类我都打了萨拉达拉斯啦第. . .</span>
+                                        <span class="delete-history am-icon-times"></span>
+                                    </div>-->
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <!--右侧-->
+                    <div class="am-u-sm-12 am-u-md-8">
+
+                        <div id="articleShow">
+
+                            <div class="articleTimeline">
+                                <!--消除留言先加载视觉效果-->
+                                <div class="timeline timeline-wrap">
+                                    <div class="timeline-row">
+
+                                        <h1 class="title"></h1>
+                                    </div>
+                                    <div class="timeline-row-major">
+                                        <div style="height: 88.4px">
+                                        </div>
+                                    </div>
+                                    <div class="timeline-row-major">
+                                        <div style="height: 88.4px">
+                                        </div>
+                                    </div>
+                                    <div class="timeline-row-major">
+                                        <div style="height: 88.4px">
+                                        </div>
+                                    </div>
+                                    <div class="timeline-row-major">
+                                        <div style="height: 88.4px">
+                                        </div>
+                                    </div>
+                                    <div class="timeline-row-major">
+                                        <div style="height: 88.4px">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div id="userShow">
+
+                            <div class="userTimeline">
+                                <!--消除留言先加载视觉效果-->
+                                <div class="timeline timeline-wrap">
+                                    <div class="timeline-row">
+
+                                        <h1 class="title"></h1>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div id="tagsShow">
+
+                            <div class="tagsTimeline">
+                                <!--消除留言先加载视觉效果-->
+                                <div class="timeline timeline-wrap">
+                                    <div class="timeline-row">
+
+                                        <h1 class="title"></h1>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div id="categoriesShow">
+
+                            <div class="categoryTimeline">
+                                <!--消除留言先加载视觉效果-->
+                                <div class="timeline timeline-wrap">
+                                    <div class="timeline-row">
+
+                                        <h1 class="title"></h1>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!--清空搜索历史模态框-->
+        <div class="am-modal am-modal-confirm" tabindex="-1" id="deleteAllHistory">
+            <div class="am-modal-dialog">
+                <div class="am-modal-hd">清空搜索历史</div>
+                <div class="am-modal-bd" id="deleteAllHistoryContent">
+                    你确定要清空搜索历史吗？<br>清空了就无法恢复了呦!
+                </div>
+                <div class="am-modal-footer">
+                    <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                    <span class="sureAllHistoryDeleteBtn am-modal-btn" data-am-modal-confirm>确定</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!--引入共有底部-->
+    <div th:replace="common/bar :: footer"></div>
+    <!--消息盒子+反馈-->
+    <div th:replace="common/bar :: feedback"></div>
+
+</body>
+</html>

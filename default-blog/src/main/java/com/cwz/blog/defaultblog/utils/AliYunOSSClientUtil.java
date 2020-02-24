@@ -243,6 +243,12 @@ public class AliYunOSSClientUtil {
         if(".xml".equalsIgnoreCase(fileExtension)) {
             return "text/xml";
         }
+        if(".mp4".equalsIgnoreCase(fileExtension) || ".m4v".equalsIgnoreCase(fileExtension)) {
+            return "audio/mp4";
+        }
+        if(".mp3".equalsIgnoreCase(fileExtension)) {
+            return "audio/mp3";
+        }
         //默认返回类型
         return "image/jpeg";
     }

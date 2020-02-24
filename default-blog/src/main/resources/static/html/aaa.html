@@ -61,7 +61,7 @@
     <br>
     <div>
         <img id="img" src="">
-        <input id="imgTest" type="file" onchange="imgChange(event)" accept=".gif,.jpg,.jpeg,.png">
+        <input id="imgTest" type="file" onchange="imgChangeaa(event)" accept=".gif,.jpg,.jpeg,.png">
         <br><a>上传图片</a>
     </div>-->
 
@@ -86,16 +86,91 @@
         </div>
     </div>-->
 
-    <div data-am-widget="gallery" data-am-gallery="{pureview: 1}">
+    <!--<div data-am-widget="gallery" data-am-gallery="{pureview: 1}">
         <a href="#">
         <img src="https://farm4.staticflickr.com/3835/15329524682_2642280b33_z.jpg"
              alt="远方 有一个地方 那里种有我们的梦想" data-rel="https://farm4.staticflickr.com/3835/15329524682_554d4c0886_k.jpg"/>
         </a>
+    </div>-->
+
+    <div class="am-g">
+        <div class="am-u-sm-6">
+            设置禁用日期<br/>
+            <p><input type="text" class="am-form-field" placeholder="今天之前的日期被禁用" id="my-start-2"/></p>
+        </div>
+        <div class="am-u-sm-6">
+            禁用日期<br/>
+            <p><input type="text" class="am-form-field" id="my-end-2" /></p>
+        </div>
     </div>
+    <script>
+        $(function() {
+            var nowTemp = new Date();
+            var nowDay = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0).valueOf();
+            var nowMoth = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), 1, 0, 0, 0, 0).valueOf();
+            var nowYear = new Date(nowTemp.getFullYear(), 0, 1, 0, 0, 0, 0).valueOf();
+            var $myStart2 = $('#my-start-2');
+
+            var checkin = $myStart2.datepicker({
+                onRender: function(date, viewMode) {
+                    // 默认 days 视图，与当前日期比较
+                    var viewDate = nowDay;
+
+                    switch (viewMode) {
+                        // moths 视图，与当前月份比较
+                        case 1:
+                            viewDate = nowMoth;
+                            break;
+                        // years 视图，与当前年份比较
+                        case 2:
+                            viewDate = nowYear;
+                            break;
+                    }
+
+                    return date.valueOf() < viewDate ? 'am-disabled' : '';
+                }
+            }).on('changeDate.datepicker.amui', function(ev) {
+                /*if (ev.date.valueOf() > checkout.date.valueOf()) {
+                    var newDate = new Date(ev.date)
+                    newDate.setDate(newDate.getDate() + 1);
+                    checkout.setValue(newDate);
+                }*/
+                checkin.close();
+                //$('#my-end-2')[0].focus();
+            }).data('amui.datepicker');
+
+            /*var checkout = $('#my-end-2').datepicker({
+                onRender: function(date, viewMode) {
+                    var inTime = checkin.date;
+                    var inDay = inTime.valueOf();
+                    var inMoth = new Date(inTime.getFullYear(), inTime.getMonth(), 1, 0, 0, 0, 0).valueOf();
+                    var inYear = new Date(inTime.getFullYear(), 0, 1, 0, 0, 0, 0).valueOf();
+
+                    // 默认 days 视图，与当前日期比较
+                    var viewDate = inDay;
+
+                    switch (viewMode) {
+                        // moths 视图，与当前月份比较
+                        case 1:
+                            viewDate = inMoth;
+                            break;
+                        // years 视图，与当前年份比较
+                        case 2:
+                            viewDate = inYear;
+                            break;
+                    }
+
+                    return date.valueOf() <= viewDate ? 'am-disabled' : '';
+                }
+            }).on('changeDate.datepicker.amui', function(ev) {
+                checkout.close();
+            }).data('amui.datepicker');*/
+        });
+    </script>
 
 
 
-    <!--<div>
+    <div>
         <i class="am-icon-bluetooth"></i>
         <i class="am-icon-bluetooth-b"></i>
         <i class="am-icon-codiepie"></i>
@@ -897,10 +972,10 @@
         <i class="am-icon-stethoscope"></i>
         <i class="am-icon-user-md"></i>
         <i class="am-icon-wheelchair"></i>
-    </div>-->
+    </div>
 
     <script>
-        function imgChange(e) {
+        function imgChangeaa(e) {
             var dom =$("input[id^='imgTest']")[0];
             var reader = new FileReader();
             reader.onload = (function (file) {

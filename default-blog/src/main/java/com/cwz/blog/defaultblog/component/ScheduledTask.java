@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
@@ -49,6 +52,12 @@ public class ScheduledTask {
             hashRedisService.put("visit", "yesterdayVisitors", yesterdayVisitors);
         } else {
             hashRedisService.put("visit", "yesterdayVisitors", oldTotalVisitors);
+        }
+
+        LocalDateTime localDateTime = LocalDateTime.now().plusSeconds(-3600);
+        String string = localDateTime.getDayOfWeek().toString();
+        if (hashRedisService.hasHashKey("visit", string)) {
+            hashRedisService.put("visit", string, yesterdayVisitors);
         }
 
         // 将redis中的所有访客记录更新到数据库中

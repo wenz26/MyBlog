@@ -19,4 +19,19 @@ public interface TagsMapper extends BeanMapper<Tags> {
 
     @Select("select * from tags order by create_date desc")
     List<Tags> selectAllTags();
+
+    @Select("select COUNT(id) from tags")
+    int countAllTags();
+
+    @Select("select * from tags where tag_name like '%${keyWords}%' order by create_date desc")
+    List<Tags> searchByKeyWordsByTagName(@Param("keyWords") String keyWords);
+
+    @Select("select COUNT(id) from tags where tag_name like '%${keyWords}%'")
+    int countSearchByKeyWordsByTagName(@Param("keyWords") String keyWords);
+
+    List<Tags> selectAllTagsToXML(@Param("tagSearch") String tagSearch,
+                                  @Param("firstDate") String firstDate, @Param("lastDate")String lastDate);
+
+    int countAllTagsToXML(@Param("tagSearch") String tagSearch,
+                          @Param("firstDate") String firstDate, @Param("lastDate") String lastDate);
 }

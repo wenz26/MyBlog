@@ -36,29 +36,19 @@ public class UserLogServiceImpl implements UserLogService {
     }
 
     @Override
-    public DataMap getAllUserLogByExample(int rows, int pageNum, UserLog userLogExample, String createDate) {
+    public DataMap getAllUserLog(int rows, int pageNum, UserLog userLogExample, int type,
+                                 String firstDate, String lastDate) {
         PageHelper.startPage(pageNum, rows);
+        List<UserLog> userLogs;
 
-        Example example = new Example(UserLog.class);
-        example.orderBy("createDate").desc();
-        Example.Criteria criteria = example.createCriteria();
-        if (!Objects.isNull(userLogExample.getLogModule()) && !Objects.equals(userLogExample.getLogModule(), StringUtil.BLANK)) {
-            criteria.andLike("logModule", "%" + userLogExample.getLogModule() + "%");
-        }
-        if (!Objects.isNull(userLogExample.getLogOperation()) && !Objects.equals(userLogExample.getLogOperation(), StringUtil.BLANK)) {
-            criteria.andLike("logOperation", "%" + userLogExample.getLogOperation() + "%");
-        }
-        if (!Objects.isNull(userLogExample.getLogUsername()) && !Objects.equals(userLogExample.getLogUsername(), StringUtil.BLANK)) {
-            criteria.andLike("logUsername", "%" + userLogExample.getLogUsername() + "%");
-        }
-        if (!Objects.isNull(createDate) && !Objects.equals(createDate, StringUtil.BLANK)) {
-            criteria.andLike("createDate", "%" + createDate + "%");
-        }
-        if (!Objects.isNull(userLogExample.getLogStatus()) && !Objects.equals(userLogExample.getLogStatus(), StringUtil.BLANK)) {
-            criteria.andEqualTo("logStatus",  userLogExample.getLogStatus());
+        if (type == 1) {
+            userLogs = userLogMapper.findAllUserLogByLogin(userLogExample, firstDate, lastDate);
+        } else if (type == 2) {
+            userLogs = userLogMapper.findAllUserLogByOperation(userLogExample, firstDate, lastDate);
+        } else {
+            userLogs = userLogMapper.findAllUserLogByExample(userLogExample, firstDate, lastDate);
         }
 
-        List<UserLog> userLogs = userLogMapper.selectByExample(example);
         PageInfo<UserLog> pageInfo = new PageInfo<>(userLogs);
 
         JSONObject logJson;
@@ -77,6 +67,12 @@ public class UserLogServiceImpl implements UserLogService {
         return DataMap.success().setData(resultJson);
     }
 
+    @Override
+    public DataMap getUserLogOneById(int id) {
+        UserLog userLog = userLogMapper.getUserLogOneById(id);
+        return DataMap.success().setData(getLogJSONObject(userLog));
+    }
+
     /**
      * @description: 对 用户日志 返回数据进行封装
      * @author: 陈文振
@@ -92,6 +88,7 @@ public class UserLogServiceImpl implements UserLogService {
         logJson.put("logMethod", userLog.getLogMethod());
         logJson.put("logParams", userLog.getLogParams());
         logJson.put("logIp", userLog.getLogIp());
+        logJson.put("logAddress", userLog.getLogAddress());
         logJson.put("logStatus", userLog.getLogStatus());
         logJson.put("logTimeConsuming", userLog.getLogTimeConsuming());
         logJson.put("createDate", TimeUtil.getFormatDateForSix(userLog.getCreateDate()));

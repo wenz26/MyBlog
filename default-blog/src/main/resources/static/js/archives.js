@@ -72,18 +72,18 @@ $(function () {
             var content = $('<div class="content am-comment-main am-animation-slide-top am-animation-delay-1"></div>');
             content.append($('<header class="am-comment-hd" style="background: #fff">' +
                 '<div class="contentTitle am-comment-meta">' +
-                '<a href="/article/' + obj['articleId'] + '">' + obj['articleTitle'] + '</a>' +
+                '<a href="/article/' + obj['articleId'] + '" title="' + obj['articleTitle'] + '" target="_blank">' + obj['articleTitle'] + '</a>' +
                 '</div>' +
                 '</header>'));
 
             var amCommentBd = $('<div class="am-comment-bd"></div>');
-            amCommentBd.append($('<i class="am-icon-calendar"> <a href="/archives?archiveDay=' + obj['publishDateForThree'] + '">' + obj['publishDate'] + '</a></i>' +
-                '<i class="am-icon-user"> ' + obj['author'] + '</i>' +
-                '<i class="am-icon-folder"> <a href="/categories?categoryName=' + obj['articleCategories'] + '">' + obj['articleCategories'] + '</a></i>'));
+            amCommentBd.append($('<i class="am-icon-calendar"> <a href="/archives?archiveDay=' + obj['publishDateForThree'] + '" title="' + obj['publishDate'] + '">' + obj['publishDate'] + '</a></i>' +
+                '<i class="am-icon-user"> <a href="/person?personName=' + obj['author'] + '" title="' + obj['author'] + '">' + obj['author'] + '</a></i>' +
+                '<i class="am-icon-folder"> <a href="/categories?categoryName=' + obj['articleCategories'] + '" title="' + obj['articleCategories'] + '">' + obj['articleCategories'] + '</a></i>'));
 
             var amCommentBdTags = $('<i class="am-comment-bd-tags am-icon-tag"></i>');
             for (var i = 0; i < obj['articleTags'].length; i++) {
-                var tag = $('<a href="/tags?tag=' + obj['articleTags'][i] + '">' + obj['articleTags'][i] + '</a>');
+                var tag = $('<a href="/tags?tag=' + obj['articleTags'][i] + '" title="' + obj['articleTags'][i] + '">' + obj['articleTags'][i] + '</a>');
                 amCommentBdTags.append(tag);
                 if (i !== (obj['articleTags'].length - 1)) {
                     amCommentBdTags.append(",");
@@ -106,7 +106,7 @@ $(function () {
         success: function (data, status, xhr) {
             archive = xhr.getResponseHeader("archiveDay");
         }
-    })
+    });
 
     var archivePages;
     var toMoreArchiveDay;
@@ -118,7 +118,7 @@ $(function () {
             dataType: 'json',
             data: {
                 archiveDay: archiveDay,
-                rows: "10",
+                rows: "8",
                 pageNum: currentPage
             },
             success: function (data) {

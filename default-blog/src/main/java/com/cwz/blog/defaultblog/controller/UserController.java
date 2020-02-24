@@ -9,10 +9,7 @@ import com.cwz.blog.defaultblog.redis.HashRedisServiceImpl;
 import com.cwz.blog.defaultblog.redis.RedisToService;
 import com.cwz.blog.defaultblog.redis.StringRedisServiceImpl;
 import com.cwz.blog.defaultblog.service.*;
-import com.cwz.blog.defaultblog.utils.DataMap;
-import com.cwz.blog.defaultblog.utils.FileUtil;
-import com.cwz.blog.defaultblog.utils.JsonResult;
-import com.cwz.blog.defaultblog.utils.StringUtil;
+import com.cwz.blog.defaultblog.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +28,7 @@ import java.io.File;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * @author: 陈文振
@@ -54,6 +52,8 @@ public class UserController {
     @Autowired
     private CommentLikesRecordService commentLikesRecordService;
     @Autowired
+    private UserAttentionService userAttentionService;
+    @Autowired
     private HashRedisServiceImpl hashRedisService;
     @Autowired
     private RedisToService redisToService;
@@ -75,10 +75,16 @@ public class UserController {
     @PermissionCheck(value = "ROLE_USER")
     public String getPublishArticleManagementByUser(@RequestParam("rows") String rows,
                                                     @RequestParam("pageNum") String pageNum,
-                                                    @AuthenticationPrincipal Principal principal){
+                                                    @AuthenticationPrincipal Principal principal,
+                                                    @RequestParam(value = "articleTitle", required = false) String articleTitle,
+                                                    @RequestParam(value = "articleType", required = false) String articleType,
+                                                    @RequestParam(value = "articleCategory", required = false) String articleCategory,
+                                                    @RequestParam(value = "firstDate", required = false) String firstDate,
+                                                    @RequestParam(value = "lastDate", required = false) String lastDate){
         String username = principal.getName();
         int userId = userService.findIdByUsername(username);
-        DataMap dataMap = articleService.getArticleManagement(Integer.parseInt(rows), Integer.parseInt(pageNum), userId, 1);
+        DataMap dataMap = articleService.getArticleManagement(Integer.parseInt(rows), Integer.parseInt(pageNum), userId, 1,
+                articleTitle, articleType, articleCategory, firstDate, lastDate);
         return JsonResult.build(dataMap).toJSON();
     }
 
@@ -96,10 +102,12 @@ public class UserController {
     @PermissionCheck(value = "ROLE_USER")
     public String getDraftArticleManagementByUser(@RequestParam("rows") String rows,
                                                   @RequestParam("pageNum") String pageNum,
-                                                  @AuthenticationPrincipal Principal principal){
+                                                  @AuthenticationPrincipal Principal principal,
+                                                  @RequestParam(value = "articleTitle", required = false) String articleTitle){
         String username = principal.getName();
         int userId = userService.findIdByUsername(username);
-        DataMap dataMap = articleService.getArticleManagement(Integer.parseInt(rows), Integer.parseInt(pageNum), userId, 0);
+        DataMap dataMap = articleService.getArticleManagement(Integer.parseInt(rows), Integer.parseInt(pageNum), userId, 0,
+                articleTitle, null, null, null, null);
         return JsonResult.build(dataMap).toJSON();
     }
 
@@ -136,9 +144,23 @@ public class UserController {
     @PermissionCheck(value = "ROLE_USER")
     public String getArticleThumbsUp(@RequestParam("rows") String rows,
                                      @RequestParam("pageNum") String pageNum,
-                                     @AuthenticationPrincipal Principal principal){
+                                     @AuthenticationPrincipal Principal principal,
+                                     @RequestParam(value = "articleThumbsUpRead", required = false) String articleThumbsUpRead,
+                                     @RequestParam(value = "firstDate", required = false) String firstDate,
+                                     @RequestParam(value = "lastDate", required = false) String lastDate){
         String username = principal.getName();
-        DataMap dataMap = articleLikesRecordService.getArticleThumbsUp(Integer.parseInt(rows), Integer.parseInt(pageNum), username);
+
+        Integer isRead;
+        if (Objects.equals(articleThumbsUpRead, "choose")) {
+            isRead = null;
+        } else {
+            isRead = Integer.parseInt(articleThumbsUpRead);
+        }
+
+        System.out.println(isRead);
+
+        DataMap dataMap = articleLikesRecordService.getArticleThumbsUp(Integer.parseInt(rows), Integer.parseInt(pageNum), username,
+                isRead, firstDate, lastDate);
         return JsonResult.build(dataMap).toJSON();
     }
 
@@ -148,9 +170,21 @@ public class UserController {
     @PermissionCheck(value = "ROLE_USER")
     public String getCommentThumbsUp(@RequestParam("rows") String rows,
                                      @RequestParam("pageNum") String pageNum,
-                                     @AuthenticationPrincipal Principal principal){
+                                     @AuthenticationPrincipal Principal principal,
+                                     @RequestParam(value = "commentThumbsUpRead", required = false) String commentThumbsUpRead,
+                                     @RequestParam(value = "firstDate", required = false) String firstDate,
+                                     @RequestParam(value = "lastDate", required = false) String lastDate){
         String username = principal.getName();
-        DataMap dataMap = commentLikesRecordService.getCommentThumbsUp(Integer.parseInt(rows), Integer.parseInt(pageNum), username);
+
+        Integer isRead;
+        if (Objects.equals(commentThumbsUpRead, "choose")) {
+            isRead = null;
+        } else {
+            isRead = Integer.parseInt(commentThumbsUpRead);
+        }
+
+        DataMap dataMap = commentLikesRecordService.getCommentThumbsUp(Integer.parseInt(rows), Integer.parseInt(pageNum), username,
+                isRead, firstDate, lastDate);
         return JsonResult.build(dataMap).toJSON();
     }
 
@@ -232,9 +266,63 @@ public class UserController {
     @PermissionCheck(value = "ROLE_USER")
     public String getFavoriteArticleByUser(@RequestParam("rows") String rows,
                                            @RequestParam("pageNum") String pageNum,
-                                           @AuthenticationPrincipal Principal principal){
+                                           @AuthenticationPrincipal Principal principal,
+                                           @RequestParam(value = "articleTitle", required = false) String articleTitle){
         String username = principal.getName();
-        DataMap dataMap = articleUserFavoriteRecordService.findArticleFavoriteRecordByUsername(username, Integer.parseInt(rows), Integer.parseInt(pageNum));
+        DataMap dataMap = articleUserFavoriteRecordService.findArticleFavoriteRecordByUsername(username, articleTitle, Integer.parseInt(rows), Integer.parseInt(pageNum));
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+    /**
+     * @description: 用户取消某篇收藏文章
+     * @author: 陈文振
+     * @date: 2020/2/4
+     * @param
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "用户取消某篇收藏文章")
+    @LogAnnotation(module = "用户取消某篇收藏文章", operation = "删除")
+    @GetMapping(value = "/cancelFavoriteArticle", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String cancelFavoriteArticle(@RequestParam("id") String id) {
+        DataMap dataMap = articleUserFavoriteRecordService.deleteArticleFavoriteRecordById(Integer.parseInt(id));
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+    /**
+     * @description: 获得用户的所有点赞文章
+     * @author: 陈文振
+     * @date: 2020/1/6
+     * @param rows
+     * @param pageNum
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "获得用户的所有点赞文章")
+    @LogAnnotation(module = "获得用户的所有点赞文章", operation = "查找")
+    @PostMapping(value = "/getLikeArticleByUser", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String getLikeArticleByUser(@RequestParam("rows") String rows,
+                                       @RequestParam("pageNum") String pageNum,
+                                       @AuthenticationPrincipal Principal principal,
+                                       @RequestParam(value = "articleTitle", required = false) String articleTitle){
+        String username = principal.getName();
+        DataMap dataMap = articleLikesRecordService.findArticleLikesRecordByUsername(username, articleTitle, Integer.parseInt(rows), Integer.parseInt(pageNum));
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+    /**
+     * @description: 用户取消某篇点赞文章
+     * @author: 陈文振
+     * @date: 2020/2/4
+     * @param
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "用户取消某篇点赞文章")
+    @LogAnnotation(module = "用户取消某篇点赞文章", operation = "删除")
+    @GetMapping(value = "/cancelLikeArticle", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String cancelLikeArticle(@RequestParam("id") String id) {
+        DataMap dataMap = articleLikesRecordService.deleteArticleLikesRecordById(Integer.parseInt(id));
         return JsonResult.build(dataMap).toJSON();
     }
 
@@ -264,13 +352,18 @@ public class UserController {
 
         try {
             FileUtil fileUtil = new FileUtil();
-            String filePath = this.getClass().getResource("/").getPath().substring(1) + "userImg";
-            String fileName = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+
+            String filePath = request.getSession().getServletContext().getRealPath("") + "upload";
+            logger.info("本地地址为：" + filePath);
+
+            Date date = new Date();
+            String fileName = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(date);
+            String day = new SimpleDateFormat("yyyy-MM-dd").format(date);
 
             File file = fileUtil.base64ToFile(filePath, avatarImgUrl, fileName + strFileExtendName);
             logger.info("用户头像图片的本地存储路径为：" + filePath);
 
-            String fileUrl = fileUtil.uploadFile(file, OSSClientConstants.USER_IMAGE + phone + "/");
+            String fileUrl = fileUtil.uploadFile(file, OSSClientConstants.USER_IMAGE + phone + "/" + day + "/");
 
             logger.info("用户[{}]上传头像图片成功！！！获得的url为：" + fileUrl, username);
 
@@ -337,9 +430,58 @@ public class UserController {
     @PermissionCheck(value = "ROLE_USER")
     public String getUserComment(@RequestParam("rows") String rows,
                                  @RequestParam("pageNum") String pageNum,
-                                 @AuthenticationPrincipal Principal principal){
+                                 @AuthenticationPrincipal Principal principal,
+                                 @RequestParam(value = "commentMsgRead", required = false) String commentMsgRead,
+                                 @RequestParam(value = "firstDate", required = false) String firstDate,
+                                 @RequestParam(value = "lastDate", required = false) String lastDate){
         String username = principal.getName();
-        DataMap dataMap = commentService.getUserComment(Integer.parseInt(rows), Integer.parseInt(pageNum), username);
+
+        Integer isRead;
+        if (Objects.equals(commentMsgRead, "choose")) {
+            isRead = null;
+        } else {
+            isRead = Integer.parseInt(commentMsgRead);
+        }
+        DataMap dataMap = commentService.getUserComment(Integer.parseInt(rows), Integer.parseInt(pageNum), username,
+                isRead, firstDate, lastDate);
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+    /**
+     * @description: 获得用户的所有评论信息
+     * @author: 陈文振
+     * @date: 2020/1/21
+     * @param rows
+     * @param pageNum
+     * @param principal
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "获得用户的所有评论信息")
+    @LogAnnotation(module = "获得用户的所有评论信息", operation = "查找")
+    @PostMapping(value = "/findAllCommentByUser", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String findAllCommentByUser(@RequestParam("rows") String rows,
+                                       @RequestParam("pageNum") String pageNum,
+                                       @AuthenticationPrincipal Principal principal,
+                                       @RequestParam(value = "articleTitle", required = false) String articleTitle,
+                                       @RequestParam(value = "commentContent", required = false) String commentContent,
+                                       @RequestParam(value = "firstDate", required = false) String firstDate,
+                                       @RequestParam(value = "lastDate", required = false) String lastDate,
+                                       @RequestParam(value = "searchUsername", required = false) String searchUsername){
+        DataMap dataMap = commentService.findAllComment(Integer.parseInt(rows), Integer.parseInt(pageNum), principal.getName(),
+                articleTitle, commentContent, firstDate, lastDate, searchUsername);
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+    @ApiOperation(value = "删除用户的某条评论")
+    @LogAnnotation(module = "删除用户的某条评论", operation = "删除")
+    @GetMapping(value = "/deleteCommentByUser", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String deleteCommentByUser(@RequestParam("id") String id){
+        if(StringUtils.isBlank(id)){
+            return JsonResult.build(DataMap.fail(CodeType.DELETE_COMMENT_FAIL)).toJSON();
+        }
+        DataMap dataMap = commentService.deleteOneCommentById(Integer.parseInt(id));
         return JsonResult.build(dataMap).toJSON();
     }
 
@@ -410,6 +552,84 @@ public class UserController {
     public String getUserNews(@AuthenticationPrincipal Principal principal){
         String username = principal.getName();
         DataMap dataMap = redisToService.getUserNews(username);
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+
+    /**
+     * @description:
+     * @author: 陈文振
+     * @date: 2020/2/6
+     * @param inquireName: 要查询的名字
+     * @param principal
+     * @param rows
+     * @param pageNum
+     * @param type: 1 为获得我的关注， 2 为获得我的粉丝
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "获得我的关注 或 我的粉丝")
+    @LogAnnotation(module = "获得我的关注 或 我的粉丝", operation = "查找")
+    @PostMapping(value = "/getUserUserAttention", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String getUserUserAttention(@RequestParam("inquireName") String inquireName,
+                                       @AuthenticationPrincipal Principal principal,
+                                       @RequestParam("rows") String rows,
+                                       @RequestParam("pageNum") String pageNum,
+                                       @RequestParam("type") int type){
+        String username = principal.getName();
+        DataMap dataMap = userAttentionService.getUserUserAttention(username, inquireName, type,
+                Integer.parseInt(rows), Integer.parseInt(pageNum));
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+    /**
+     * @description: 取消关注
+     * @author: 陈文振
+     * @date: 2020/2/6
+     * @param attentionId
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "取消关注")
+    @LogAnnotation(module = "取消关注", operation = "删除")
+    @GetMapping(value = "/deleteUserAttention", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    @PermissionCheck(value = "ROLE_USER")
+    public String deleteUserAttention(@RequestParam("attentionId") String attentionId){
+        DataMap dataMap = userAttentionService.deleteUserAttention(Integer.parseInt(attentionId));
+        return JsonResult.build(dataMap).toJSON();
+    }
+
+    /**
+     * @description: 获得关注 或 粉丝
+     * @author: 陈文振
+     * @date: 2020/2/6
+     * @param username
+     * @param rows
+     * @param pageNum
+     * @param type: 1 为获得我的关注， 2 为获得我的粉丝
+     * @return: java.lang.String
+     */
+    @ApiOperation(value = "获得关注 或 粉丝")
+    @LogAnnotation(module = "获得关注 或 粉丝", operation = "查找")
+    @PostMapping(value = "/getSomeOneAttention", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=utf-8")
+    public String getSomeOneAttention(@RequestParam("username") String username,
+                                      @AuthenticationPrincipal Principal principal,
+                                      @RequestParam("rows") String rows,
+                                      @RequestParam("pageNum") String pageNum,
+                                      @RequestParam("type") int type){
+
+        if (!Objects.equals(username, StringUtil.BLANK)) {
+            username = TransCodingUtil.unicodeToString(username);
+        }
+
+        String myName;
+        if (principal == null) {
+            myName = null;
+        } else {
+            myName = principal.getName();
+        }
+
+        DataMap dataMap = userAttentionService.getSomeOneAttention(username, myName, type,
+                Integer.parseInt(rows), Integer.parseInt(pageNum));
         return JsonResult.build(dataMap).toJSON();
     }
 }

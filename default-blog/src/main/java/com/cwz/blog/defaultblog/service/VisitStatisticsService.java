@@ -56,4 +56,13 @@ public interface VisitStatisticsService {
      * @return:
      */
     void updateVisitNumByStatisticsName(String statisticsName, long visitNum);
+
+    /**
+     * @description: 通过名字删除访问量
+     * @author: 陈文振
+     * @date: 2020/1/22
+     * @param statisticsName
+     * @return: void
+     */
+    void deleteVisitByStatisticsName(String statisticsName);
 }

@@ -1,0 +1,25 @@
+.noNews{
+    height: 30px;
+    background: #f0f0f0;
+    text-align: center;
+    opacity: .5;
+    line-height: 30px;
+}
+.formInput{
+    padding: 5px 10px;
+    font-size: 15px;
+    border: 1px solid #c8c8c8;
+    border-radius: 4px;
+    background-color: hsla(0,0%,71%,.1);
+}
+.codeButton{
+    width: 60px;
+    height: 28px;
+    font-size: 13px;
+}
+.cwz-cancel{
+    float: right;
+    margin-right: 10px;
+    color: #0a0a0a;
+}
+

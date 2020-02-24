@@ -16,7 +16,7 @@ class TagsServiceTest {
 
     @Test
     void findTagsNameAndArticleCountNum() {
-        DataMap dataMap = tagsService.findTagsInfoAndArticleCountNum(5,0);
+        DataMap dataMap = tagsService.findTagsInfoAndArticleCountNum(5,0, null, null, null);
         System.out.println(JSON.toJSONString(dataMap));
     }
 

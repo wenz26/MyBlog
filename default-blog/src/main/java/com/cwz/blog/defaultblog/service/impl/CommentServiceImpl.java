@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cwz.blog.defaultblog.constant.CodeType;
 import com.cwz.blog.defaultblog.entity.Comment;
+import com.cwz.blog.defaultblog.entity.User;
 import com.cwz.blog.defaultblog.entity.UserReadNews;
 import com.cwz.blog.defaultblog.mapper.CommentLikesRecordMapper;
 import com.cwz.blog.defaultblog.mapper.CommentMapper;
@@ -18,6 +19,7 @@ import com.cwz.blog.defaultblog.utils.StringUtil;
 import com.cwz.blog.defaultblog.utils.TimeUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -112,6 +114,7 @@ public class CommentServiceImpl implements CommentService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", comment.getId());
         jsonObject.put("answerer", answerer);
+        jsonObject.put("avatarImgUrl", userService.findUserByUsername(answerer).getAvatarImgUrl());
         jsonObject.put("respondent", respondent);
         jsonObject.put("commentContent", comment.getCommentContent());
         jsonObject.put("commentDate", TimeUtil.getFormatDateForSix(comment.getCommentDate()));
@@ -144,7 +147,8 @@ public class CommentServiceImpl implements CommentService {
             if (comment.getpId() != 0) {
                 comment.setCommentContent("@" + userService.findUsernameById(comment.getRespondentId()) + " " + comment.getCommentContent());
             }
-            jsonObject = getCommentJson(comment);
+            String articleTitle = articleService.findArticleTitleByArticleId(comment.getArticleId()).get("articleTitle");
+            jsonObject = getCommentJson(comment, articleTitle);
             jsonArray.add(jsonObject);
         }
         returnJson.put("result", jsonArray);
@@ -154,17 +158,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public DataMap getUserComment(int rows, int pageNum, String username) {
+    public DataMap getUserComment(int rows, int pageNum, String username, Integer isRead, String firstDate, String lastDate) {
 
         CommonReturn commonReturn = new CommonReturn();
         int userId = userService.findIdByUsername(username);
+
         PageHelper.startPage(pageNum, rows);
 
-        Example example = new Example(Comment.class);
-        example.orderBy("id").desc();
-        example.createCriteria().andEqualTo("respondentId", userId)
-                .andNotEqualTo("answererId", userId);
-        List<Comment> comments = commentMapper.selectByExample(example);
+        List<Comment> comments = commentMapper.getUserComment(userId, userId, isRead, firstDate, lastDate);
         PageInfo<Comment> pageInfo = new PageInfo<>(comments);
 
         JSONObject returnJson = new JSONObject();
@@ -172,17 +173,22 @@ public class CommentServiceImpl implements CommentService {
         JSONArray commentJsonArray = new JSONArray();
 
         for (Comment comment : comments) {
-            commentJson = getCommentJson(comment);
+            String articleTitle = comment.getArticle().getArticleTitle();
+            commentJson = getCommentJson(comment, articleTitle);
+            commentJson.put("respondent", userService.findUsernameById(comment.getRespondentId()));
+
+            if (comment.getpId() != 0) {
+                Comment commentToParent = commentMapper.findCommentContentAndAnswererIdByPId(comment.getpId());
+                commentJson.put("pRespondent", userService.findUsernameById(commentToParent.getAnswererId()));
+                commentJson.put("pComment", commentToParent.getCommentContent());
+            }
+
             commentJsonArray.add(commentJson);
         }
 
         returnJson.put("result", commentJsonArray);
 
-        example.clear();
-        example.createCriteria().andEqualTo("isRead", 1)
-                .andEqualTo("respondentId", userId)
-                .andNotEqualTo("answererId", userId);
-        returnJson.put("msgIsNotReadNum", commentMapper.selectCountByExample(example));
+        returnJson.put("msgIsNotReadNum", commentMapper.countUserCommentNotRead(userId, userId));
         returnJson.put("pageInfo", commonReturn.jsonObjectToPageInfo(pageInfo));
 
         return DataMap.success().setData(returnJson);
@@ -219,10 +225,23 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public DataMap findAllComment(int rows, int pageNum) {
+    public DataMap findAllComment(int rows, int pageNum, String username, String articleTitle,
+                                  String commentContent, String firstDate, String lastDate, String searchUsername) {
 
-        PageHelper.startPage(pageNum, rows);
-        List<Comment> comments = commentMapper.findAllComment();
+        List<Comment> comments;
+        int total;
+
+        if (StringUtils.isBlank(username)) {
+            PageHelper.startPage(pageNum, rows);
+            comments = commentMapper.findAllCommentBySome(articleTitle, null, commentContent, firstDate, lastDate, searchUsername);
+            total = commentMapper.countAllCommentBySome(articleTitle, null, commentContent, firstDate, lastDate, searchUsername);
+        } else {
+            int userId = userService.findIdByUsername(username);
+            PageHelper.startPage(pageNum, rows);
+            comments = commentMapper.findAllCommentBySome(articleTitle, userId, commentContent, firstDate, lastDate, searchUsername);
+            total = commentMapper.countAllCommentBySome(articleTitle, userId, commentContent, firstDate, lastDate, searchUsername);
+        }
+
         PageInfo<Comment> pageInfo = new PageInfo<>(comments);
 
         JSONObject jsonObject;
@@ -236,18 +255,62 @@ public class CommentServiceImpl implements CommentService {
         }
 
         resultJsonObject.put("result", resultJsonArray);
+        resultJsonObject.put("total", total);
         resultJsonObject.put("pageInfo", commonReturn.jsonObjectToPageInfo(pageInfo));
         return DataMap.success().setData(resultJsonObject);
     }
 
     @Override
     public DataMap deleteOneCommentById(int id) {
+        Comment comment = commentMapper.findCommentById(id);
+
+        int commentNum = 0;
+        int commentLikesNum = 0;
+        int answererId = comment.getAnswererId();
+
+        if (comment.getpId() == 0) {
+            commentNum = commentMapper.countCommentByPId(id, answererId); // 我自己发的评论，回复本人的未读数
+            commentLikesNum = commentMapper.countCommentLikesByPId(id, answererId); // 我自己发的评论，点赞数未读数
+
+            List<Integer> otherCommentRespondentIds = commentMapper.findOtherCommentRespondentId(id, answererId); // 我自己发的评论，回复其他人的人数
+            for (Integer otherRId : otherCommentRespondentIds) {
+                int otherCommentNum = commentMapper.countCommentByPId(id, otherRId); // 我自己发的评论，回复其他人的未读数
+
+                if (hashRedisService.hasKey(String.valueOf(otherRId))) {
+                    hashRedisService.hashIncrement(String.valueOf(otherRId), "allNewsNum", -otherCommentNum);
+                    hashRedisService.hashIncrement(String.valueOf(otherRId), "commentNum", -otherCommentNum);
+                }
+                System.out.println(otherRId + " 要-" + otherCommentNum + "的评论未读数");
+            }
+        } else {
+            if (comment.getIsRead() == 1) {
+                if (hashRedisService.hasKey(String.valueOf(comment.getRespondentId()))) {
+                    hashRedisService.hashIncrement(String.valueOf(comment.getRespondentId()), "allNewsNum", -1);
+                    hashRedisService.hashIncrement(String.valueOf(comment.getRespondentId()), "commentNum", -1);
+                }
+                System.out.println(comment.getRespondentId() + " 要-1的评论未读数");
+            } else {
+                System.out.println(comment.getRespondentId() + " 要-0的评论未读数");
+            }
+        }
+
         // 删除评论
         commentMapper.deleteOneCommentById(id);
         // 删除评论的回复
         commentMapper.deleteOneCommentBypId(id);
         // 删除评论的点赞
         commentLikesRecordMapper.deleteCommentLikesRecordBypId(id);
+
+        if (hashRedisService.hasKey(String.valueOf(answererId))) {
+            hashRedisService.hashIncrement(String.valueOf(answererId), "allNewsNum", -commentNum);
+            hashRedisService.hashIncrement(String.valueOf(answererId), "commentNum", -commentNum);
+            System.out.println("回复我的未读数：" + commentNum);
+        }
+
+        if (hashRedisService.hasHashKey(StringUtil.COMMENT_THUMBS_UP, String.valueOf(answererId))) {
+            hashRedisService.hashIncrement(StringUtil.COMMENT_THUMBS_UP, String.valueOf(answererId), -commentLikesNum);
+            System.out.println("评论点赞的未读数：" + commentLikesNum);
+        }
 
         return DataMap.success();
     }
@@ -282,8 +345,10 @@ public class CommentServiceImpl implements CommentService {
      */
     private JSONObject getReplyCommentJson(Comment reply) {
         JSONObject replyJsonObject = new JSONObject();
+        User user = userService.findUserByUserId(reply.getAnswererId());
         replyJsonObject.put("id", reply.getId());
-        replyJsonObject.put("answerer", userService.findUsernameById(reply.getAnswererId()));
+        replyJsonObject.put("answerer", user.getUsername());
+        replyJsonObject.put("avatarImgUrl", user.getAvatarImgUrl());
         replyJsonObject.put("commentDate", TimeUtil.getFormatDateForSix(reply.getCommentDate()));
         replyJsonObject.put("commentContent", reply.getCommentContent());
         replyJsonObject.put("respondent", userService.findUsernameById(reply.getRespondentId()));
@@ -316,16 +381,18 @@ public class CommentServiceImpl implements CommentService {
      * @param comment: 评论类
      * @return:
      */
-    private JSONObject getCommentJson(Comment comment) {
+    private JSONObject getCommentJson(Comment comment, String articleTitle) {
         JSONObject jsonObject = new JSONObject();
+
         jsonObject.put("id", comment.getId());
         jsonObject.put("pId", comment.getpId());
         jsonObject.put("articleId", comment.getArticleId());
         jsonObject.put("answerer", userService.findUsernameById(comment.getAnswererId()));
         jsonObject.put("commentDate", TimeUtil.getFormatDateForSix(comment.getCommentDate()));
-        jsonObject.put("articleTitle", articleService.findArticleTitleByArticleId(comment.getArticleId()).get("articleTitle"));
+        jsonObject.put("articleTitle", articleTitle);
         jsonObject.put("commentContent", comment.getCommentContent());
         jsonObject.put("isRead", comment.getIsRead());
+
         return jsonObject;
     }
 
@@ -337,16 +404,19 @@ public class CommentServiceImpl implements CommentService {
      * @return: com.alibaba.fastjson.JSONObject
      */
     private JSONObject getAllCommentJson(Comment comment) {
-        JSONObject jsonObject = getCommentJson(comment);
-        jsonObject.put("respondent", userService.findUsernameById(comment.getRespondentId()));
+        //String articleTitle = articleService.findArticleTitleByArticleId(comment.getArticleId()).get("articleTitle");
+        JSONObject jsonObject = getCommentJson(comment, comment.getArticle().getArticleTitle());
 
+        String respondent = userService.findUsernameById(comment.getRespondentId());
         // 被评论对象
-        Integer pId = comment.getpId();
-        if(pId == 0) {
-            jsonObject.put("ParentObject", "这是根评论哦");
+        if(comment.getpId() == 0) {
+            jsonObject.put("parentObject", comment.getArticle().getArticleTitle());
         } else {
-            jsonObject.put("ParentObject", commentMapper.findOneCommentById(comment.getpId()).getCommentContent());
+            Comment oneCommentById = commentMapper.findOneCommentById(comment.getpId());
+            jsonObject.put("parentObject", userService.findUsernameById(oneCommentById.getAnswererId()) + "：" + oneCommentById.getCommentContent());
         }
+
+        jsonObject.put("respondent", respondent);
         return jsonObject;
     }
 }

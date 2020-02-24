@@ -15,6 +15,7 @@ import com.cwz.blog.defaultblog.utils.DataMap;
 import com.cwz.blog.defaultblog.utils.TimeUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -63,8 +64,12 @@ public class ArticleUserFavoriteRecordServiceImpl implements ArticleUserFavorite
     @Override
     public DataMap deleteArticleFavoriteRecordByArticleIdAndUsername(int articleId, String username) {
         Example example = new Example(ArticleUserFavoriteRecord.class);
-        example.createCriteria().andEqualTo("articleId", articleId)
-                .andEqualTo("userId", userService.findIdByUsername(username));
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("articleId", articleId);
+        if (!StringUtils.isBlank(username)) {
+            criteria.andEqualTo("userId", userService.findIdByUsername(username));
+        }
+
         int i = articleUserFavoriteRecordMapper.deleteByExample(example);
         if (i > 0) {
             return DataMap.success(CodeType.DELETE_ARTICLE_FAVORITE_SUCCESS);
@@ -75,15 +80,23 @@ public class ArticleUserFavoriteRecordServiceImpl implements ArticleUserFavorite
     }
 
     @Override
-    public DataMap findArticleFavoriteRecordByUsername(String username, int rows, int pageNum) {
+    public DataMap findArticleFavoriteRecordByUsername(String username, String articleTitle, int rows, int pageNum) {
         CommonReturn commonReturn = new CommonReturn();
         int userId = userService.findIdByUsername(username);
 
         PageHelper.startPage(pageNum, rows);
-        Example example = new Example(ArticleUserFavoriteRecord.class);
-        example.orderBy("id").desc();
-        example.createCriteria().andEqualTo("userId", userId);
-        List<ArticleUserFavoriteRecord> articleUserFavoriteRecords = articleUserFavoriteRecordMapper.selectByExample(example);
+        List<ArticleUserFavoriteRecord> articleUserFavoriteRecords;
+        int articleFavoriteNum;
+
+        if (StringUtils.isBlank(articleTitle)) {
+            articleUserFavoriteRecords = articleUserFavoriteRecordMapper.findArticleFavoriteRecordByUserId(userId);
+            articleFavoriteNum = articleUserFavoriteRecordMapper.countArticleFavoriteRecordByUserId(userId);
+
+        } else {
+            articleUserFavoriteRecords = articleUserFavoriteRecordMapper.findArticleFavoriteRecordByUserIdAndArticleTitle(userId, articleTitle);
+            articleFavoriteNum = articleUserFavoriteRecordMapper.countArticleFavoriteRecordByUserIdAndArticleTitle(userId, articleTitle);
+        }
+
         PageInfo<ArticleUserFavoriteRecord> pageInfo = new PageInfo<>(articleUserFavoriteRecords);
 
         JSONObject returnJson = new JSONObject();
@@ -106,7 +119,7 @@ public class ArticleUserFavoriteRecordServiceImpl implements ArticleUserFavorite
         }
 
         returnJson.put("result", returnJsonArray);
-        returnJson.put("articleFavoriteNum", countArticleFavoriteRecordByUsername(username));
+        returnJson.put("articleFavoriteNum", articleFavoriteNum);
         returnJson.put("pageInfo", commonReturn.jsonObjectToPageInfo(pageInfo));
         return DataMap.success().setData(returnJson);
     }
@@ -126,6 +139,14 @@ public class ArticleUserFavoriteRecordServiceImpl implements ArticleUserFavorite
         // 这里可以适当的添加一个 redis 用来统计文章的被收藏数
 
         return articleUserFavoriteRecordMapper.selectCountByExample(example);
+    }
+
+    @Override
+    public DataMap deleteArticleFavoriteRecordById(int id) {
+        int articleId = articleUserFavoriteRecordMapper.selectArticleFavoriteRecordById(id);
+        articleUserFavoriteRecordMapper.updateArticleFavoriteRecord(articleId);
+        articleUserFavoriteRecordMapper.deleteArticleFavoriteRecordById(id);
+        return DataMap.success();
     }
 
 }

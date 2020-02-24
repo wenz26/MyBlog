@@ -46,7 +46,7 @@ class CommentLikesRecordServiceTest {
 
     @Test
     void testAAA() {
-        List<CommentLikesRecord> result = commentLikesRecordMapper.findCommentLikesRecordByUserId(1);
-        System.out.println(JSON.toJSONString(result));
+//        List<CommentLikesRecord> result = commentLikesRecordMapper.findCommentLikesRecordByUserId(1);
+//        System.out.println(JSON.toJSONString(result));
     }
 }

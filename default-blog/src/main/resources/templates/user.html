@@ -48,19 +48,23 @@
                     <ul class="am-list am-collapse admin-sidebar-sub am-in" id="collapse-nav">
                         <li class="clickLi publishArticle"><a><i class="am-icon-file-text am-icon-fw"></i> 已发布文章管理</a></li>
                         <li class="clickLi draftArticle"><a><i class="am-icon-dropbox am-icon-fw"></i> 草稿箱管理</a></li>
+                        <li class="clickLi myCommentManage"><a><i class="am-icon-comments am-icon-fw"></i> 我的评论</a></li>
                     </ul>
                 </li>
 
-                <li class="clickLi commentMessage"><a><i class="am-icon-commenting am-icon-fw new"></i> 回复我的<span class="newsNum am-badge am-badge-danger"></span></a></li>
+                <li class="clickLi commentMessage"><a><i class="am-icon-commenting am-icon-fw new"></i> 回复我的<!--<span class="newsNum am-badge am-badge-danger"></span>--></a></li>
 
                 <li class="article user-parent">
                     <a class="am-cf" data-am-collapse="{target: '#thumbsUp'}">
                         <span class="am-icon-hand-peace-o"></span> 收到的赞 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
                     <ul class="am-list am-collapse admin-sidebar-sub am-in" id="thumbsUp">
-                        <li class="clickLi articleByThumbsUp"><a><i class="am-icon-thumbs-o-up am-icon-fw articleNew"></i> 文章点赞<span class="newsNum am-badge am-badge-danger"></span></a></li>
-                        <li class="clickLi commentByThumbsUp"><a><i class="am-icon-thumbs-up am-icon-fw commentNew"></i> 评论点赞<span class="newsNum am-badge am-badge-danger"></span></a></li>
+                        <li class="clickLi articleByThumbsUp"><a><i class="am-icon-thumbs-o-up am-icon-fw articleNew"></i> 文章点赞<!--<span class="newsNum am-badge am-badge-danger"></span>--></a></li>
+                        <li class="clickLi commentByThumbsUp"><a><i class="am-icon-thumbs-up am-icon-fw commentNew"></i> 评论点赞<!--<span class="newsNum am-badge am-badge-danger"></span>--></a></li>
                     </ul>
                 </li>
+
+                <li class="clickLi myAttention" ><a><i class="am-icon-star am-icon-fw"></i> 我的关注</a></li>
+                <li class="clickLi myFan"><a><i class="am-icon-heart am-icon-fw"></i> 我的粉丝</a></li>
 
             </ul>
             <div class="am-panel am-panel-default admin-sidebar-panel">
@@ -75,6 +79,7 @@
     <!--右侧-->
     <div class="admin-content">
         <div class="userInfo">
+
             <div id="personalDate">
                 <ol class="am-breadcrumb  am-breadcrumb-slash">
                     <li class="am-active am-icon-home"> 个人主页</li>
@@ -83,12 +88,12 @@
                 <div class="zhy-personalDate">
                     <div class="personalDateHeadPortrait">
                         <div class="headPortrait">
-                            <img id="headPortrait" th:src="@{img/general/loading.gif}" data-src=""/>
+                            <img id="headPortrait" th:src="@{img/general/loading.gif}" style="object-fit: cover"/>
                         </div>
                         <div class="headChange">
                             <div class="headPortraitChange">
                                 <input id="imgTest" type="file" onchange="imgChange(event)" accept=".gif,.jpg,.jpeg,.png">
-                                <a>更改头像</a>
+                                <a href="javascript:void(0);">更改头像</a>
                             </div>
                         </div>
 
@@ -113,7 +118,7 @@
                             </div>
                             <div class="birthdayTable">
                                 <label for="birthday">生日</label>
-                                <input class="formInput" type="date" id="birthday" data-am-datepicker="{format: 'yyyy-mm-dd', viewMode: 'years'}" placeholder="填写你的生日"/>
+                                <input class="formInput" type="text" id="birthday" placeholder="填写你的生日" readonly/>
                                 <hr data-am-widget="divider" style="" class="am-divider am-divider-default"/>
                             </div>
                             <div class="genderTable">
@@ -135,7 +140,7 @@
                             </div>
                             <div class="personalBriefTable">
                                 <label for="personalBrief">个人简介</label>
-                                <textarea class="formInput" id="personalBrief" placeholder="填写你的个人简介"></textarea>
+                                <textarea class="formInput" id="personalBrief" placeholder="填写你的个人简介（也可以是一句个人座右铭哦）"></textarea>
                                 <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
                             </div>
                             <button type="button" id="savePersonalDateBtn" class="savePersonalDateBtn am-btn am-btn-warning">保存</button>
@@ -143,6 +148,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="basicSetting">
                 <ol class="am-breadcrumb  am-breadcrumb-slash">
                     <li class="am-active am-icon-home"> 个人主页</li>
@@ -171,13 +177,13 @@
                             <input class="formInput" type="password" id="surePassword" placeholder="再次填写你的密码">
                             <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
                         </div>
-                        <button type="button" id="changePasswordBtn" class="changePasswordBtn am-btn am-btn-warning">保存</button>
+                        <button type="button" id="changePasswordBtn" class="changePasswordBtn am-btn am-btn-warning">修改</button>
                     </form>
                 </div>
             </div>
 
             <div id="publishArticle">
-                <div class="publishArticleMessage">
+                <div class="publishArticleMessage articles">
                     <div class="am-g">
                         <div class="am-u-sm-12 " style="padding-left: 0;">
                             <ol class="am-breadcrumb  am-breadcrumb-slash">
@@ -203,7 +209,7 @@
             </div>
 
             <div id="draftArticle">
-                <div class="draftArticleMessage">
+                <div class="draftArticleMessage articles">
                     <div class="am-g">
                         <div class="am-u-sm-12 " style="padding-left: 0;">
                             <ol class="am-breadcrumb  am-breadcrumb-slash">
@@ -211,10 +217,39 @@
                                 <li class="am-active">草稿箱管理</li>
                             </ol>
                             <div class="draftArticleMessageTable">
-                                <table class="table am-table am-table-bd am-table-striped admin-content-table  am-animation-slide-right" style="word-break: break-all; word-wrap: break-word">
+                                <table class="table am-table am-table-bd am-table-striped admin-content-table  am-animation-slide-right" style="word-wrap: break-word">
                                     <thead>
                                     <tr>
                                         <th>文章标题</th><th>更新时间</th><th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="tables">
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="myCommentManage">
+                <div class="myCommentManageMessage articles">
+                    <div class="am-g">
+                        <div class="am-u-sm-12 " style="padding-left: 0;">
+                            <ol class="am-breadcrumb  am-breadcrumb-slash">
+                                <li class="am-active am-icon-home"> 个人主页</li>
+                                <li class="am-active">我的评论</li>
+                            </ol>
+                            <div class="myCommentManageMessageTable">
+                                <table class="table am-table am-table-bd am-table-striped admin-content-table  am-animation-slide-right" style="word-wrap: break-word">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 300px">文章标题</th><th style="width: 300px">回复对象（主评论或文章）</th>
+                                        <th style="width: 300px">评论内容</th><th style="width: 300px">评论日期</th>
+                                        <th style="width: 300px">操作</th>
                                     </tr>
                                     </thead>
                                     <tbody class="tables">
@@ -235,8 +270,10 @@
                         <li class="am-active am-icon-home"> 个人主页</li>
                         <li class="am-active">回复我的</li>
                     </ol>
+
                     <div class="msgContent am-animation-slide-right">
                         <!--填充评论信息-->
+
                     </div>
                 </div>
             </div>
@@ -247,7 +284,8 @@
                         <li class="am-active am-icon-home"> 个人主页</li>
                         <li class="am-active">文章点赞</li>
                     </ol>
-                    <div class="msgContent am-animation-slide-right">
+
+                    <div class="articleByThumbsUpContent am-animation-slide-right">
                         <!--填充文章点赞信息-->
 
                     </div>
@@ -260,9 +298,37 @@
                         <li class="am-active am-icon-home"> 个人主页</li>
                         <li class="am-active">评论点赞</li>
                     </ol>
-                    <div class="msgContent am-animation-slide-right">
+                    <div class="commentByThumbsUpContent am-animation-slide-right">
                         <!--填充文章点赞信息-->
 
+                    </div>
+                </div>
+            </div>
+
+            <div id="myAttention">
+                <div class="myAttentionManagement">
+                    <ol class="am-breadcrumb  am-breadcrumb-slash navigationBar">
+                        <li class="am-active am-icon-home"> 个人主页</li>
+                        <li class="am-active">我的关注</li>
+                    </ol>
+                    <div class="myAttentionListInfo">
+                        <div class="myAttentionInfos am-animation-slide-right">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="myFan">
+                <div class="myFanManagement">
+                    <ol class="am-breadcrumb  am-breadcrumb-slash navigationBar">
+                        <li class="am-active am-icon-home"> 个人主页</li>
+                        <li class="am-active">我的粉丝</li>
+                    </ol>
+                    <div class="myFanListInfo">
+                        <div class="myFanInfos am-animation-slide-right">
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -272,6 +338,48 @@
 
     <!--消息盒子+反馈-->
     <div th:replace="common/bar :: feedback"></div>
+
+    <!--删除已发布文章模态框-->
+    <div class="am-modal am-modal-confirm" tabindex="-1" id="deletePublicAlter">
+        <div class="am-modal-dialog">
+            <div class="am-modal-hd">删除已发布文章</div>
+            <div class="am-modal-bd" id="deletePublicAlterContent">
+                你确定要删除吗？删除了就无法恢复了呦!
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="surePublicArticleDeleteBtn am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+    </div>
+
+    <!--删除草稿箱文章模态框-->
+    <div class="am-modal am-modal-confirm" tabindex="-1" id="deleteDraftAlter">
+        <div class="am-modal-dialog">
+            <div class="am-modal-hd">删除草稿箱文章</div>
+            <div class="am-modal-bd" id="deleteDraftAlterContent">
+                你确定要删除吗？删除了就无法恢复了呦!
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="sureDraftArticleDeleteBtn am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+    </div>
+
+    <!--删除我的评论模态框-->
+    <div class="am-modal am-modal-confirm" tabindex="-1" id="deleteMyComment">
+        <div class="am-modal-dialog">
+            <div class="am-modal-hd">删除该条评论</div>
+            <div class="am-modal-bd" id="deleteMyCommentContent">
+                你确定要删除吗？删除了就无法恢复了呦!
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="sureMyCommentDeleteBtn am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+    </div>
 
 </div>
 

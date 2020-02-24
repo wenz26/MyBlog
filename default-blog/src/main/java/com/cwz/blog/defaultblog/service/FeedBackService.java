@@ -27,5 +27,24 @@ public interface FeedBackService {
      * @date: 2019/12/22
      * @return:
      */
-    DataMap getAllFeedback(int rows, int pageNum);
+    DataMap getAllFeedback(int rows, int pageNum, Integer isRead, String firstDate, String lastDate);
+
+    /**
+     * @description: 已读一条反馈信息
+     * @author: 陈文振
+     * @date: 2020/2/1
+     * @param id
+     * @return: com.cwz.blog.defaultblog.utils.DataMap
+     */
+    DataMap readOneFeedBackRecord(int id);
+
+    /**
+     * @description: 已读全部反馈信息
+     * @author: 陈文振
+     * @date: 2020/2/1
+     * @param
+     * @return: com.cwz.blog.defaultblog.utils.DataMap
+     */
+    DataMap readAllFeedBack();
+
 }

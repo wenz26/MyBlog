@@ -185,4 +185,17 @@ public interface UserService {
      * @return:
      */
     int countUserNum();
+
+    /**
+     * @description: 获得网站所有用户
+     * @author: 陈文振
+     * @date: 2020/1/29
+     * @param rows
+     * @param pageNum
+     * @return: com.cwz.blog.defaultblog.utils.DataMap
+     */
+    DataMap findAllUser(int rows, int pageNum, String phoneSearch, String usernameSearch, String genderSearch,
+                        String firstDate, String lastDate);
+
+
 }

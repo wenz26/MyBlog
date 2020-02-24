@@ -58,13 +58,13 @@ public enum CodeType {
     USERNAME_FORMAT_ERROR(509, "用户名长度过长或格式不正确"),
 
     ARTICLE_COLLECTION_SUCCESS(601, "文章收藏成功"),
-    ARTICLE_COLLECTION_FAIL(601, "文章收藏失败"),
+    ARTICLE_COLLECTION_FAIL(602, "文章收藏失败"),
 
     USER_LOG_RECORD_SUCCESS(701, "日志记录成功"),
     USER_LOG_RECORD_FAIL(702, "日志记录失败"),
 
-    COMMENT_BLANK(801, "内容为空"),
-    MESSAGE_HAS_THUMBS_UP(802, "已经点过赞了"),
+    COMMENT_BLANK(801, "评论内容为空"),
+    MESSAGE_HAS_THUMBS_UP(802, "评论已经点过赞了"),
 
     PHONE_ERROR(901, "手机号错误"),
     AUTH_CODE_ERROR(902, "验证码错误"),
@@ -88,7 +88,14 @@ public enum CodeType {
     CODE_BLANK(1201, "验证码的值为空"),
     CODE_NOT_EXIST(1202, "验证码不存在"),
     CODE_IS_EXPIRED(1203, "验证码已过期"),
-    CODE_NOT_RIGHT(1204, "验证码不匹配")
+    CODE_NOT_RIGHT(1204, "验证码不匹配"),
+
+    READ_FEEDBACK_ONE_SUCCESS(1301, "已读一条反馈信息成功"),
+    READ_FEEDBACK_ALL_SUCCESS(1302, "已读全部反馈信息成功"),
+    READ_FEEDBACK_FAIL(1303, "已读反馈信息失败"),
+
+    INSERT_USER_ATTENTION_SUCCESS(1401, "关注用户成功"),
+    INSERT_USER_ATTENTION_FAIL(1402, "关注用户失败"),
     ;
 
 

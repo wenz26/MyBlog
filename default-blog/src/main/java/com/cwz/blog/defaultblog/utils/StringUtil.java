@@ -41,4 +41,14 @@ public class StringUtil {
      * 短信验证码 前缀
      */
     public static final String PREFIX_SMS_CODE = "PREFIX_SMS_CODE";
+
+    /**
+     * 反馈未读数
+     */
+    public static final String FEEDBACK_MSG = "feedBackMsg";
+
+    /**
+     * 搜索历史
+     */
+    public static final String SEARCH_HISTORY = "searchHistory";
 }

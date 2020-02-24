@@ -46,12 +46,18 @@
                     action += "&callback=" + settings.uploadCallbackURL + "&dialog_id=editormd-image-dialog-" + guid;
                 }
 
+                // 修改
+                imageLang.title = "添加图片/视频/音频(大小小于30M)";
+                imageLang.url = "图片/视频/音频地址";
+                imageLang.alt = "图片/视频/音频描述";
+                imageLang.link = "图片/视频/音频链接";
+
                 var dialogContent = ( (settings.imageUpload) ? "<form action=\"" + action +"\" target=\"" + iframeName + "\" method=\"post\" enctype=\"multipart/form-data\" class=\"" + classPrefix + "form\">" : "<div class=\"" + classPrefix + "form\">" ) +
                                         ( (settings.imageUpload) ? "<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\" guid=\"" + guid + "\"></iframe>" : "" ) +
                                         "<label>" + imageLang.url + "</label>" +
                                         "<input type=\"text\" data-url />" + (function(){
                                             return (settings.imageUpload) ? "<div class=\"" + classPrefix + "file-input\">" +
-                                                                                "<input type=\"file\" name=\"" + classPrefix + "image-file\" accept=\"image/*\" />" +
+                                                                                "<input type=\"file\" name=\"" + classPrefix + "image-file\" accept=\"image/*,video/mp4,audio/mp3\" />" + // 修改
                                                                                 "<input type=\"submit\" value=\"" + imageLang.uploadButton + "\" />" +
                                                                             "</div>" : "";
                                         })() +
@@ -91,6 +97,28 @@
                                 return false;
                             }
 
+                            // 修改  .mp4
+                            if (url.endsWith(".mp4")) {
+                                var videoHtml = '<video class="video-js" controls preload="auto" width="100%" poster="" data-setup=\'{"aspectRatio":"16:9"}\'>' +
+                                    '<source src="' + url + '" type=\'video/mp4\' ><p class="vjs-no-js"></p></video>';
+                                videoHtml = "\n" + videoHtml + "\n";
+                                cm.replaceSelection(videoHtml);
+                                cm.setCursor(cursor.line, cursor.ch + 2);
+                                this.hide().lockScreen(false).hideMask();
+                                return false;
+                            }
+
+                            // 修改  .mp3
+                            if (url.endsWith(".mp3")) {
+                                var audioHtml = '<audio class="audio-js" controls preload="auto" width="100%" poster="" data-setup=\'{"aspectRatio":"16:9"}\'>' +
+                                    '<source src="' + url + '" type=\'audio/mp3\' ><p class="ajs-no-js"></p></audio>';
+                                audioHtml = "\n" + audioHtml + "\n";
+                                cm.replaceSelection(audioHtml);
+                                cm.setCursor(cursor.line, cursor.ch + 2);
+                                this.hide().lockScreen(false).hideMask();
+                                return false;
+                            }
+
 							var altAttr = (alt !== "") ? " \"" + alt + "\"" : "";
 
                             if (link === "" || link === "http://")
@@ -124,6 +152,10 @@
 				if (!settings.imageUpload) {
                     return ;
                 }
+
+                $(".editormd-image-dialog").css({'width': '525px'});
+                // $(".editormd-dialog-container").css({'top': ''});
+                $(".editormd-form label").css({'width': '137px'});
 
 				var fileInput  = dialog.find("[name=\"" + classPrefix + "image-file\"]");
 

@@ -40,13 +40,13 @@ class ArticleLikesRecordServiceTest {
 
     @Test
     void deleteArticleLikesRecordByArticleId() {
-        articleLikesRecordService.deleteArticleLikesRecordByArticleId(2);
+        articleLikesRecordService.deleteArticleLikesRecordByArticleId(2, null);
     }
 
     @Test
     void getArticleThumbsUp() {
-        DataMap articleThumbsUp = articleLikesRecordService.getArticleThumbsUp(5, 0, "陈文振");
-        System.out.println(JSON.toJSONString(articleThumbsUp));
+//        DataMap articleThumbsUp = articleLikesRecordService.getArticleThumbsUp(5, 0, "陈文振");
+//        System.out.println(JSON.toJSONString(articleThumbsUp));
     }
 
     @Test
